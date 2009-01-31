@@ -21,14 +21,10 @@
 
 SessionClient::SessionClient()
 {
-    settings = SettingsPtr(new QSettings("ggbot.ini", QSettings::IniFormat));
-    ReadSettings();
-    SaveSettings();
 }
 
 SessionClient::~SessionClient()
 {
-    SaveSettings();
 }
 
 void SessionClient::MakeConnection()
@@ -54,30 +50,6 @@ void SessionClient::MakeConnection()
     EventLoop();
 
     CleanEndExit();
-}
-
-void SessionClient::ReadSettings()
-{
-    qDebug() << "ReadSettings() called";
-
-    settings->beginGroup("Main");
-    m_level = settings->value("DebugLevel", 0).toInt();
-    m_uin = settings->value("UIN", 1234).toUInt();
-    m_password = settings->value("Password", "pass").toString();
-    m_defaultDescription = settings->value("DefaultDescription", "v0.3").toString();
-    settings->endGroup();
-}
-
-void SessionClient::SaveSettings()
-{
-    qDebug() << "SaveSettings() called";
-
-    settings->beginGroup("Main");
-    settings->setValue("DebugLevel", m_level);
-    settings->setValue("UIN", m_uin);
-    settings->setValue("Password", m_password);
-    settings->setValue("DefaultDescription", m_defaultDescription);
-    settings->endGroup();
 }
 
 void SessionClient::FreeSession(gg_session *session)

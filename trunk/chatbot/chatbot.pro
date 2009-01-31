@@ -9,10 +9,14 @@ SOURCES += main.cpp \
 	sessionclient.cpp \
 	eventmanager.cpp \
 	profilebase.cpp \
-	profile.cpp
+	profile.cpp \
+	botsettings.cpp \
+	botsettingsto.cpp
 
 HEADERS += connectionthread.h \
 	sessionclient.h \
 	eventmanager.h \
 	profilebase.h \
-	profile.h
+	profile.h \
+	botsettings.cpp \
+	botsettingsto.cpp

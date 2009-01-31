@@ -17,24 +17,35 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/lgpl-3.0.html>.
 */
 
-#include "profile.h"
+#ifndef _BOTSETTINGSTO_H
+#define	_BOTSETTINGSTO_H
 
-Profile::Profile()
+#include <QString>
+
+class BotSettingsTO
 {
-    Init();
-}
+public:
+    BotSettingsTO();
+    virtual ~BotSettingsTO();
 
-Profile::~Profile()
-{
+    void setDebugLevel(const int v) { m_level = v; }
+    int getDebugLevel() const { return m_level; }
 
-}
+    void setUin(const uin_t v) { m_uin = v; }
+    uin_t getUin() const { return m_uin; }
 
-void Profile::Init()
-{
-    m_botSettings = boost::shared_ptr<BotSettings>(new BotSettings());
-}
+    void setPassword(const QString v) { m_password = v; }
+    QString getPassword() const { return m_password; }
 
-BotSettingsTO Profile::getBotSettings()
-{
-    return m_botSettings->getBotSettings();
-}
+    void setDefaultDescription(const QString v) { m_defaultDescription = v; }
+    QString getDefaultDescription() const { return m_defaultDescription; }
+    
+private:
+    int m_level;
+    uin_t m_uin;
+    QString m_password;
+    QString m_defaultDescription;
+};
+
+#endif	/* _BOTSETTINGSTO_H */
+
