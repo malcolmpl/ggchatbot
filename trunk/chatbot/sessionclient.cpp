@@ -45,7 +45,7 @@ void SessionClient::MakeConnection()
         return;
     }
 
-    ChangeStatus(m_defaultDescription);
+    ChangeStatus(GetProfile()->getBotSettings().getDefaultDescription());
 
     EventLoop();
 
@@ -77,7 +77,7 @@ void SessionClient::SetDebugLevel()
 {
     qDebug() << "SetDebugLevel() called";
 
-    gg_debug_level = m_level;
+    gg_debug_level = GetProfile()->getBotSettings().getDebugLevel();
 }
 
 bool SessionClient::Login()
@@ -85,8 +85,8 @@ bool SessionClient::Login()
     qDebug() << "Login() called";
     memset(&loginParams, 0, sizeof(loginParams));
 
-    loginParams.uin = m_uin;
-    loginParams.password = m_password.toAscii().data();
+    loginParams.uin = GetProfile()->getBotSettings().getUin();
+    loginParams.password = GetProfile()->getBotSettings().getPassword().toAscii().data();
 
     if (!( session = gg_login(&loginParams) ) )
     {

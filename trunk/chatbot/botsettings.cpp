@@ -28,7 +28,7 @@ BotSettings::BotSettings()
 
 BotSettings::~BotSettings()
 {
-    SaveSettings();
+    SaveBotSettings();
 }
 
 void BotSettings::ReadBotSettings()
@@ -37,9 +37,9 @@ void BotSettings::ReadBotSettings()
 
     settings->beginGroup("Main");
         m_botSettings.setDebugLevel(settings->value("DebugLevel", 0).toInt());
-        m_botSettings.getUin(settings->value("UIN", 1234).toUInt());
-        m_botSettings.getPassword(settings->value("Password", "pass").toString());
-        m_botSettings.getDefaultDescription(settings->value("DefaultDescription", "v0.3").toString());
+        m_botSettings.setUin(settings->value("UIN", 1234).toUInt());
+        m_botSettings.setPassword(settings->value("Password", "pass").toString());
+        m_botSettings.setDefaultDescription(settings->value("DefaultDescription", "v0.3").toString());
     settings->endGroup();
 }
 
