@@ -21,6 +21,7 @@
 #define	_BOTSETTINGSTO_H
 
 #include <QString>
+#include "libgadu.h"
 
 class BotSettingsTO
 {
