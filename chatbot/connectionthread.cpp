@@ -39,6 +39,8 @@ void ConnectionThread::startServer()
     qDebug() << "startServer() called";
     ProfilePtr profile = ProfilePtr(new Profile());
     sessionClient.SetProfile(profile);
+
     QObject::connect(&sessionClient, SIGNAL(endServer()), this, SLOT(quit()));
+
     sessionClient.MakeConnection();
 }

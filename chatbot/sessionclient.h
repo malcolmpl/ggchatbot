@@ -21,14 +21,12 @@
 #define	_SESSIONCLIENT_H
 
 #include <QtCore>
-#include <QSettings>
 #include <QtDebug>
 #include <boost/shared_ptr.hpp>
 #include "libgadu.h"
 #include "eventmanager.h"
 #include "profilebase.h"
 
-typedef boost::shared_ptr<QSettings> SettingsPtr;
 typedef boost::shared_ptr<gg_session*> SessionPtr;
 typedef boost::shared_ptr<gg_event*> EventPtr;
 
@@ -49,16 +47,8 @@ private:
     struct gg_recv_msg gotmsg;
     struct gg_session *session;
     struct gg_event *event;
-    SettingsPtr settings;
     EventManager eventManager;
 
-    int m_level;
-    uin_t m_uin;
-    QString m_password;
-    QString m_defaultDescription;
-
-    void ReadSettings();
-    void SaveSettings();
     void FreeSession(gg_session *session);
     void Logout(gg_session *session);
     void CleanEndExit();

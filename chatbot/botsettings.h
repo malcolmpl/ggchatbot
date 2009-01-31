@@ -17,24 +17,29 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/lgpl-3.0.html>.
 */
 
-#include "profile.h"
+#ifndef _BOTSETTINGS_H
+#define	_BOTSETTINGS_H
 
-Profile::Profile()
+#include <QSettings>
+#include <QtDebug>
+#include <boost/shared_ptr.hpp>
+#include "botsettingsto.h"
+
+typedef boost::shared_ptr<QSettings> SettingsPtr;
+
+class BotSettings
 {
-    Init();
-}
+public:
+    BotSettings();
+    virtual ~BotSettings();
+    void ReadBotSettings();
+    void SaveBotSettings();
 
-Profile::~Profile()
-{
+    BotSettingsTO getBotSettings() { return m_botSettings; }
+private:
+    SettingsPtr settings;
+    BotSettingsTO m_botSettings;
+};
 
-}
+#endif	/* _BOTSETTINGS_H */
 
-void Profile::Init()
-{
-    m_botSettings = boost::shared_ptr<BotSettings>(new BotSettings());
-}
-
-BotSettingsTO Profile::getBotSettings()
-{
-    return m_botSettings->getBotSettings();
-}

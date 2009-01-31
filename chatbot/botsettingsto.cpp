@@ -17,24 +17,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/lgpl-3.0.html>.
 */
 
-#include "profile.h"
+#include "botsettingsto.h"
 
-Profile::Profile()
+BotSettingsTO::BotSettingsTO()
 {
-    Init();
 }
 
-Profile::~Profile()
+BotSettingsTO::~BotSettingsTO()
 {
-
 }
 
-void Profile::Init()
-{
-    m_botSettings = boost::shared_ptr<BotSettings>(new BotSettings());
-}
-
-BotSettingsTO Profile::getBotSettings()
-{
-    return m_botSettings->getBotSettings();
-}

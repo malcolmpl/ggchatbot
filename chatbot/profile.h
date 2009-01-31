@@ -21,10 +21,20 @@
 #define PROFILE_H_
 
 #include <boost/shared_ptr.hpp>
+#include "botsettings.h"
 
 class Profile
 {
 public:
+    Profile();
+    virtual ~Profile();
+
+    BotSettingsTO getBotSettings();
+
+private:
+    void Init();
+
+    boost::shared_ptr<BotSettings> m_botSettings;
 };
 
 typedef boost::shared_ptr<Profile> ProfilePtr;
