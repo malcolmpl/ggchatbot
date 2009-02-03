@@ -19,9 +19,14 @@
 
 #include "botsettings.h"
 
+namespace
+{
+    const QString BOT_CONFIG = "ggchatbot.ini";
+}
+
 BotSettings::BotSettings()
 {
-    settings = SettingsPtr(new QSettings("ggchatbot.ini", QSettings::IniFormat));
+    settings = SettingsPtr(new QSettings(BOT_CONFIG, QSettings::IniFormat));
     ReadBotSettings();
     SaveBotSettings();
 }

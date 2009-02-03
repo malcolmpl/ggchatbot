@@ -18,6 +18,9 @@
 */
 
 #include "profile.h"
+#include "userdatabase.h"
+#include "botsettings.h"
+
 
 Profile::Profile()
 {
@@ -31,10 +34,16 @@ Profile::~Profile()
 
 void Profile::Init()
 {
-    m_botSettings = boost::shared_ptr<BotSettings>(new BotSettings());
+    m_botSettings = BotSettingsPtr(new BotSettings());
+    m_userDatabase = UserDatabasePtr(new UserDatabase());
 }
 
-BotSettingsTO Profile::getBotSettings()
+BotSettingsTO Profile::getBotSettings() const
 {
     return m_botSettings->getBotSettings();
+}
+
+UserDatabasePtr Profile::getUserDatabase() const
+{
+    return m_userDatabase;
 }

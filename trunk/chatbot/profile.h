@@ -21,7 +21,13 @@
 #define PROFILE_H_
 
 #include <boost/shared_ptr.hpp>
-#include "botsettings.h"
+
+class UserDatabase;
+class BotSettings;
+class BotSettingsTO;
+
+typedef boost::shared_ptr<UserDatabase> UserDatabasePtr;
+typedef boost::shared_ptr<BotSettings> BotSettingsPtr;
 
 class Profile
 {
@@ -29,12 +35,14 @@ public:
     Profile();
     virtual ~Profile();
 
-    BotSettingsTO getBotSettings();
-
+    BotSettingsTO getBotSettings() const;
+    UserDatabasePtr getUserDatabase() const;
+    
 private:
     void Init();
 
-    boost::shared_ptr<BotSettings> m_botSettings;
+    BotSettingsPtr m_botSettings;
+    UserDatabasePtr m_userDatabase;
 };
 
 typedef boost::shared_ptr<Profile> ProfilePtr;

@@ -18,6 +18,7 @@
 */
 
 #include "sessionclient.h"
+#include "botsettingsto.h"
 
 SessionClient::SessionClient()
 {
