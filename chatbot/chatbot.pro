@@ -11,12 +11,14 @@ SOURCES += main.cpp \
 	profilebase.cpp \
 	profile.cpp \
 	botsettings.cpp \
-	botsettingsto.cpp
+	botsettingsto.cpp \
+	userdatabase.cpp
 
 HEADERS += connectionthread.h \
 	sessionclient.h \
 	eventmanager.h \
 	profilebase.h \
 	profile.h \
-	botsettings.cpp \
-	botsettingsto.cpp
+	botsettings.h \
+	botsettingsto.h \
+	userdatabase.h
