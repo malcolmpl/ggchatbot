@@ -18,12 +18,80 @@
 */
 
 #include "userdatabase.h"
+#include "common.h"
+
+#include <QDebug>
+
+namespace
+{
+    const QString USERS_CONFIG = "users.ini";
+}
 
 UserDatabase::UserDatabase()
 {
+    settings = SettingsPtr(new QSettings(USERS_CONFIG, QSettings::IniFormat));
+    readUsersListConfig();
 }
 
 UserDatabase::~UserDatabase()
 {
+    saveUsersListConfig();
+}
+
+void UserDatabase::readUsersListConfig()
+{
+    qDebug() << "readUsersListConfig() called";
+    int size = settings->beginReadArray("user");
+    for (int i = 0; i < size; ++i)
+    {
+        UserInfoTOPtr user = UserInfoTOPtr(new UserInfoTO());
+        settings->setArrayIndex(i);
+        user->setNick(settings->value("nick").toString());
+        user->setUin(settings->value("UIN").toUInt());
+        user->setUserFlags(static_cast<GGChatBot::USER_FLAGS>(settings->value("Flags").toInt()));
+        m_usersList.append(user);
+    }
+    settings->endArray();
+}
+
+void UserDatabase::saveUsersListConfig()
+{
+    qDebug() << "saveUsersListConfig() called";
+    settings->beginWriteArray("logins");
+    for (int i = 0; i < m_usersList.size(); ++i)
+    {
+        settings->setArrayIndex(i);
+        settings->setValue("nick", m_usersList.at(i)->getNick());
+        settings->setValue("UIN", m_usersList.at(i)->getUin());
+        settings->setValue("Flags", m_usersList.at(i)->getUserFlags());
+    }
+    settings->endArray();
+}
+
+UserInfoTOPtr UserDatabase::getUserInfo(uin_t uin) const
+{
+    foreach(UserInfoTOPtr user, m_usersList)
+    {
+        if(user->getUin() == uin)
+            return user;
+    }
+
+    return UserInfoTOPtr();
+}
+
+void UserDatabase::addUser(const UserInfoTOPtr u)
+{
+    foreach(UserInfoTOPtr user, m_usersList)
+    {
+        if(user->getUin()== u->getUin())
+            return;
+    }
+
+    m_usersList.append(u);
+}
+
+void UserDatabase::saveDatabase()
+{
+    saveUsersListConfig();
 }
 

@@ -23,6 +23,8 @@
 #include "libgadu.h"
 #include "common.h"
 
+#include <boost/shared_ptr.hpp>
+
 #include <QString>
 
 class UserInfoTO
@@ -45,6 +47,8 @@ private:
     QString m_nick;
     GGChatBot::USER_FLAGS m_flags;
 };
+
+typedef boost::shared_ptr<UserInfoTO> UserInfoTOPtr;
 
 #endif	/* _USERINFOTO_H */
 
