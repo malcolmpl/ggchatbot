@@ -12,7 +12,8 @@ SOURCES += main.cpp \
 	profile.cpp \
 	botsettings.cpp \
 	botsettingsto.cpp \
-	userdatabase.cpp
+	userdatabase.cpp \
+	userinfoto.cpp
 
 HEADERS += connectionthread.h \
 	sessionclient.h \
@@ -21,4 +22,5 @@ HEADERS += connectionthread.h \
 	profile.h \
 	botsettings.h \
 	botsettingsto.h \
-	userdatabase.h
+	userdatabase.h \
+	userinfoto.h

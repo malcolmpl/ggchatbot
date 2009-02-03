@@ -24,7 +24,6 @@ class UserDatabase
 {
 public:
     UserDatabase();
-    UserDatabase(const UserDatabase& orig);
     virtual ~UserDatabase();
 private:
 

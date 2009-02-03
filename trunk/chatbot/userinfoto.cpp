@@ -17,13 +17,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/lgpl-3.0.html>.
 */
 
-#include "userdatabase.h"
+#include "userinfoto.h"
 
-UserDatabase::UserDatabase()
+UserInfoTO::UserInfoTO()
 {
 }
 
-UserDatabase::~UserDatabase()
+UserInfoTO::~UserInfoTO()
 {
 }
 

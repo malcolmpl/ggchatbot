@@ -17,13 +17,19 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/lgpl-3.0.html>.
 */
 
-#include "userdatabase.h"
+#ifndef _COMMON_H
+#define	_COMMON_H
 
-UserDatabase::UserDatabase()
+namespace GGChatBot
 {
+    enum USER_FLAGS
+    {
+        NONE_FLAG,
+        VOICE_USER_FLAG,
+        OP_USER_FLAG,
+        SUPER_USER_FLAG
+    };
 }
 
-UserDatabase::~UserDatabase()
-{
-}
+#endif	/* _COMMON_H */
 
