@@ -34,6 +34,7 @@ Profile::~Profile()
 
 void Profile::Init()
 {
+    qDebug() << "Profile Init() called";
     m_botSettings = BotSettingsPtr(new BotSettings());
     m_userDatabase = UserDatabasePtr(new UserDatabase());
 }

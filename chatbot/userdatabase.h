@@ -20,13 +20,31 @@
 #ifndef _USERDATABASE_H
 #define	_USERDATABASE_H
 
+#include "userinfoto.h"
+
+#include <boost/shared_ptr.hpp>
+
+#include <QList>
+#include <QSettings>
+
+typedef boost::shared_ptr<QSettings> SettingsPtr;
+
 class UserDatabase
 {
 public:
     UserDatabase();
     virtual ~UserDatabase();
-private:
 
+    UserInfoTOPtr getUserInfo(uin_t uin) const;
+    void addUser(const UserInfoTOPtr user);
+    void saveDatabase();
+    
+private:
+    void readUsersListConfig();
+    void saveUsersListConfig();
+    
+    QList<UserInfoTOPtr> m_usersList;
+    SettingsPtr settings;
 };
 
 #endif	/* _USERDATABASE_H */
