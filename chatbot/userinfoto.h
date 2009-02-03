@@ -17,13 +17,34 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/lgpl-3.0.html>.
 */
 
-#include "userdatabase.h"
+#ifndef _USERINFOTO_H
+#define	_USERINFOTO_H
 
-UserDatabase::UserDatabase()
-{
-}
+#include "libgadu.h"
+#include "common.h"
 
-UserDatabase::~UserDatabase()
+#include <QString>
+
+class UserInfoTO
 {
-}
+public:
+    UserInfoTO();
+    virtual ~UserInfoTO();
+
+    void setUin(const uin_t v) { m_uin = v; }
+    uin_t getUin() const { return m_uin; }
+
+    void setNick(const QString v) { m_nick = v; }
+    QString getNick() const { return m_nick; }
+
+    void setUserFlags(const GGChatBot::USER_FLAGS v) { m_flags = v; }
+    GGChatBot::USER_FLAGS getUserFlags() const { return m_flags; }
+
+private:
+    uin_t m_uin;
+    QString m_nick;
+    GGChatBot::USER_FLAGS m_flags;
+};
+
+#endif	/* _USERINFOTO_H */
 
