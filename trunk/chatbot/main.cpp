@@ -20,17 +20,54 @@
 #include <QtCore/QCoreApplication>
 #include <QObject>
 #include <QTimer>
+#include <QDate>
+#include <QFile>
+
 #include "connectionthread.h"
+#include "logscheduler.h"
+
+QTextStream *logOutput;
+
+void logHandler(QtMsgType type, const char *msg)
+{
+    if(logOutput && logOutput->device())
+    {
+        *logOutput << "[" << QTime::currentTime().toString("hh:mm:ss:zzz") << "] " << msg << "\n";
+        logOutput->flush();
+    }
+
+    switch (type)
+    {
+       case QtDebugMsg:
+           fprintf(stderr, "Debug: %s\n", msg);
+           break;
+       case QtWarningMsg:
+           fprintf(stderr, "Warning: %s\n", msg);
+           break;
+       case QtCriticalMsg:
+           fprintf(stderr, "Critical: %s\n", msg);
+           break;
+       case QtFatalMsg:
+           fprintf(stderr, "Fatal: %s\n", msg);
+           abort();
+    }
+}
 
 int main(int argc, char *argv[])
 {
+    qInstallMsgHandler(&logHandler);
     QCoreApplication app(argc, argv);
+
+    LogScheduler logSched;
+    logSched.start();
 
     ConnectionThread connection;
     QObject::connect(&connection, SIGNAL(finished()), &app, SLOT(quit()));
-
     connection.start();
-    QTimer::singleShot(1, &connection, SLOT(startServer()));
 
-    return app.exec();
+    int ret = app.exec();
+    fprintf(stderr, "exec end\n");
+
+    fprintf(stderr, "exit\n");
+    return ret;
 }

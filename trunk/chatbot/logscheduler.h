@@ -17,31 +17,33 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/lgpl-3.0.html>.
 */
 
-#include "connectionthread.h"
+#ifndef _LOGSCHEDULER_H
+#define	_LOGSCHEDULER_H
 
-#include <QtDebug>
+#include <QThread>
+#include <QTime>
+#include <QTextStream>
+#include <QFile>
 
-ConnectionThread::ConnectionThread()
+class QTimer;
+
+class LogScheduler : public QThread
 {
-}
+    Q_OBJECT
+public:
+    LogScheduler();
+    virtual ~LogScheduler();
 
-ConnectionThread::~ConnectionThread()
-{
-}
+    void run();
 
-void ConnectionThread::run()
-{
-    qDebug() << "run() called";
-    startServer();
-}
+private slots:
+    void updateLogFile();
+    
+private:
+    QTimer *logTimer;
+    QTime lastTime;
+    QFile logFile;
+};
 
-void ConnectionThread::startServer()
-{
-    qDebug() << "startServer() called";
-    ProfilePtr profile = ProfilePtr(new Profile());
-    sessionClient.SetProfile(profile);
+#endif	/* _LOGSCHEDULER_H */
 
-    QObject::connect(&sessionClient, SIGNAL(endServer()), this, SLOT(quit()));
-
-    sessionClient.MakeConnection();
-}
