@@ -65,9 +65,8 @@ void SessionScheduler::timerEvent()
 
 void SessionScheduler::pingServer()
 {
-    if(checkTime(10))
+    if(checkTime(20))
     {
-        qDebug() << "Ping server";
         gg_ping(session);
     }
 }
