@@ -17,43 +17,36 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/lgpl-3.0.html>.
 */
 
-#include "eventmanager.h"
-#include <QtDebug>
+#ifndef _SESSIONSCHEDULER_H
+#define	_SESSIONSCHEDULER_H
 
-EventManager::EventManager()
+#include <libgadu.h>
+
+#include <QThread>
+
+class QTimer;
+class QTime;
+
+class SessionScheduler : public QThread
 {
-}
+    Q_OBJECT
+public:
+    SessionScheduler(gg_session *s);
+    virtual ~SessionScheduler();
 
-EventManager::~EventManager()
-{
-}
+    void run();
 
-void EventManager::ResolveEvent(gg_event *event)
-{
-    qDebug() << "Resolve Event";
-    m_event = event;
-    switch(event->type)
-    {
-        case GG_EVENT_ACK:
-        {
-            AckEvent();
-        }
-        break;
+private slots:
+    void timerEvent();
+    
+private:
+    void pingServer();
+    bool checkTime(int sec);
 
-        case GG_EVENT_MSG:
-        {
-            MessageEvent();
-        }
-        break;
-    }
-}
+    gg_session *session;
+    QTimer *timer;
+    QTime *time;
+};
 
-void EventManager::AckEvent()
-{
-    qDebug() << "ACK EVENT";
-}
+#endif	/* _SESSIONSCHEDULER_H */
 
-void EventManager::MessageEvent()
-{
-    qDebug() << "MSG EVENT "; //<< QString(m_event->event.msg.sender);
-}

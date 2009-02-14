@@ -30,12 +30,6 @@ QTextStream *logOutput;
 
 void logHandler(QtMsgType type, const char *msg)
 {
-    if(logOutput && logOutput->device())
-    {
-        *logOutput << "[" << QTime::currentTime().toString("hh:mm:ss:zzz") << "] " << msg << "\n";
-        logOutput->flush();
-    }
-
     switch (type)
     {
        case QtDebugMsg:
@@ -49,7 +43,21 @@ void logHandler(QtMsgType type, const char *msg)
            break;
        case QtFatalMsg:
            fprintf(stderr, "Fatal: %s\n", msg);
-           abort();
+           break;
+    }
+
+    if(logOutput)
+    {
+        if(logOutput->device())
+        {
+            *logOutput << "[" << QTime::currentTime().toString("hh:mm:ss:zzz") << "] " << msg << "\n";
+            logOutput->flush();
+        }
+    }
+
+    if(type == QtFatalMsg)
+    {
+        abort();
     }
 }
 
@@ -63,11 +71,9 @@ int main(int argc, char *argv[])
 
     ConnectionThread connection;
     QObject::connect(&connection, SIGNAL(finished()), &app, SLOT(quit()));
+    QObject::connect(&connection, SIGNAL(finished()), &logSched, SLOT(quit()));
     connection.start();
 
     int ret = app.exec();
-    fprintf(stderr, "exec end\n");
-
-    fprintf(stderr, "exit\n");
     return ret;
 }

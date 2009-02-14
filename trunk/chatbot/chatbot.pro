@@ -14,7 +14,8 @@ SOURCES += main.cpp \
 	botsettingsto.cpp \
 	userdatabase.cpp \
 	userinfoto.cpp \
-	logscheduler.cpp
+	logscheduler.cpp \
+	sessionscheduler.cpp
 
 HEADERS += connectionthread.h \
 	sessionclient.h \
@@ -25,4 +26,5 @@ HEADERS += connectionthread.h \
 	botsettingsto.h \
 	userdatabase.h \
 	userinfoto.h \
-	logscheduler.h
+	logscheduler.h \
+	sessionscheduler.h

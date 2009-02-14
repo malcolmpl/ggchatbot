@@ -17,43 +17,58 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/lgpl-3.0.html>.
 */
 
-#include "eventmanager.h"
-#include <QtDebug>
+#include "sessionscheduler.h"
 
-EventManager::EventManager()
+#include <QTimer>
+#include <QTime>
+#include <QDebug>
+
+SessionScheduler::SessionScheduler(gg_session *s)
+{
+    session = s;
+
+    time = new QTime();
+    time->start();
+
+    timer = new QTimer(this);
+    timer->start(1000);
+    
+    QObject::connect(timer, SIGNAL(timeout()), this, SLOT(timerEvent()));
+}
+
+SessionScheduler::~SessionScheduler()
 {
 }
 
-EventManager::~EventManager()
+void SessionScheduler::run()
 {
+    exec();
 }
 
-void EventManager::ResolveEvent(gg_event *event)
+bool SessionScheduler::checkTime(int sec)
 {
-    qDebug() << "Resolve Event";
-    m_event = event;
-    switch(event->type)
+    int seconds = time->elapsed() / 1000;
+
+    if(!(seconds % sec))
+        return true;
+
+    return false;
+}
+
+void SessionScheduler::timerEvent()
+{
+    if(!session)
+        return;
+    
+    pingServer();
+}
+
+void SessionScheduler::pingServer()
+{
+    if(checkTime(10))
     {
-        case GG_EVENT_ACK:
-        {
-            AckEvent();
-        }
-        break;
-
-        case GG_EVENT_MSG:
-        {
-            MessageEvent();
-        }
-        break;
+        qDebug() << "Ping server";
+        gg_ping(session);
     }
 }
 
-void EventManager::AckEvent()
-{
-    qDebug() << "ACK EVENT";
-}
-
-void EventManager::MessageEvent()
-{
-    qDebug() << "MSG EVENT "; //<< QString(m_event->event.msg.sender);
-}
