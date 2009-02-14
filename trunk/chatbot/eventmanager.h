@@ -23,7 +23,10 @@
 #include "libgadu.h"
 #include <QObject>
 
-class EventManager : public QObject
+#include "profilebase.h"
+#include "userinfoto.h"
+
+class EventManager : public QObject, public ProfileBase
 {
     Q_OBJECT
 public:
@@ -31,10 +34,21 @@ public:
     virtual ~EventManager();
 
     void ResolveEvent(gg_event *event);
+
+signals:
+    void sendMessage(QString message);
+    void sendMessageTo(uin_t uin, QString message);
+
 private:
     gg_event *m_event;
     void AckEvent();
     void MessageEvent();
+
+    bool isUserInDatabase(uin_t uin);
+    bool isUserOnChannel(uin_t uin);
+    UserInfoTOPtr getUser(uin_t uin);
+    void welcomeMessage();
+    bool checkCommand();
 };
 
 #endif	/* _EVENTMANAGER_H */

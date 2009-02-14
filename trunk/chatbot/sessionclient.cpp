@@ -20,6 +20,7 @@
 #include "sessionclient.h"
 #include "botsettingsto.h"
 #include "sessionscheduler.h"
+#include "userdatabase.h"
 
 #include <errno.h>
 
@@ -33,8 +34,11 @@ SessionClient::~SessionClient()
 
 void SessionClient::MakeConnection()
 {
-    qDebug() << "MakeConnection() called";
-    
+    qRegisterMetaType<uin_t>("uin_t");
+    eventManager.SetProfile(GetProfile());
+    QObject::connect(&eventManager, SIGNAL(sendMessage(QString)), this, SLOT(sendMessage(QString)));
+    QObject::connect(&eventManager, SIGNAL(sendMessageTo(uin_t, QString)), this, SLOT(sendMessageTo(uin_t, QString)));
+
     SetDebugLevel();
 
     if(!Login())
@@ -48,14 +52,13 @@ void SessionClient::MakeConnection()
 
 void SessionClient::FreeSession(gg_session *session)
 {
-    qDebug() << "FreeSession() called";
     gg_free_event(event);
     gg_free_session(session);
 }
 
 void SessionClient::Logout(gg_session *session)
 {
-    qDebug() << "Logout() called";
+    qDebug() << "Bot logout.";
     gg_logoff(session);
 }
 
@@ -64,7 +67,7 @@ void SessionClient::CleanAndExit()
     Logout(session);
     FreeSession(session);
 
-    qDebug() << "Bye, bye";
+    qDebug() << "Bye, bye :)";
     emit endServer();
 }
 
@@ -77,7 +80,7 @@ void SessionClient::SetDebugLevel()
 
 bool SessionClient::Login()
 {
-    qDebug() << "Login() called";
+    qDebug() << "Logowanie...";
     memset(&loginParams, 0, sizeof(loginParams));
 
     loginParams.uin = GetProfile()->getBotSettings().getUin();
@@ -86,12 +89,12 @@ bool SessionClient::Login()
 
     if (!( session = gg_login(&loginParams) ) )
     {
-        qDebug() << "Nie udalo sie polaczyc";   //printf("Nie uda?o si? po??czy?: %s\n", strerror(errno));
+        qDebug() << "Nie udalo sie polaczyc.";   //printf("Nie uda?o si? po??czy?: %s\n", strerror(errno));
         CleanAndExit();
         return false;
     }
 
-    qDebug() << "Polaczono";
+    qDebug() << "Polaczono.";
 
     scheduler = new SessionScheduler(session);
     scheduler->start();
@@ -101,27 +104,24 @@ bool SessionClient::Login()
 
 bool SessionClient::SendContactList()
 {
-    qDebug() << "SendContactList called()";
     if(gg_notify(session, NULL, 0) == -1)
     {
         qDebug() << "Blad wysylania listy kontaktow na serwer";
         return false;
     }
 
-    qDebug() << "Lista kontaktow wyslana poprawnie";
+    qDebug() << "Lista kontaktow wyslana na serwer.";
     return true;
 }
 
 void SessionClient::ChangeStatus(QString description, int status)
 {
-    qDebug() << "Zmiana statusu: " << description;
+    qDebug() << "Zmieniam status na: " << description;
     gg_change_status_descr(session, status, description.toAscii());
 }
 
 bool SessionClient::WaitForEvent()
 {
-    qDebug() << "WaitForEvent() called";
-
     if( !(event = gg_watch_fd(session)) )
         return false;
 
@@ -180,8 +180,6 @@ void SessionClient::EventLoop()
                 continue;
             }
 
-            qDebug() << event->type;
-
             if(event->type == GG_EVENT_CONN_SUCCESS)
             {
                 if(!SendContactList())
@@ -206,3 +204,22 @@ void SessionClient::EventLoop()
         }
     }
 }
+
+void SessionClient::sendMessage(QString message)
+{
+    if(!session)
+        return;
+
+    QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
+    foreach(UserInfoTOPtr user, users)
+    {
+        gg_send_message(session, GG_CLASS_CHAT, user->getUin(), (const unsigned char*)message.toAscii().data());
+    }
+}
+
+void SessionClient::sendMessageTo(uin_t uin, QString message)
+{
+    gg_send_message(session, GG_CLASS_CHAT, uin, (const unsigned char*)message.toAscii().data());
+}
+
+

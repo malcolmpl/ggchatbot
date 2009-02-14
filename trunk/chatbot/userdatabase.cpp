@@ -35,12 +35,21 @@ UserDatabase::UserDatabase()
 
 UserDatabase::~UserDatabase()
 {
+    cleanOnChannel();
     saveUsersListConfig();
+}
+
+void UserDatabase::cleanOnChannel()
+{
+    foreach(UserInfoTOPtr user, m_usersList)
+    {
+        user->setOnChannel(false);
+    }
 }
 
 void UserDatabase::readUsersListConfig()
 {
-    qDebug() << "readUsersListConfig() called";
+    qDebug() << "Odczytywanie bazy uzytkownikow...";
     int size = settings->beginReadArray("user");
     for (int i = 0; i < size; ++i)
     {
@@ -49,6 +58,9 @@ void UserDatabase::readUsersListConfig()
         user->setNick(settings->value("nick").toString());
         user->setUin(settings->value("UIN").toUInt());
         user->setUserFlags(static_cast<GGChatBot::USER_FLAGS>(settings->value("Flags").toInt()));
+        user->setLastSeen(settings->value("lastSeen").toDateTime());
+        user->setChannelName(settings->value("channel").toString());
+        user->setOnChannel(settings->value("onChannel").toBool());
         m_usersList.append(user);
     }
     settings->endArray();
@@ -56,7 +68,7 @@ void UserDatabase::readUsersListConfig()
 
 void UserDatabase::saveUsersListConfig()
 {
-    qDebug() << "saveUsersListConfig() called";
+    qDebug() << "Zapisywanie bazy uzytkownikow...";
     settings->beginWriteArray("logins");
     for (int i = 0; i < m_usersList.size(); ++i)
     {
@@ -64,6 +76,9 @@ void UserDatabase::saveUsersListConfig()
         settings->setValue("nick", m_usersList.at(i)->getNick());
         settings->setValue("UIN", m_usersList.at(i)->getUin());
         settings->setValue("Flags", m_usersList.at(i)->getUserFlags());
+        settings->setValue("lastSeen", m_usersList.at(i)->getLastSeen());
+        settings->setValue("channel", m_usersList.at(i)->getChannelName());
+        settings->setValue("onChannel", m_usersList.at(i)->getOnChannel());
     }
     settings->endArray();
 }
@@ -81,6 +96,10 @@ UserInfoTOPtr UserDatabase::getUserInfo(uin_t uin) const
 
 void UserDatabase::addUser(const UserInfoTOPtr u)
 {
+    qDebug() << "add user";
+    if(u->getUin() == 0)
+        return;
+    
     foreach(UserInfoTOPtr user, m_usersList)
     {
         if(user->getUin()== u->getUin())
@@ -88,6 +107,8 @@ void UserDatabase::addUser(const UserInfoTOPtr u)
     }
 
     m_usersList.append(u);
+
+    saveDatabase();
 }
 
 void UserDatabase::saveDatabase()

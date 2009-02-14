@@ -38,10 +38,12 @@ public:
     UserInfoTOPtr getUserInfo(uin_t uin) const;
     void addUser(const UserInfoTOPtr user);
     void saveDatabase();
+    QList<UserInfoTOPtr> getUserList() { return m_usersList; }
     
 private:
     void readUsersListConfig();
     void saveUsersListConfig();
+    void cleanOnChannel();
     
     QList<UserInfoTOPtr> m_usersList;
     SettingsPtr settings;

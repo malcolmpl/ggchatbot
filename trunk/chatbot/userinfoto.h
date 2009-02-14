@@ -26,6 +26,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include <QString>
+#include <QDateTime>
 
 class UserInfoTO
 {
@@ -42,10 +43,22 @@ public:
     void setUserFlags(const GGChatBot::USER_FLAGS v) { m_flags = v; }
     GGChatBot::USER_FLAGS getUserFlags() const { return m_flags; }
 
+    void setOnChannel(bool v) { m_onChannel = v; }
+    bool getOnChannel() { return m_onChannel; }
+
+    void setChannelName(QString v) { m_channelName = v; }
+    QString getChannelName() { return m_channelName; }
+
+    void setLastSeen(QDateTime v) { m_lastSeen = v; }
+    QDateTime getLastSeen() { return m_lastSeen; }
+
 private:
     uin_t m_uin;
     QString m_nick;
     GGChatBot::USER_FLAGS m_flags;
+    bool m_onChannel;
+    QString m_channelName;
+    QDateTime m_lastSeen;
 };
 
 typedef boost::shared_ptr<UserInfoTO> UserInfoTOPtr;
