@@ -23,12 +23,16 @@
 #include <QtCore>
 #include <QtDebug>
 #include <boost/shared_ptr.hpp>
+#include <time.h>
+
 #include "libgadu.h"
 #include "eventmanager.h"
 #include "profilebase.h"
 
 typedef boost::shared_ptr<gg_session*> SessionPtr;
 typedef boost::shared_ptr<gg_event*> EventPtr;
+
+class SessionScheduler;
 
 class SessionClient : public QObject, public ProfileBase
 {
@@ -37,10 +41,12 @@ public:
     SessionClient();
     ~SessionClient();
 
+public slots:
     void MakeConnection();
 
 signals:
     void endServer();
+    void restartConnection();
     
 private:
     struct gg_login_params loginParams;
@@ -48,10 +54,13 @@ private:
     struct gg_session *session;
     struct gg_event *event;
     EventManager eventManager;
+    SessionScheduler *scheduler;
+    fd_set rd, wd, ex;
+    struct timeval tv;
 
     void FreeSession(gg_session *session);
     void Logout(gg_session *session);
-    void CleanEndExit();
+    void CleanAndExit();
     void SetDebugLevel();
     bool Login();
     bool SendContactList();

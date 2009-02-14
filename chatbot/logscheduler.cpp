@@ -29,7 +29,6 @@ extern QTextStream *logOutput;
 
 LogScheduler::LogScheduler()
 {
-    qDebug() << "LogScheduler() called";
 }
 
 void LogScheduler::run()
@@ -55,7 +54,6 @@ void LogScheduler::run()
 
 LogScheduler::~LogScheduler()
 {
-    qDebug() << "~LogScheduler() called";
     logFile.close();
 }
 
