@@ -50,7 +50,7 @@ void UserDatabase::cleanOnChannel()
 void UserDatabase::readUsersListConfig()
 {
     qDebug() << "Odczytywanie bazy uzytkownikow...";
-    int size = settings->beginReadArray("user");
+    int size = settings->beginReadArray("users");
     for (int i = 0; i < size; ++i)
     {
         UserInfoTOPtr user = UserInfoTOPtr(new UserInfoTO());
@@ -60,7 +60,7 @@ void UserDatabase::readUsersListConfig()
         user->setUserFlags(static_cast<GGChatBot::USER_FLAGS>(settings->value("Flags").toInt()));
         user->setLastSeen(settings->value("lastSeen").toDateTime());
         user->setChannelName(settings->value("channel").toString());
-        user->setOnChannel(settings->value("onChannel").toBool());
+        user->setOnChannel(false);
         user->setBanned(settings->value("banned").toBool());
         user->setBanTime(settings->value("banTime").toDateTime());
         m_usersList.append(user);
@@ -71,7 +71,7 @@ void UserDatabase::readUsersListConfig()
 void UserDatabase::saveUsersListConfig()
 {
     qDebug() << "Zapisywanie bazy uzytkownikow...";
-    settings->beginWriteArray("logins");
+    settings->beginWriteArray("users");
     for (int i = 0; i < m_usersList.size(); ++i)
     {
         settings->setArrayIndex(i);
@@ -100,7 +100,7 @@ UserInfoTOPtr UserDatabase::getUserInfo(uin_t uin) const
 
 void UserDatabase::addUser(const UserInfoTOPtr u)
 {
-    qDebug() << "add user";
+    qDebug() << "Dodaje użytkownika do bazy.";
     
     foreach(UserInfoTOPtr user, m_usersList)
     {

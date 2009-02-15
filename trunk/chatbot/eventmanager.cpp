@@ -70,9 +70,12 @@ void EventManager::MessageEvent()
         welcomeMessage();
         return;
     }
-    qDebug() << "MSG EVENT "; //<< QString(m_event->event.msg.sender);
-    // \todo: FIXME
-    emit sendMessage("Dupa");
+
+    UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(sender);
+    QString msg = QString::fromAscii((const char*)m_event->event.msg.message);
+    QString message = user->getNick() + ": " + msg;
+    emit sendMessage(message);
+    showUserDebug(user, msg);
 }
 
 bool EventManager::isUserOnChannel(uin_t uin)

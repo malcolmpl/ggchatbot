@@ -36,8 +36,12 @@ public:
 
 private:
     gg_event *m_event;
+    QString lastString;
+
+    QString removeCommand(QString message, QString command);
 
     void nickCommand();
+    void joinCommand();
 };
 
 #endif	/* _COMMANDRESOLVER_H */

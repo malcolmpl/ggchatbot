@@ -211,10 +211,14 @@ void SessionClient::sendMessage(QString message)
     if(!session)
         return;
 
+    qDebug() << "sendMessage() called";
+
     QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
     foreach(UserInfoTOPtr user, users)
     {
-        gg_send_message(session, GG_CLASS_CHAT, user->getUin(), (const unsigned char*)message.toAscii().data());
+        qDebug() << "Wysylam " << user->getUin();
+        if(GetProfile()->getUserDatabase()->isUserOnChannel(user->getUin()))
+            gg_send_message(session, GG_CLASS_CHAT, user->getUin(), (const unsigned char*)message.toAscii().data());
     }
 }
 
