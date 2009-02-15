@@ -19,6 +19,7 @@
 
 #include "commandresolver.h"
 
+#include <QDebug>
 #include <QRegExp>
 
 CommandResolver::CommandResolver()
@@ -33,7 +34,7 @@ bool CommandResolver::checkCommand(gg_event *event)
 {
     m_event = event;
     
-    QRegExp rx("(/\\w+).*");
+    QRegExp rx("^(/\\w+).*");
     QString str = QString::fromAscii((const char*)m_event->event.msg.message);
     int pos = 0;
 
@@ -41,6 +42,7 @@ bool CommandResolver::checkCommand(gg_event *event)
     {
         if(rx.cap(1) == "/nick")
         {
+            qDebug() << rx.cap(0) << rx.cap(1);
             nickCommand();
             return true;
         }
