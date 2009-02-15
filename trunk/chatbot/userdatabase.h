@@ -43,6 +43,9 @@ public:
     bool isUserOnChannel(uin_t uin);
     bool isUserInDatabase(uin_t uin);
     bool isUserHaveNick(uin_t uin);
+    bool isUserHaveVoice(uin_t uin);
+    bool isUserHaveOp(uin_t uin);
+    bool isSuperUser(uin_t uin);
     
 private:
     void readUsersListConfig();
