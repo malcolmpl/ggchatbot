@@ -17,42 +17,41 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/lgpl-3.0.html>.
 */
 
-#ifndef _EVENTMANAGER_H
-#define	_EVENTMANAGER_H
-
-#include "libgadu.h"
-#include <QObject>
-
-#include "profilebase.h"
-#include "userinfoto.h"
 #include "commandresolver.h"
 
-class EventManager : public QObject, public ProfileBase
+#include <QRegExp>
+
+CommandResolver::CommandResolver()
 {
-    Q_OBJECT
-public:
-    EventManager();
-    virtual ~EventManager();
+}
 
-    void ResolveEvent(gg_event *event);
+CommandResolver::~CommandResolver()
+{
+}
 
-signals:
-    void sendMessage(QString message);
-    void sendMessageTo(uin_t uin, QString message);
-
-private:
-    gg_event *m_event;
-    CommandResolver cmdResolv;
+bool CommandResolver::checkCommand(gg_event *event)
+{
+    m_event = event;
     
-    void AckEvent();
-    void MessageEvent();
+    QRegExp rx("(/\\w+).*");
+    QString str = QString::fromAscii((const char*)m_event->event.msg.message);
+    int pos = 0;
 
-    bool isUserInDatabase(uin_t uin);
-    bool isUserOnChannel(uin_t uin);
-    UserInfoTOPtr getUser(uin_t uin);
-    void welcomeMessage();
-    bool checkCommand();
-};
+    if((pos = rx.indexIn(str, pos)) != -1)
+    {
+        if(rx.cap(1) == "/nick")
+        {
+            nickCommand();
+            return true;
+        }
+    }
 
-#endif	/* _EVENTMANAGER_H */
+    return false;
+}
+
+void CommandResolver::nickCommand()
+{
+    
+}
+
 

@@ -17,42 +17,28 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/lgpl-3.0.html>.
 */
 
-#ifndef _EVENTMANAGER_H
-#define	_EVENTMANAGER_H
+#ifndef _COMMANDRESOLVER_H
+#define	_COMMANDRESOLVER_H
 
-#include "libgadu.h"
 #include <QObject>
+#include <libgadu.h>
 
 #include "profilebase.h"
-#include "userinfoto.h"
-#include "commandresolver.h"
 
-class EventManager : public QObject, public ProfileBase
+class CommandResolver : public QObject, public ProfileBase
 {
     Q_OBJECT
 public:
-    EventManager();
-    virtual ~EventManager();
+    CommandResolver();
+    virtual ~CommandResolver();
 
-    void ResolveEvent(gg_event *event);
-
-signals:
-    void sendMessage(QString message);
-    void sendMessageTo(uin_t uin, QString message);
+    bool checkCommand(gg_event *event);
 
 private:
     gg_event *m_event;
-    CommandResolver cmdResolv;
-    
-    void AckEvent();
-    void MessageEvent();
 
-    bool isUserInDatabase(uin_t uin);
-    bool isUserOnChannel(uin_t uin);
-    UserInfoTOPtr getUser(uin_t uin);
-    void welcomeMessage();
-    bool checkCommand();
+    void nickCommand();
 };
 
-#endif	/* _EVENTMANAGER_H */
+#endif	/* _COMMANDRESOLVER_H */
 

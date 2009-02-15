@@ -39,6 +39,10 @@ public:
     void addUser(const UserInfoTOPtr user);
     void saveDatabase();
     QList<UserInfoTOPtr> getUserList() { return m_usersList; }
+
+    bool isUserOnChannel(uin_t uin);
+    bool isUserInDatabase(uin_t uin);
+    bool isUserHaveNick(uin_t uin);
     
 private:
     void readUsersListConfig();

@@ -15,7 +15,8 @@ SOURCES += main.cpp \
 	userdatabase.cpp \
 	userinfoto.cpp \
 	logscheduler.cpp \
-	sessionscheduler.cpp
+	sessionscheduler.cpp \
+	commandresolver.cpp
 
 HEADERS += connectionthread.h \
 	sessionclient.h \
@@ -27,4 +28,5 @@ HEADERS += connectionthread.h \
 	userdatabase.h \
 	userinfoto.h \
 	logscheduler.h \
-	sessionscheduler.h
+	sessionscheduler.h \
+	commandresolver.h

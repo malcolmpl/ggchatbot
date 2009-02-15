@@ -22,7 +22,6 @@
 #include "userinfoto.h"
 
 #include <QtDebug>
-#include <QRegExp>
 
 EventManager::EventManager()
 {
@@ -71,36 +70,18 @@ void EventManager::MessageEvent()
         return;
     }
     qDebug() << "MSG EVENT "; //<< QString(m_event->event.msg.sender);
+    // \todo: FIXME
     emit sendMessage("Dupa");
 }
 
 bool EventManager::isUserOnChannel(uin_t uin)
 {
-    if(!isUserInDatabase(uin))
-        return false;
-
-    UserInfoTOPtr user = getUser(uin);
-    if(user->getNick().isEmpty())
-        return false;
-
-    if(!user->getOnChannel())
-        return false;
-
-    return true;
+    return GetProfile()->getUserDatabase()->isUserOnChannel(uin);
 }
 
 bool EventManager::isUserInDatabase(uin_t uin)
 {
-    if(getUser(uin) == NULL)
-    {
-        UserInfoTOPtr user = UserInfoTOPtr(new UserInfoTO());
-        user->setUin(uin);
-        GetProfile()->getUserDatabase()->addUser(user);
-
-        return false;
-    }
-
-    return true;
+    return GetProfile()->getUserDatabase()->isUserInDatabase(uin);
 }
 
 UserInfoTOPtr EventManager::getUser(uin_t uin)
@@ -110,26 +91,14 @@ UserInfoTOPtr EventManager::getUser(uin_t uin)
 
 void EventManager::welcomeMessage()
 {
-    QString welcome = "Witaj!\nWpisz /nick aby ustawic swoj nick.";
+    QString welcome = "Witaj!\nWpisz /nick 'Nick' aby ustawic swoj nick.\nWpisz /join aby dolaczyc do czatu.";
     emit sendMessageTo(m_event->event.msg.sender, welcome);
 }
 
 bool EventManager::checkCommand()
 {
-    QRegExp rx("(/\\w+).*");
-    QString str = QString::fromAscii((const char*)m_event->event.msg.message);
-    int pos = 0;
-
-    if((pos = rx.indexIn(str, pos)) != -1)
-    {
-        if(rx.cap(1) == "/nick")
-        {
-            qDebug() << "Nick Command";
-            return true;
-        }
-    }
-
-    return false;
+    cmdResolv.SetProfile(GetProfile());
+    return cmdResolv.checkCommand(m_event);
 }
 
 
