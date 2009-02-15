@@ -48,3 +48,13 @@ UserDatabasePtr Profile::getUserDatabase() const
 {
     return m_userDatabase;
 }
+
+SessionClientPtr Profile::getSession() const
+{
+    return m_sessionClient;
+}
+
+void Profile::setSession(const SessionClientPtr v)
+{
+    m_sessionClient = v;
+}

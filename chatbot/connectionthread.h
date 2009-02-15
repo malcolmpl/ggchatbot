@@ -27,7 +27,7 @@ class ConnectionThread : public QThread
 {
     Q_OBJECT
 public:
-    ConnectionThread();
+    ConnectionThread(QObject *parent = 0);
     ~ConnectionThread();
 
     void run();
@@ -36,7 +36,7 @@ public slots:
     void startServer();
 
 private:
-    SessionClient sessionClient;
+    SessionClientPtr sessionClient;
 };
 
 #endif // CONNECTIONTHREAD_H

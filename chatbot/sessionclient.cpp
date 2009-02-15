@@ -24,7 +24,8 @@
 
 #include <errno.h>
 
-SessionClient::SessionClient()
+SessionClient::SessionClient(QObject *parent)
+    : QObject(parent)
 {
 }
 

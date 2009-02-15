@@ -116,3 +116,42 @@ void UserDatabase::saveDatabase()
     saveUsersListConfig();
 }
 
+bool UserDatabase::isUserOnChannel(uin_t uin)
+{
+    if(!isUserHaveNick(uin))
+        return false;
+
+    UserInfoTOPtr user = getUserInfo(uin);
+    if(!user->getOnChannel())
+        return false;
+
+    return true;
+}
+
+bool UserDatabase::isUserInDatabase(uin_t uin)
+{
+    if(getUserInfo(uin) == NULL)
+    {
+        UserInfoTOPtr user = UserInfoTOPtr(new UserInfoTO());
+        user->setUin(uin);
+        addUser(user);
+
+        return false;
+    }
+
+    return true;
+}
+
+bool UserDatabase::isUserHaveNick(uin_t uin)
+{
+    if(!isUserInDatabase(uin))
+        return false;
+
+    UserInfoTOPtr user = getUserInfo(uin);
+    if(user->getNick().isEmpty())
+        return false;
+
+    return true;
+}
+
+

@@ -21,8 +21,10 @@
 
 #include <QtDebug>
 
-ConnectionThread::ConnectionThread()
+ConnectionThread::ConnectionThread(QObject *parent)
+    : QThread(parent)
 {
+    sessionClient = SessionClientPtr(new SessionClient(this));
 }
 
 ConnectionThread::~ConnectionThread()
@@ -39,9 +41,10 @@ void ConnectionThread::startServer()
 {
     qDebug() << "startServer() called";
     ProfilePtr profile = ProfilePtr(new Profile());
-    sessionClient.SetProfile(profile);
+    profile->setSession(sessionClient);
+    sessionClient->SetProfile(profile);
 
-    QObject::connect(&sessionClient, SIGNAL(endServer()), this, SLOT(quit()));
+    QObject::connect(sessionClient.get(), SIGNAL(endServer()), this, SLOT(quit()));
 
-    sessionClient.MakeConnection();
+    sessionClient->MakeConnection();
 }

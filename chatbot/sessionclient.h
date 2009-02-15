@@ -38,7 +38,7 @@ class SessionClient : public QObject, public ProfileBase
 {
     Q_OBJECT
 public:
-    SessionClient();
+    SessionClient(QObject *parent = 0);
     ~SessionClient();
 
 public slots:
@@ -70,6 +70,8 @@ private:
     bool WaitForEvent();
     void EventLoop();
 };
+
+typedef boost::shared_ptr<SessionClient> SessionClientPtr;
 
 #endif	/* _SESSIONCLIENT_H */
 

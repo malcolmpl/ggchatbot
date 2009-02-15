@@ -25,9 +25,11 @@
 class UserDatabase;
 class BotSettings;
 class BotSettingsTO;
+class SessionClient;
 
 typedef boost::shared_ptr<UserDatabase> UserDatabasePtr;
 typedef boost::shared_ptr<BotSettings> BotSettingsPtr;
+typedef boost::shared_ptr<SessionClient> SessionClientPtr;
 
 class Profile
 {
@@ -37,12 +39,15 @@ public:
 
     BotSettingsTO getBotSettings() const;
     UserDatabasePtr getUserDatabase() const;
+    SessionClientPtr getSession() const;
+    void setSession(const SessionClientPtr);
     
 private:
     void Init();
 
     BotSettingsPtr m_botSettings;
     UserDatabasePtr m_userDatabase;
+    SessionClientPtr m_sessionClient;
 };
 
 typedef boost::shared_ptr<Profile> ProfilePtr;
