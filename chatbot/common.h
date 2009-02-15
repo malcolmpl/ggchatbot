@@ -22,6 +22,7 @@
 
 namespace GGChatBot
 {
+   
     enum USER_FLAGS
     {
         NONE_FLAG,

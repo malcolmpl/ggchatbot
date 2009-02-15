@@ -101,8 +101,6 @@ UserInfoTOPtr UserDatabase::getUserInfo(uin_t uin) const
 void UserDatabase::addUser(const UserInfoTOPtr u)
 {
     qDebug() << "add user";
-    if(u->getUin() == 0)
-        return;
     
     foreach(UserInfoTOPtr user, m_usersList)
     {

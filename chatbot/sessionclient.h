@@ -45,6 +45,7 @@ public slots:
     void MakeConnection();
     void sendMessage(QString message);
     void sendMessageTo(uin_t uin, QString message);
+    void sendMessageToSuperUser(QString message);
 
 signals:
     void endServer();
