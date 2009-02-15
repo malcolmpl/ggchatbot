@@ -17,10 +17,26 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/lgpl-3.0.html>.
 */
 
+#include "sessionclient.h"
+
+
+#include "botsettings.h"
+
+
+#include "userdatabase.h"
+
+
 #include "commandresolver.h"
 
 #include <QDebug>
 #include <QRegExp>
+
+namespace
+{
+    const QString CMD_NICK      = "/nick";
+    const QString CMD_JOIN      = "/join";
+    const QString CMD_LEAVE     = "/leave";
+}
 
 CommandResolver::CommandResolver()
 {
@@ -40,10 +56,16 @@ bool CommandResolver::checkCommand(gg_event *event)
 
     if((pos = rx.indexIn(str, pos)) != -1)
     {
-        if(rx.cap(1) == "/nick")
+        if(rx.cap(1) == CMD_NICK)
         {
-            qDebug() << rx.cap(0) << rx.cap(1);
+            lastString = removeCommand(str, CMD_NICK);
             nickCommand();
+            return true;
+        }
+        else if(rx.cap(1) == CMD_JOIN)
+        {
+            lastString = removeCommand(str, CMD_JOIN);
+            joinCommand();
             return true;
         }
     }
@@ -51,9 +73,40 @@ bool CommandResolver::checkCommand(gg_event *event)
     return false;
 }
 
+QString CommandResolver::removeCommand(QString message, QString command)
+{
+    QString ret = message.right(message.size()-command.size());
+    return ret.simplified();
+}
+
 void CommandResolver::nickCommand()
 {
+    if(lastString.isEmpty())
+        return;
     
+    QRegExp rx("^(\\w+).*");
+    int pos = 0;
+
+    if((pos = rx.indexIn(lastString, pos)) != -1)
+    {
+        UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
+        user->setNick(rx.cap(1));
+        GetProfile()->getUserDatabase()->saveDatabase();
+    }
+}
+
+void CommandResolver::joinCommand()
+{
+    qDebug() << "joinCommand called";
+
+    UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
+    if(user->getOnChannel())
+        return;
+
+    user->setOnChannel(true);
+    GetProfile()->getUserDatabase()->saveDatabase();
+    QString msg = "Przychodzi " + user->getNick();
+    GetProfile()->getSession()->sendMessage(msg);
 }
 
 
