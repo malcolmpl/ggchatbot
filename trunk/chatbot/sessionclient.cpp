@@ -220,7 +220,19 @@ void SessionClient::sendMessage(QString message)
 
 void SessionClient::sendMessageTo(uin_t uin, QString message)
 {
+    if(!session)
+        return;
+    
     gg_send_message(session, GG_CLASS_CHAT, uin, (const unsigned char*)message.toAscii().data());
 }
 
+void SessionClient::sendMessageToSuperUser(QString message)
+{
+    QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
+    foreach(UserInfoTOPtr user, users)
+    {
+        if(GetProfile()->getUserDatabase()->isSuperUser(user->getUin()))
+            sendMessageTo(user->getUin(), message);
+    }
+}
 

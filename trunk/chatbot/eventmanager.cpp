@@ -20,6 +20,7 @@
 #include "userdatabase.h"
 #include "eventmanager.h"
 #include "userinfoto.h"
+#include "debug.h"
 
 #include <QtDebug>
 
@@ -91,6 +92,9 @@ UserInfoTOPtr EventManager::getUser(uin_t uin)
 
 void EventManager::welcomeMessage()
 {
+    UserInfoTOPtr user = getUser(m_event->event.msg.sender);
+    QString msg = QString::fromAscii((const char*)m_event->event.msg.message);
+    showUserDebug(user, msg);
     QString welcome = "Witaj!\nWpisz /nick 'Nick' aby ustawic swoj nick.\nWpisz /join aby dolaczyc do czatu.";
     emit sendMessageTo(m_event->event.msg.sender, welcome);
 }
