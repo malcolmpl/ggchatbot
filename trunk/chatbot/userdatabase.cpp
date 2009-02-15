@@ -61,6 +61,8 @@ void UserDatabase::readUsersListConfig()
         user->setLastSeen(settings->value("lastSeen").toDateTime());
         user->setChannelName(settings->value("channel").toString());
         user->setOnChannel(settings->value("onChannel").toBool());
+        user->setBanned(settings->value("banned").toBool());
+        user->setBanTime(settings->value("banTime").toDateTime());
         m_usersList.append(user);
     }
     settings->endArray();
@@ -79,6 +81,8 @@ void UserDatabase::saveUsersListConfig()
         settings->setValue("lastSeen", m_usersList.at(i)->getLastSeen());
         settings->setValue("channel", m_usersList.at(i)->getChannelName());
         settings->setValue("onChannel", m_usersList.at(i)->getOnChannel());
+        settings->setValue("banned", m_usersList.at(i)->getBanned());
+        settings->setValue("banTime", m_usersList.at(i)->getBanTime());
     }
     settings->endArray();
 }

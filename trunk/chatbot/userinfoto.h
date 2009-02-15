@@ -44,13 +44,19 @@ public:
     GGChatBot::USER_FLAGS getUserFlags() const { return m_flags; }
 
     void setOnChannel(bool v) { m_onChannel = v; }
-    bool getOnChannel() { return m_onChannel; }
+    bool getOnChannel() const { return m_onChannel; }
 
     void setChannelName(QString v) { m_channelName = v; }
-    QString getChannelName() { return m_channelName; }
+    QString getChannelName() const { return m_channelName; }
 
     void setLastSeen(QDateTime v) { m_lastSeen = v; }
-    QDateTime getLastSeen() { return m_lastSeen; }
+    QDateTime getLastSeen() const { return m_lastSeen; }
+
+    void setBanned(bool v) { m_banned = v; }
+    bool getBanned() const { return m_banned; }
+
+    void setBanTime(QDateTime v) { m_banTime = v; }
+    QDateTime getBanTime() const { return m_banTime; }
 
 private:
     uin_t m_uin;
@@ -59,6 +65,8 @@ private:
     bool m_onChannel;
     QString m_channelName;
     QDateTime m_lastSeen;
+    bool m_banned;
+    QDateTime m_banTime;
 };
 
 typedef boost::shared_ptr<UserInfoTO> UserInfoTOPtr;
