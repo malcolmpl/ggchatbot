@@ -33,9 +33,11 @@
 
 namespace
 {
-    const QString CMD_NICK      = "/nick";
-    const QString CMD_JOIN      = "/join";
-    const QString CMD_LEAVE     = "/leave";
+    const QString CMD_NICK              = "/nick";
+    const QString CMD_JOIN              = "/join";
+    const QString CMD_LEAVE             = "/leave";
+
+    const QString MSG_NICK_EXIST        = "Uzytkownik o takim nicku juz istnieje!";
 }
 
 CommandResolver::CommandResolver()
@@ -56,16 +58,23 @@ bool CommandResolver::checkCommand(gg_event *event)
 
     if((pos = rx.indexIn(str, pos)) != -1)
     {
-        if(rx.cap(1) == CMD_NICK)
+        QString command = rx.cap(1);
+        if(command == CMD_NICK)
         {
             lastString = removeCommand(str, CMD_NICK);
             nickCommand();
             return true;
         }
-        else if(rx.cap(1) == CMD_JOIN)
+        else if(command == CMD_JOIN)
         {
             lastString = removeCommand(str, CMD_JOIN);
             joinCommand();
+            return true;
+        }
+        else if(command == CMD_LEAVE)
+        {
+            lastString = removeCommand(str, CMD_LEAVE);
+            leaveCommand();
             return true;
         }
     }
@@ -97,7 +106,7 @@ void CommandResolver::nickCommand()
         {
             if(u->getNick() == newNick)
             {
-                GetProfile()->getSession()->sendMessageTo(user->getUin(), "Uzytkownik o takim nicku juz istnieje!");
+                GetProfile()->getSession()->sendMessageTo(user->getUin(), MSG_NICK_EXIST);
                 return;
             }
         }
@@ -112,8 +121,6 @@ void CommandResolver::nickCommand()
 
 void CommandResolver::joinCommand()
 {
-    qDebug() << "joinCommand called";
-
     UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
     if(user->getOnChannel())
         return;
@@ -121,6 +128,26 @@ void CommandResolver::joinCommand()
     user->setOnChannel(true);
     GetProfile()->getUserDatabase()->saveDatabase();
     QString msg = "Przychodzi " + user->getNick();
+    qDebug() << msg;
+    GetProfile()->getSession()->sendMessage(msg);
+}
+
+void CommandResolver::leaveCommand()
+{
+    UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
+    if(!user->getOnChannel())
+        return;
+
+    QString reason;
+    if(!lastString.isEmpty())
+    {
+        reason = lastString;
+    }
+
+    user->setOnChannel(false);
+    GetProfile()->getUserDatabase()->saveDatabase();
+    QString msg = "Odchodzi " + user->getNick() + " " + reason;
+    qDebug() << msg;
     GetProfile()->getSession()->sendMessage(msg);
 }
 
