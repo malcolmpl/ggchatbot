@@ -18,14 +18,8 @@
 */
 
 #include "sessionclient.h"
-
-
 #include "botsettings.h"
-
-
 #include "userdatabase.h"
-
-
 #include "commandresolver.h"
 
 #include <QDebug>
@@ -36,8 +30,15 @@ namespace
     const QString CMD_NICK              = "/nick";
     const QString CMD_JOIN              = "/join";
     const QString CMD_LEAVE             = "/leave";
+    const QString CMD_QUIT              = "/quit";
+    const QString CMD_WHO               = "/who";
+    const QString CMD_HELP              = "/help";
+    const QString CMD_POMOC             = "/pomoc";
 
     const QString MSG_NICK_EXIST        = "Uzytkownik o takim nicku juz istnieje!";
+    const QString MSG_HELP              = "Dostepne komendy:\n/nick 'Nick' - zmiana nicka\n" \
+        "/join - wejscie na czat\n/leave /quit 'tekst'- opuszczenie czatu, opcjonalnie z tekstem\n" \
+        "/who - spis osob dostepnych na czacie\n/help /pomoc - pomoc ktora wlasnie czytasz ;)";
 }
 
 CommandResolver::CommandResolver()
@@ -75,6 +76,30 @@ bool CommandResolver::checkCommand(gg_event *event)
         {
             lastString = removeCommand(str, CMD_LEAVE);
             leaveCommand();
+            return true;
+        }
+        else if(command == CMD_QUIT)
+        {
+            lastString = removeCommand(str, CMD_QUIT);
+            leaveCommand();
+            return true;
+        }
+        else if(command == CMD_WHO)
+        {
+            lastString = removeCommand(str, CMD_WHO);
+            whoCommand();
+            return true;
+        }
+        else if(command == CMD_HELP)
+        {
+            lastString = removeCommand(str, CMD_HELP);
+            helpCommand();
+            return true;
+        }
+        else if(command == CMD_POMOC)
+        {
+            lastString = removeCommand(str, CMD_POMOC);
+            helpCommand();
             return true;
         }
     }
@@ -144,11 +169,41 @@ void CommandResolver::leaveCommand()
         reason = lastString;
     }
 
-    user->setOnChannel(false);
-    GetProfile()->getUserDatabase()->saveDatabase();
     QString msg = "Odchodzi " + user->getNick() + " " + reason;
     qDebug() << msg;
     GetProfile()->getSession()->sendMessage(msg);
+    user->setOnChannel(false);
+    GetProfile()->getUserDatabase()->saveDatabase();
+}
+
+void CommandResolver::whoCommand()
+{
+    UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
+    if(!user->getOnChannel())
+        return;
+
+    QString listOfUsers;
+    QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
+    foreach(UserInfoTOPtr u, users)
+    {
+        if(GetProfile()->getUserDatabase()->isUserOnChannel(u->getUin()))
+        {
+            listOfUsers += u->getNick() + "\n";
+        }
+    }
+
+    QString msg = QString("%1 %2 %3").arg(user->getUin()).arg(user->getNick()).arg(CMD_WHO);
+    GetProfile()->getSession()->sendMessageToSuperUser(user->getUin(), msg);
+    GetProfile()->getSession()->sendMessageTo(user->getUin(), listOfUsers);
+}
+
+void CommandResolver::helpCommand()
+{
+    UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
+    if(!user->getOnChannel())
+        return;
+
+    GetProfile()->getSession()->sendMessageTo(user->getUin(), MSG_HELP);
 }
 
 

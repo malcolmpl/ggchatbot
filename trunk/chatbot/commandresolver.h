@@ -43,6 +43,8 @@ private:
     void nickCommand();
     void joinCommand();
     void leaveCommand();
+    void whoCommand();
+    void helpCommand();
 };
 
 #endif	/* _COMMANDRESOLVER_H */
