@@ -34,6 +34,7 @@ namespace
     const QString CMD_WHO               = "/who";
     const QString CMD_HELP              = "/help";
     const QString CMD_POMOC             = "/pomoc";
+    const QString CMD_KICK              = "/kick";
 
     const QString MSG_NICK_EXIST        = "Uzytkownik o takim nicku juz istnieje!";
     const QString MSG_HELP              = "Dostepne komendy:\n/nick 'Nick' - zmiana nicka\n" \
@@ -100,6 +101,12 @@ bool CommandResolver::checkCommand(gg_event *event)
         {
             lastString = removeCommand(str, CMD_POMOC);
             helpCommand();
+            return true;
+        }
+        else if(command == CMD_KICK)
+        {
+            lastString = removeCommand(str, CMD_KICK);
+            kickCommand();
             return true;
         }
     }
@@ -206,4 +213,59 @@ void CommandResolver::helpCommand()
     GetProfile()->getSession()->sendMessageTo(user->getUin(), MSG_HELP);
 }
 
+void CommandResolver::kickCommand()
+{
+    UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
+    if(!user->getOnChannel())
+        return;
+
+    if(user->getUserFlags() < GGChatBot::OP_USER_FLAG)
+        return;
+
+    QRegExp rx2("^(\\d+).*");
+    int pos = 0;
+
+    if((pos = rx2.indexIn(lastString, pos)) != -1)
+    {
+        QString uinToKick = rx2.cap(1);
+        lastString = removeCommand(rx2.cap(0), uinToKick);
+
+        QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
+        foreach(UserInfoTOPtr u, users)
+        {
+            QString uin = QString("%1").arg(u->getUin());
+            if(uin == uinToKick)
+            {
+                kickHelperCommand(u);
+                return;
+            }
+        }
+    }
+
+    QRegExp rx("^(\\w+).*");
+    pos = 0;
+
+    if((pos = rx.indexIn(lastString, pos)) != -1)
+    {
+        QString nickToKick = rx.cap(1);
+        lastString = removeCommand(rx.cap(0), nickToKick);
+
+        QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
+        foreach(UserInfoTOPtr u, users)
+        {
+            if(u->getNick() == nickToKick)
+            {
+                kickHelperCommand(u);
+                return;
+            }
+        }
+    }
+}
+
+void CommandResolver::kickHelperCommand(UserInfoTOPtr user)
+{
+    QString msg = QString("%1 wylatuje z czatu. %2").arg(user->getNick()).arg(lastString);
+    GetProfile()->getSession()->sendMessage(msg);
+    user->setOnChannel(false);
+}
 

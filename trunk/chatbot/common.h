@@ -25,10 +25,10 @@ namespace GGChatBot
    
     enum USER_FLAGS
     {
-        NONE_FLAG,
-        VOICE_USER_FLAG,
-        OP_USER_FLAG,
-        SUPER_USER_FLAG
+        NONE_FLAG = 0,
+        VOICE_USER_FLAG = 2,
+        OP_USER_FLAG = 4,
+        SUPER_USER_FLAG = 8
     };
 }
 

@@ -24,6 +24,7 @@
 #include <libgadu.h>
 
 #include "profilebase.h"
+#include "userinfoto.h"
 
 class CommandResolver : public QObject, public ProfileBase
 {
@@ -45,6 +46,8 @@ private:
     void leaveCommand();
     void whoCommand();
     void helpCommand();
+    void kickCommand();
+    void kickHelperCommand(UserInfoTOPtr);
 };
 
 #endif	/* _COMMANDRESOLVER_H */
