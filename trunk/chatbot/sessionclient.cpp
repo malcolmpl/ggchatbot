@@ -38,6 +38,7 @@ void SessionClient::MakeConnection()
     qRegisterMetaType<uin_t>("uin_t");
     eventManager.SetProfile(GetProfile());
     QObject::connect(&eventManager, SIGNAL(sendMessage(QString)), this, SLOT(sendMessage(QString)));
+    QObject::connect(&eventManager, SIGNAL(sendMessage(uin_t, QString)), this, SLOT(sendMessage(uin_t, QString)));
     QObject::connect(&eventManager, SIGNAL(sendMessageTo(uin_t, QString)), this, SLOT(sendMessageTo(uin_t, QString)));
 
     SetDebugLevel();
@@ -211,14 +212,24 @@ void SessionClient::sendMessage(QString message)
     if(!session)
         return;
 
-    qDebug() << "sendMessage() called";
+    QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
+    foreach(UserInfoTOPtr user, users)
+    {
+        if(GetProfile()->getUserDatabase()->isUserOnChannel(user->getUin()))
+            gg_send_message(session, GG_CLASS_CHAT, user->getUin(), (const unsigned char*)message.toAscii().data());
+    }
+}
+
+void SessionClient::sendMessage(uin_t uin, QString message)
+{
+    if(!session)
+        return;
 
     QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
     foreach(UserInfoTOPtr user, users)
     {
-        qDebug() << "Wysylam " << user->getUin();
-        if(GetProfile()->getUserDatabase()->isUserOnChannel(user->getUin()))
-            gg_send_message(session, GG_CLASS_CHAT, user->getUin(), (const unsigned char*)message.toAscii().data());
+        if(user->getUin() != uin && GetProfile()->getUserDatabase()->isUserOnChannel(user->getUin()))
+            sendMessageTo(user->getUin(), message);
     }
 }
 
@@ -230,8 +241,11 @@ void SessionClient::sendMessageTo(uin_t uin, QString message)
     gg_send_message(session, GG_CLASS_CHAT, uin, (const unsigned char*)message.toAscii().data());
 }
 
-void SessionClient::sendMessageToSuperUser(QString message)
+void SessionClient::sendMessageToSuperUser(uin_t uin, QString message)
 {
+    if(!GetProfile()->getUserDatabase()->isUserOnChannel(uin))
+        return;
+    
     QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
     foreach(UserInfoTOPtr user, users)
     {

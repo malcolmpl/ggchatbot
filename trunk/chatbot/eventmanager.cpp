@@ -53,7 +53,6 @@ void EventManager::ResolveEvent(gg_event *event)
 
 void EventManager::AckEvent()
 {
-    qDebug() << "ACK EVENT";
 }
 
 void EventManager::MessageEvent()
@@ -74,7 +73,7 @@ void EventManager::MessageEvent()
     UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(sender);
     QString msg = QString::fromAscii((const char*)m_event->event.msg.message);
     QString message = user->getNick() + ": " + msg;
-    emit sendMessage(message);
+    emit sendMessage(user->getUin(), message);
     showUserDebug(user, msg);
 }
 

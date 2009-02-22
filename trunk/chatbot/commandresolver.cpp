@@ -89,8 +89,23 @@ void CommandResolver::nickCommand()
 
     if((pos = rx.indexIn(lastString, pos)) != -1)
     {
+        QString newNick = rx.cap(1);
         UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
-        user->setNick(rx.cap(1));
+
+        QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
+        foreach(UserInfoTOPtr u, users)
+        {
+            if(u->getNick() == newNick)
+            {
+                GetProfile()->getSession()->sendMessageTo(user->getUin(), "Uzytkownik o takim nicku juz istnieje!");
+                return;
+            }
+        }
+
+        QString debugMessage = QString("%1 %2 zmienil nick na %3").arg(user->getUin()).arg(user->getNick()).arg(newNick);
+        qDebug() << debugMessage;
+        GetProfile()->getSession()->sendMessageToSuperUser(user->getUin(), debugMessage);
+        user->setNick(newNick);
         GetProfile()->getUserDatabase()->saveDatabase();
     }
 }

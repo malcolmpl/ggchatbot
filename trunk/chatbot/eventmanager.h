@@ -38,6 +38,7 @@ public:
 
 signals:
     void sendMessage(QString message);
+    void sendMessage(uin_t uin, QString message);
     void sendMessageTo(uin_t uin, QString message);
 
 private:
