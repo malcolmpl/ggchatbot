@@ -22,6 +22,7 @@
 #include <QTimer>
 #include <QDate>
 #include <QFile>
+#include <QRegExp>
 
 #include "connectionthread.h"
 #include "logscheduler.h"
