@@ -24,7 +24,7 @@
 ConnectionThread::ConnectionThread(QObject *parent)
     : QThread(parent)
 {
-    sessionClient = SessionClientPtr(new SessionClient(this));
+
 }
 
 ConnectionThread::~ConnectionThread()
@@ -34,13 +34,14 @@ ConnectionThread::~ConnectionThread()
 void ConnectionThread::run()
 {
     qDebug() << "run() called";
-    startServer();
+    exec();
 }
 
 void ConnectionThread::startServer()
 {
     qDebug() << "startServer() called";
     ProfilePtr profile = ProfilePtr(new Profile());
+    sessionClient = SessionClientPtr(new SessionClient());
     profile->setSession(sessionClient);
     sessionClient->SetProfile(profile);
 
@@ -48,3 +49,4 @@ void ConnectionThread::startServer()
 
     sessionClient->MakeConnection();
 }
+

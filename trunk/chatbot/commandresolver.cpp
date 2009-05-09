@@ -17,6 +17,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/lgpl-3.0.html>.
 */
 
+#include "userinfoto.h"
+
+
 #include "sessionclient.h"
 #include "botsettings.h"
 #include "userdatabase.h"
@@ -24,6 +27,7 @@
 
 #include <QDebug>
 #include <QRegExp>
+#include <QDateTime>
 
 namespace
 {
@@ -35,6 +39,8 @@ namespace
     const QString CMD_HELP              = "/help";
     const QString CMD_POMOC             = "/pomoc";
     const QString CMD_KICK              = "/kick";
+    const QString CMD_BAN               = "/ban";
+    const QString CMD_TOPIC             = "/topic";
 
     const QString MSG_NICK_EXIST        = "Uzytkownik o takim nicku juz istnieje!";
     const QString MSG_HELP              = "Dostepne komendy:\n/nick 'Nick' - zmiana nicka\n" \
@@ -109,6 +115,12 @@ bool CommandResolver::checkCommand(gg_event *event)
             kickCommand();
             return true;
         }
+        else if(command == CMD_BAN)
+        {
+            lastString = removeCommand(str, CMD_BAN);
+            banCommand();
+            return true;
+        }
     }
 
     return false;
@@ -138,9 +150,20 @@ void CommandResolver::nickCommand()
         {
             if(u->getNick() == newNick)
             {
+                if(u->getUin() == user->getUin())
+                {
+                    GetProfile()->getSession()->sendMessageTo(user->getUin(), QString("Hej %1, juz masz ustawiony nick!").arg(user->getNick()));
+                    return;
+                }
                 GetProfile()->getSession()->sendMessageTo(user->getUin(), MSG_NICK_EXIST);
                 return;
             }
+        }
+
+        if(!user->getNick().isEmpty())
+        {
+            QString message = QString("%1 zmienil nick na %2").arg(user->getNick()).arg(newNick);
+            GetProfile()->getSession()->sendMessage(message);
         }
 
         QString debugMessage = QString("%1 %2 zmienil nick na %3").arg(user->getUin()).arg(user->getNick()).arg(newNick);
@@ -156,6 +179,27 @@ void CommandResolver::joinCommand()
     UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
     if(user->getOnChannel())
         return;
+
+    if(user->getBanned())
+    {
+        QDateTime currentTime = QDateTime::currentDateTime();
+        QDateTime banTime = user->getBanTime();
+        if(currentTime>banTime)
+        {
+            user->setBanned(false);     // zdejmujemy bana, moze wejsc
+        }
+        else
+        { // a jesli ma bana, to wyjazd
+            QString msg;
+            if(user->getBanReason().isEmpty())
+                msg = "Przykro nam, masz zakaz wjazdu do: " + banTime.toString("dd MMMM yyyy h:mm:ss");
+            else
+                msg = QString("Przykro nam, masz zakaz wjazdu do: %1. Powod: %2").arg(banTime.toString("dd MMMM yyyy h:mm:ss")).arg(user->getBanReason());
+
+            GetProfile()->getSession()->sendMessageTo(user->getUin(), msg);
+            return;
+        }
+    }
 
     user->setOnChannel(true);
     GetProfile()->getUserDatabase()->saveDatabase();
@@ -269,3 +313,89 @@ void CommandResolver::kickHelperCommand(UserInfoTOPtr user)
     user->setOnChannel(false);
 }
 
+void CommandResolver::banCommand()
+{
+    UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
+    if(!user->getOnChannel())
+        return;
+
+    if(user->getUserFlags() < GGChatBot::OP_USER_FLAG)
+        return;
+
+    QRegExp rx("^(\\w+)\\s+(\\w+)\\s+(.*)");
+    int pos = 0;
+    QStringList list;
+
+    QString nick = "";
+    uint minutes = 0;
+    QString description = "";
+
+    qDebug() << lastString;
+
+    while((pos = rx.indexIn(lastString, pos)) != -1)
+    {
+        list << rx.cap(1);
+        list << rx.cap(2);
+        list << rx.cap(3);
+        pos += rx.matchedLength();
+    }
+
+    if(list.size() < 2)
+        return;
+
+    bool isOk = false;
+    nick = list[0];
+    list[1].toInt(&isOk);
+    if(isOk)
+        minutes = list[1].toInt(&isOk);
+    if(list.size()==3)
+        description = list[2];
+
+    QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
+    UserInfoTOPtr u;
+    foreach(u, users)
+    {
+        isOk = false;
+        nick.toInt(&isOk);
+        if(isOk)
+        {
+            QString uin = QString("%1").arg(u->getUin());
+            if(uin == nick)
+            {
+                banHelperCommand(u, minutes, description);
+                break;
+            }
+        }
+        else
+        {
+            QString nickStr = u->getNick();
+            if(nickStr == nick)
+            {
+                banHelperCommand(u, minutes, description);
+                break;
+            }
+        }
+    }
+}
+
+void CommandResolver::banHelperCommand(UserInfoTOPtr user, uint banTime, QString description)
+{
+    QString message;
+    if(description.isEmpty())
+        message = QString("%1 zostal zbanowany na %2 minut.").arg(user->getNick()).arg(banTime);
+    else
+        message = QString("%1 zostal zbanowany na %2 minut. Powod: %3").arg(user->getNick()).arg(banTime).arg(description);
+
+    GetProfile()->getSession()->sendMessage(message);
+
+    lastString = "";
+    kickHelperCommand(user);
+    user->setBanned(true);
+    user->setBanReason(description);
+    QDateTime currentDate = QDateTime::currentDateTime();
+    if(banTime == 0)
+        currentDate = currentDate.addYears(1);        // jesli banTime==0 to dajemy bana na rok
+    else
+        currentDate = currentDate.addSecs(banTime*60);
+    user->setBanTime(currentDate);
+}
