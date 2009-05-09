@@ -121,6 +121,12 @@ bool CommandResolver::checkCommand(gg_event *event)
             banCommand();
             return true;
         }
+        else if(command == CMD_TOPIC)
+        {
+            lastString = removeCommand(str, CMD_TOPIC);
+            topicCommand();
+            return true;
+        }
     }
 
     return false;
@@ -399,3 +405,26 @@ void CommandResolver::banHelperCommand(UserInfoTOPtr user, uint banTime, QString
         currentDate = currentDate.addSecs(banTime*60);
     user->setBanTime(currentDate);
 }
+
+void CommandResolver::topicCommand()
+{
+    UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
+
+    if(!user->getOnChannel())
+        return;
+
+    if(user->getUserFlags() < GGChatBot::OP_USER_FLAG)
+        return;
+
+    QRegExp rx("^(.*)");
+    int pos = 0;
+
+    if((pos = rx.indexIn(lastString, pos)) != -1)
+    {
+        QString topic = rx.cap(1);
+
+        GetProfile()->getSession()->ChangeStatus(topic);
+    }
+}
+
+

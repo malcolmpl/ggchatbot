@@ -47,7 +47,8 @@ public slots:
     void sendMessage(uin_t uin, QString message);
     void sendMessageTo(uin_t uin, QString message);
     void sendMessageToSuperUser(uin_t uin, QString message);
-
+    void ChangeStatus(QString description = "v0.3", int status = GG_STATUS_AVAIL_DESCR);
+    
 signals:
     void endServer();
     void restartConnection();
@@ -68,7 +69,6 @@ private:
     void SetDebugLevel();
     bool Login();
     bool SendContactList();
-    void ChangeStatus(QString description = "v0.3", int status = GG_STATUS_AVAIL_DESCR);
     bool WaitForEvent();
     void EventLoop();
 };
