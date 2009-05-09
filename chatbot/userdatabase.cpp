@@ -63,6 +63,7 @@ void UserDatabase::readUsersListConfig()
         user->setOnChannel(false);
         user->setBanned(settings->value("banned").toBool());
         user->setBanTime(settings->value("banTime").toDateTime());
+        user->setBanReason(settings->value("banReason").toString());
         m_usersList.append(user);
     }
     settings->endArray();
@@ -83,6 +84,7 @@ void UserDatabase::saveUsersListConfig()
         settings->setValue("onChannel", m_usersList.at(i)->getOnChannel());
         settings->setValue("banned", m_usersList.at(i)->getBanned());
         settings->setValue("banTime", m_usersList.at(i)->getBanTime());
+        settings->setValue("banReason", m_usersList.at(i)->getBanReason());
     }
     settings->endArray();
 }

@@ -67,14 +67,18 @@ int main(int argc, char *argv[])
     qInstallMsgHandler(&logHandler);
     QCoreApplication app(argc, argv);
 
-    LogScheduler logSched;
-    logSched.start();
+    LogScheduler *logSched = new LogScheduler();
+    logSched->start();
 
-    ConnectionThread connection;
-    QObject::connect(&connection, SIGNAL(finished()), &app, SLOT(quit()));
-    QObject::connect(&connection, SIGNAL(finished()), &logSched, SLOT(quit()));
-    connection.start();
+    ConnectionThread *connection = new ConnectionThread();
+    QObject::connect(connection, SIGNAL(finished()), &app, SLOT(quit()));
+//    QObject::connect(connection, SIGNAL(finished()), logSched, SLOT(quit()), Qt::DirectConnection);
+    connection->start();
+    connection->startServer();
 
     int ret = app.exec();
+
+    delete connection;
+
     return ret;
 }

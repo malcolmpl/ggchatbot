@@ -45,7 +45,6 @@ void SessionClient::MakeConnection()
 
     if(!Login())
     {
-        emit endServer();
         return;
     }
 
@@ -54,8 +53,11 @@ void SessionClient::MakeConnection()
 
 void SessionClient::FreeSession(gg_session *session)
 {
-    gg_free_event(event);
-    gg_free_session(session);
+    if(session)
+    {
+        gg_free_event(event);
+        gg_free_session(session);
+    }
 }
 
 void SessionClient::Logout(gg_session *session)
@@ -70,7 +72,7 @@ void SessionClient::CleanAndExit()
     FreeSession(session);
 
     qDebug() << "Bye, bye :)";
-    emit endServer();
+    //emit endServer();
 }
 
 void SessionClient::SetDebugLevel()
@@ -85,14 +87,24 @@ bool SessionClient::Login()
     qDebug() << "Logowanie...";
     memset(&loginParams, 0, sizeof(loginParams));
 
-    loginParams.uin = GetProfile()->getBotSettings().getUin();
+    uin_t uin = GetProfile()->getBotSettings().getUin();
+    qDebug() << "UIN:" << uin;
+
+    if(uin == 0)
+    {
+        qDebug() << "Skonfiguruj swoj UIN!";
+        endServer();
+        return false;
+    }
+
+    loginParams.uin = uin;
     loginParams.password = GetProfile()->getBotSettings().getPassword().toAscii().data();
     loginParams.async = 1;
 
     if (!( session = gg_login(&loginParams) ) )
     {
         qDebug() << "Nie udalo sie polaczyc.";   //printf("Nie uda?o si? po??czy?: %s\n", strerror(errno));
-        CleanAndExit();
+        emit endServer();
         return false;
     }
 
@@ -196,7 +208,8 @@ void SessionClient::EventLoop()
             if(event->type == GG_EVENT_CONN_FAILED)
             {
                 qDebug() << "Connection failed :(";
-                emit restartConnection();
+                //emit restartConnection();
+                emit endServer();
                 return;
             }
 
@@ -237,7 +250,7 @@ void SessionClient::sendMessageTo(uin_t uin, QString message)
 {
     if(!session)
         return;
-    
+
     gg_send_message(session, GG_CLASS_CHAT, uin, (const unsigned char*)message.toAscii().data());
 }
 

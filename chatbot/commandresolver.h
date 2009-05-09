@@ -48,6 +48,8 @@ private:
     void helpCommand();
     void kickCommand();
     void kickHelperCommand(UserInfoTOPtr);
+    void banCommand();
+    void banHelperCommand(UserInfoTOPtr, uint, QString);
 };
 
 #endif	/* _COMMANDRESOLVER_H */

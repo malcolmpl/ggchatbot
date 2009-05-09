@@ -72,7 +72,15 @@ void EventManager::MessageEvent()
 
     UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(sender);
     QString msg = QString::fromAscii((const char*)m_event->event.msg.message);
-    QString message = user->getNick() + ": " + msg;
+    QString message;
+    if((GetProfile()->getUserDatabase()->isUserHaveVoice(user->getUin())))
+        message = "+" + user->getNick() + ": " + msg;
+    else if((GetProfile()->getUserDatabase()->isUserHaveOp(user->getUin())))
+        message = "@" + user->getNick() + ": " + msg;
+    else if((GetProfile()->getUserDatabase()->isSuperUser(user->getUin())))
+        message = "!" + user->getNick() + ": " + msg;
+    else
+        message = user->getNick() + ": " + msg;
     emit sendMessage(user->getUin(), message);
     showUserDebug(user, msg);
 }
@@ -97,7 +105,11 @@ void EventManager::welcomeMessage()
     UserInfoTOPtr user = getUser(m_event->event.msg.sender);
     QString msg = QString::fromAscii((const char*)m_event->event.msg.message);
     showUserDebug(user, msg);
-    QString welcome = "Witaj!\nWpisz /nick 'Nick' aby ustawic swoj nick.\nWpisz /join aby dolaczyc do czatu.";
+    QString welcome;
+    if(user->getNick().isEmpty())
+        welcome = "Witaj!\nWpisz /nick 'Nick' aby ustawic swoj nick.\nWpisz /join aby dolaczyc do czatu.";
+    else
+        welcome = QString("Witaj %1! Wpisz /join aby dolaczyc do czatu.").arg(user->getNick());
     emit sendMessageTo(m_event->event.msg.sender, welcome);
 }
 
