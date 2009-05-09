@@ -50,6 +50,7 @@ private:
     void kickHelperCommand(UserInfoTOPtr);
     void banCommand();
     void banHelperCommand(UserInfoTOPtr, uint, QString);
+    void topicCommand();
 };
 
 #endif	/* _COMMANDRESOLVER_H */
