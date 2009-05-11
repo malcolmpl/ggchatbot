@@ -35,9 +35,12 @@ namespace
 
     const QString CMD_NICK              = "/nick";
     const QString CMD_JOIN              = "/join";
+    const QString CMD_START		= "/start";
     const QString CMD_LEAVE             = "/leave";
+    const QString CMD_STOP		= "/stop";
     const QString CMD_QUIT              = "/quit";
     const QString CMD_WHO               = "/who";
+    const QString CMD_KTO		= "/kto";
     const QString CMD_HELP              = "/help";
     const QString CMD_POMOC             = "/pomoc";
     const QString CMD_KICK              = "/kick";
@@ -46,8 +49,8 @@ namespace
 
     const QString MSG_NICK_EXIST        = "Uzytkownik o takim nicku juz istnieje!";
     const QString MSG_HELP              = "Dostepne komendy:\n/nick 'Nick' - zmiana nicka\n" \
-        "/join - wejscie na czat\n/leave /quit 'tekst'- opuszczenie czatu, opcjonalnie z tekstem\n" \
-        "/who - spis osob dostepnych na czacie\n/help /pomoc - pomoc ktora wlasnie czytasz ;)";
+        "/join /start - wejscie na czat\n/leave /stop /quit 'tekst'- opuszczenie czatu, opcjonalnie z tekstem\n" \
+        "/who /kto - spis osob dostepnych na czacie\n/help /pomoc - pomoc ktora wlasnie czytasz ;)";
 }
 
 CommandResolver::CommandResolver()
@@ -81,12 +84,24 @@ bool CommandResolver::checkCommand(gg_event *event)
             joinCommand();
             return true;
         }
+	else if(command == CMD_START)
+	{
+	    lastString = removeCommand(str, CMD_START);
+	    joinCommand();
+	    return true;
+	}
         else if(command == CMD_LEAVE)
         {
             lastString = removeCommand(str, CMD_LEAVE);
             leaveCommand();
             return true;
         }
+	else if(command == CMD_STOP)
+	{
+	    lastString = removeCommand(str, CMD_STOP);
+	    leaveCommand();
+	    return true;
+	}
         else if(command == CMD_QUIT)
         {
             lastString = removeCommand(str, CMD_QUIT);
@@ -99,6 +114,12 @@ bool CommandResolver::checkCommand(gg_event *event)
             whoCommand();
             return true;
         }
+	else if(command == CMD_KTO)
+	{
+	    lastString = removeCommand(str, CMD_KTO);
+	    whoCommand();
+	    return true;
+	}
         else if(command == CMD_HELP)
         {
             lastString = removeCommand(str, CMD_HELP);
