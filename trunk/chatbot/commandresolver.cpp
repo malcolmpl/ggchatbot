@@ -31,6 +31,8 @@
 
 namespace
 {
+    const int MAX_NICK_LENGTH		= 14;
+
     const QString CMD_NICK              = "/nick";
     const QString CMD_JOIN              = "/join";
     const QString CMD_LEAVE             = "/leave";
@@ -148,8 +150,14 @@ void CommandResolver::nickCommand()
 
     if((pos = rx.indexIn(lastString, pos)) != -1)
     {
+	UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
         QString newNick = rx.cap(1);
-        UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
+	if(newNick.size() > MAX_NICK_LENGTH)
+	{
+	    QString msg = "Maksymalna dlugosc nicka to 14 znakow!";
+	    GetProfile()->getSession()->sendMessageTo(user->getUin(), msg);
+	    return;
+	}
 
         QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
         foreach(UserInfoTOPtr u, users)
@@ -185,6 +193,9 @@ void CommandResolver::joinCommand()
     UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
     if(user->getOnChannel())
         return;
+
+    if(user->getNick().isEmpty())
+	return;
 
     if(user->getBanned())
     {
