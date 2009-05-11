@@ -23,6 +23,7 @@
 #include "userdatabase.h"
 
 #include <errno.h>
+#include <QCoreApplication>
 
 SessionClient::SessionClient(QObject *parent)
     : QObject(parent)
@@ -165,7 +166,7 @@ void SessionClient::EventLoop()
 
         if (!wynik)
         {
-            qApp->processEvents();
+		QCoreApplication::instance()->processEvents();
             continue;
         }
 
