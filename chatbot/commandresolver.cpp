@@ -209,8 +209,9 @@ void CommandResolver::joinCommand()
 
     user->setOnChannel(true);
     GetProfile()->getUserDatabase()->saveDatabase();
+    whoCommand();
     QString msg = "Przychodzi " + user->getNick();
-    qDebug() << msg;
+    qDebug() << "UIN:" << user->getUin() << msg;
     GetProfile()->getSession()->sendMessage(msg);
 }
 
@@ -227,7 +228,7 @@ void CommandResolver::leaveCommand()
     }
 
     QString msg = "Odchodzi " + user->getNick() + " " + reason;
-    qDebug() << msg;
+    qDebug() << "UIN:" << user->getUin() << msg;
     GetProfile()->getSession()->sendMessage(msg);
     user->setOnChannel(false);
     GetProfile()->getUserDatabase()->saveDatabase();
@@ -239,7 +240,7 @@ void CommandResolver::whoCommand()
     if(!user->getOnChannel())
         return;
 
-    QString listOfUsers;
+    QString listOfUsers = "Osoby na czacie:\n";
     QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
     foreach(UserInfoTOPtr u, users)
     {
