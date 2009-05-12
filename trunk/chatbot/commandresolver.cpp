@@ -197,11 +197,11 @@ void CommandResolver::nickCommand()
 
         if(!user->getNick().isEmpty())
         {
-            QString message = QString("%1 zmienil nick na %2").arg(user->getNick()).arg(newNick);
+            QString message = QString("%1 zmienia nick na %2").arg(user->getNick()).arg(newNick);
             GetProfile()->getSession()->sendMessage(message);
         }
 
-        QString debugMessage = QString("%1 %2 zmienil nick na %3").arg(user->getUin()).arg(user->getNick()).arg(newNick);
+        QString debugMessage = QString("%1 %2 zmienia nick na %3").arg(user->getUin()).arg(user->getNick()).arg(newNick);
         qDebug() << debugMessage;
         GetProfile()->getSession()->sendMessageToSuperUser(user->getUin(), debugMessage);
         user->setNick(newNick);
