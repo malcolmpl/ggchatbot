@@ -348,7 +348,8 @@ void CommandResolver::kickCommand()
 void CommandResolver::kickHelperCommand(UserInfoTOPtr user)
 {
     QString msg = QString("%1 wylatuje z czatu. %2").arg(user->getNick()).arg(lastString);
-    GetProfile()->getSession()->sendMessage(msg);
+    if(user->getOnChannel())
+        GetProfile()->getSession()->sendMessage(msg);
     user->setOnChannel(false);
 }
 
