@@ -274,16 +274,20 @@ void CommandResolver::whoCommand()
 
     QString listOfUsers = "Osoby na czacie:\n";
     QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
+	QList<UserInfoTOPtr> usersOnChannel;
+	foreach(UserInfoTOPtr u, users)
+	{
+		if(GetProfile()->getUserDatabase()->isUserOnChannel(u->getUin()))
+			usersOnChannel.push_back(u);
+	}
+
     int i = 1;
-    foreach(UserInfoTOPtr u, users)
+    foreach(UserInfoTOPtr u, usersOnChannel)
     {
-        if(GetProfile()->getUserDatabase()->isUserOnChannel(u->getUin()))
-        {
-			if(i<users.size())
+			if(i<usersOnChannel.size())
             	listOfUsers += u->getNick() + ", ";
 			else
 				listOfUsers += u->getNick();
-        }
     }
 
     QString msg = QString("%1 %2 %3").arg(user->getUin()).arg(user->getNick()).arg(CMD_WHO);
