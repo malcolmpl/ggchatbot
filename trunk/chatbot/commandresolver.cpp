@@ -274,11 +274,15 @@ void CommandResolver::whoCommand()
 
     QString listOfUsers = "Osoby na czacie:\n";
     QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
+    int i = 0;
     foreach(UserInfoTOPtr u, users)
     {
         if(GetProfile()->getUserDatabase()->isUserOnChannel(u->getUin()))
         {
-            listOfUsers += u->getNick() + "\n";
+			if(i<users.size())
+            	listOfUsers += u->getNick() + ", ";
+			else
+				listOfUsers += u->getNick();
         }
     }
 
