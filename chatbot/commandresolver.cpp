@@ -288,6 +288,7 @@ void CommandResolver::whoCommand()
             	listOfUsers += u->getNick() + ", ";
 			else
 				listOfUsers += u->getNick();
+			i++;
     }
 
     QString msg = QString("%1 %2 %3").arg(user->getUin()).arg(user->getNick()).arg(CMD_WHO);
