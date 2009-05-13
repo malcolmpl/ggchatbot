@@ -102,7 +102,7 @@ UserInfoTOPtr UserDatabase::getUserInfo(uin_t uin) const
 
 void UserDatabase::addUser(const UserInfoTOPtr u)
 {
-    qDebug() << "Dodaje użytkownika do bazy.";
+    qDebug() << "Dodaje użytkownik" + u->getNick() + "do bazy.";
     
     foreach(UserInfoTOPtr user, m_usersList)
     {
