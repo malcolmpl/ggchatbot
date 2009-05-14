@@ -53,6 +53,9 @@ private:
 	void unbanCommand();
 	void unbanHelperCommand(UserInfoTOPtr);
     void topicCommand();
+	void opCommand();
+	void voiceCommand();
+	void removeFlagsCommand();
 };
 
 #endif	/* _COMMANDRESOLVER_H */
