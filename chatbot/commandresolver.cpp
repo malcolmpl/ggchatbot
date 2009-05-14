@@ -51,6 +51,11 @@ namespace
     const QString MSG_HELP              = "Dostepne komendy:\n/nick 'Nick' - zmiana nicka\n" \
         "/join /start - wejscie na czat\n/leave /stop /quit 'tekst'- opuszczenie czatu, opcjonalnie z tekstem\n" \
         "/who /kto - spis osob dostepnych na czacie\n/help /pomoc - pomoc ktora wlasnie czytasz ;)";
+
+	const QString MSG_HELP_FOR_OPS		= "Dostepne komendy:\n/nick 'Nick' - zmiana nicka\n" \
+        "/join /start - wejscie na czat\n/leave /stop /quit 'tekst'- opuszczenie czatu\n" \
+        "/who /kto - spis osob dostepnych na czacie\n/help /pomoc - pomoc\n/ban /unban kto czas opis - banowanie" \
+		", czas w minutach, 0=rok\n/kick kto opis - wywalenie z czatu";
 }
 
 CommandResolver::CommandResolver()
@@ -302,7 +307,10 @@ void CommandResolver::helpCommand()
     if(!user->getOnChannel())
         return;
 
-    GetProfile()->getSession()->sendMessageTo(user->getUin(), MSG_HELP);
+	if(user->getUserFlags() < GGChatBot::OP_USER_FLAG)
+		GetProfile()->getSession()->sendMessageTo(user->getUin(), MSG_HELP);
+	else
+    	GetProfile()->getSession()->sendMessageTo(user->getUin(), MSG_HELP_FOR_OPS);
 }
 
 void CommandResolver::kickCommand()
