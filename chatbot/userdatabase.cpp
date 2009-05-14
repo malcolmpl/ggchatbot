@@ -57,14 +57,15 @@ void UserDatabase::readUsersListConfig()
         settings->setArrayIndex(i);
         user->setNick(settings->value("nick").toString());
         user->setUin(settings->value("UIN").toUInt());
-        user->setUserFlags(static_cast<GGChatBot::USER_FLAGS>(settings->value("Flags").toInt()));
+		user->setUserFlags(settings->value("Flags").toUInt());
         user->setLastSeen(settings->value("lastSeen").toDateTime());
         user->setChannelName(settings->value("channel").toString());
         user->setOnChannel(false);
         user->setBanned(settings->value("banned").toBool());
         user->setBanTime(settings->value("banTime").toDateTime());
         user->setBanReason(settings->value("banReason").toString());
-        m_usersList.append(user);
+		qDebug() << user->getUserFlags();
+        m_usersList.push_back(user);
     }
     settings->endArray();
 }
@@ -164,7 +165,10 @@ bool UserDatabase::isUserHaveVoice(uin_t uin)
         return false;
 
     UserInfoTOPtr user = getUserInfo(uin);
-    return (user->getUserFlags() == GGChatBot::VOICE_USER_FLAG);
+    if(user->getUserFlags() == GGChatBot::VOICE_USER_FLAG)
+		return true;
+
+	return false;
 }
 
 bool UserDatabase::isUserHaveOp(uin_t uin)
@@ -173,7 +177,10 @@ bool UserDatabase::isUserHaveOp(uin_t uin)
         return false;
 
     UserInfoTOPtr user = getUserInfo(uin);
-    return (user->getUserFlags() == GGChatBot::OP_USER_FLAG);
+    if(user->getUserFlags() == GGChatBot::OP_USER_FLAG)
+		return true;
+
+	return false;
 }
 
 bool UserDatabase::isSuperUser(uin_t uin)
@@ -182,6 +189,10 @@ bool UserDatabase::isSuperUser(uin_t uin)
         return false;
 
     UserInfoTOPtr user = getUserInfo(uin);
-    return (user->getUserFlags() == GGChatBot::SUPER_USER_FLAG);
+	qDebug() << user->getUserFlags() << GGChatBot::SUPER_USER_FLAG;
+    if(user->getUserFlags() == GGChatBot::SUPER_USER_FLAG)
+		return true;
+
+	return false;
 }
 

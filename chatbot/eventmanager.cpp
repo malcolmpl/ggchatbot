@@ -73,14 +73,21 @@ void EventManager::MessageEvent()
     UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(sender);
     QString msg = QString::fromAscii((const char*)m_event->event.msg.message);
     QString message;
-    if((GetProfile()->getUserDatabase()->isUserHaveVoice(user->getUin())))
-        message = "+" + user->getNick() + ": " + msg;
-    else if((GetProfile()->getUserDatabase()->isUserHaveOp(user->getUin())))
-        message = "@" + user->getNick() + ": " + msg;
-    else if((GetProfile()->getUserDatabase()->isSuperUser(user->getUin())))
-        message = "!" + user->getNick() + ": " + msg;
-    else
-        message = user->getNick() + ": " + msg;
+
+	qDebug() << "Voice:" << GetProfile()->getUserDatabase()->isUserHaveVoice(user->getUin())
+		<< "Op:" << GetProfile()->getUserDatabase()->isUserHaveOp(user->getUin())
+ 		<< "SuperUser:" << GetProfile()->getUserDatabase()->isSuperUser(user->getUin())
+		<< user->getUserFlags();
+
+	if((GetProfile()->getUserDatabase()->isSuperUser(user->getUin())))
+		message = "!" + user->getNick() + ": " + msg;
+	else if((GetProfile()->getUserDatabase()->isUserHaveOp(user->getUin())))
+		message = "@" + user->getNick() + ": " + msg;
+	else if((GetProfile()->getUserDatabase()->isUserHaveVoice(user->getUin())))
+		message = "+" + user->getNick() + ": " + msg;
+	else
+		message = user->getNick() + ": " + msg;
+
     emit sendMessage(user->getUin(), message);
     showUserDebug(user, msg);
 }
