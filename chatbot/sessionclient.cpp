@@ -36,6 +36,7 @@ SessionClient::~SessionClient()
 
 void SessionClient::MakeConnection()
 {
+	QObject::disconnect(&eventManager, 0, 0, 0);
     qRegisterMetaType<uin_t>("uin_t");
     eventManager.SetProfile(GetProfile());
     QObject::connect(&eventManager, SIGNAL(sendMessage(QString)), this, SLOT(sendMessage(QString)));
@@ -184,8 +185,8 @@ void SessionClient::EventLoop()
         {
             if(!WaitForEvent())
             {
-                qDebug() << "None";
-                CleanAndExit();
+                qDebug() << "Rozlaczono z serwerem, ponawiam...";
+                QTimer::singleShot(1, this, SLOT(MakeConnection()));
                 return;
             }
 
