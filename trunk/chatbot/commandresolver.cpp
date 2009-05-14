@@ -45,6 +45,7 @@ namespace
     const QString CMD_POMOC             = "/pomoc";
     const QString CMD_KICK              = "/kick";
     const QString CMD_BAN               = "/ban";
+	const QString CMD_UNBAN				= "/unban";
     const QString CMD_TOPIC             = "/topic";
 
     const QString MSG_NICK_EXIST        = "Uzytkownik o takim nicku juz istnieje!";
@@ -155,6 +156,12 @@ bool CommandResolver::checkCommand(gg_event *event)
             topicCommand();
             return true;
         }
+		else if(command == CMD_UNBAN)
+		{
+			lastString = removeCommand(str, CMD_UNBAN);
+			unbanCommand();
+			return true;
+		}
     }
 
     return false;
@@ -455,6 +462,61 @@ void CommandResolver::banHelperCommand(UserInfoTOPtr user, uint banTime, QString
     else
         currentDate = currentDate.addSecs(banTime*60);
     user->setBanTime(currentDate);
+}
+
+void CommandResolver::unbanCommand()
+{
+    UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
+    if(!user->getOnChannel())
+        return;
+
+    if(user->getUserFlags() < GGChatBot::OP_USER_FLAG)
+        return;
+
+    QRegExp rx2("^(\\d+).*");
+    int pos = 0;
+
+    if((pos = rx2.indexIn(lastString, pos)) != -1)
+    {
+        QString uinToUnban = rx2.cap(1);
+        lastString = removeCommand(rx2.cap(0), uinToUnban);
+
+        QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
+        foreach(UserInfoTOPtr u, users)
+        {
+            QString uin = QString("%1").arg(u->getUin());
+            if(uin == uinToUnban)
+            {
+                unbanHelperCommand(u);
+                return;
+            }
+        }
+    }
+
+    QRegExp rx("^(\\w+).*");
+    pos = 0;
+
+    if((pos = rx.indexIn(lastString, pos)) != -1)
+    {
+        QString nickToUnban = rx.cap(1);
+        lastString = removeCommand(rx.cap(0), nickToUnban);
+
+        QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
+        foreach(UserInfoTOPtr u, users)
+        {
+            if(u->getNick() == nickToUnban)
+            {
+                unbanHelperCommand(u);
+                return;
+            }
+        }
+    }
+}
+
+void CommandResolver::unbanHelperCommand(UserInfoTOPtr u)
+{
+	u->setBanned(false);
+	u->setBanTime(QDateTime());
 }
 
 void CommandResolver::topicCommand()
