@@ -23,13 +23,10 @@
 namespace GGChatBot
 {
    
-    enum USER_FLAGS
-    {
-        NONE_FLAG = 0,
-        VOICE_USER_FLAG = 2,
-        OP_USER_FLAG = 4,
-        SUPER_USER_FLAG = 8
-    };
+	const int NONE_FLAG 			= 0;
+    const int VOICE_USER_FLAG 		= 1;
+    const int OP_USER_FLAG 			= 2;
+    const int SUPER_USER_FLAG 		= 4;
 }
 
 #endif	/* _COMMON_H */

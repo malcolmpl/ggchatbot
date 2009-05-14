@@ -40,8 +40,8 @@ public:
     void setNick(const QString v) { m_nick = v; }
     QString getNick() const { return m_nick; }
 
-    void setUserFlags(const GGChatBot::USER_FLAGS v) { m_flags = v; }
-    GGChatBot::USER_FLAGS getUserFlags() const { return m_flags; }
+    void setUserFlags(const int v) { m_flags = v; }
+    int getUserFlags() const { return m_flags; }
 
     void setOnChannel(bool v) { m_onChannel = v; }
     bool getOnChannel() const { return m_onChannel; }
@@ -64,7 +64,7 @@ public:
 private:
     uin_t m_uin;
     QString m_nick;
-    GGChatBot::USER_FLAGS m_flags;
+    int m_flags;
     bool m_onChannel;
     QString m_channelName;
     QDateTime m_lastSeen;
