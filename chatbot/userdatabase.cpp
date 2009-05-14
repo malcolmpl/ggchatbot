@@ -164,7 +164,7 @@ bool UserDatabase::isUserHaveVoice(uin_t uin)
         return false;
 
     UserInfoTOPtr user = getUserInfo(uin);
-    return (user->getUserFlags() & GGChatBot::VOICE_USER_FLAG);
+    return (user->getUserFlags() == GGChatBot::VOICE_USER_FLAG);
 }
 
 bool UserDatabase::isUserHaveOp(uin_t uin)
@@ -173,7 +173,7 @@ bool UserDatabase::isUserHaveOp(uin_t uin)
         return false;
 
     UserInfoTOPtr user = getUserInfo(uin);
-    return (user->getUserFlags() & GGChatBot::OP_USER_FLAG);
+    return (user->getUserFlags() == GGChatBot::OP_USER_FLAG);
 }
 
 bool UserDatabase::isSuperUser(uin_t uin)
@@ -182,6 +182,6 @@ bool UserDatabase::isSuperUser(uin_t uin)
         return false;
 
     UserInfoTOPtr user = getUserInfo(uin);
-    return (user->getUserFlags() & GGChatBot::SUPER_USER_FLAG);
+    return (user->getUserFlags() == GGChatBot::SUPER_USER_FLAG);
 }
 
