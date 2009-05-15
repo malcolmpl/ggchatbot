@@ -64,7 +64,6 @@ void UserDatabase::readUsersListConfig()
         user->setBanned(settings->value("banned").toBool());
         user->setBanTime(settings->value("banTime").toDateTime());
         user->setBanReason(settings->value("banReason").toString());
-		qDebug() << user->getUserFlags();
         m_usersList.push_back(user);
     }
     settings->endArray();
@@ -189,7 +188,6 @@ bool UserDatabase::isSuperUser(uin_t uin)
         return false;
 
     UserInfoTOPtr user = getUserInfo(uin);
-	qDebug() << user->getUserFlags() << GGChatBot::SUPER_USER_FLAG;
     if(user->getUserFlags() == GGChatBot::SUPER_USER_FLAG)
 		return true;
 
