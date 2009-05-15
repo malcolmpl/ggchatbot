@@ -74,11 +74,6 @@ void EventManager::MessageEvent()
     QString msg = QString::fromAscii((const char*)m_event->event.msg.message);
     QString message;
 
-	qDebug() << "Voice:" << GetProfile()->getUserDatabase()->isUserHaveVoice(user->getUin())
-		<< "Op:" << GetProfile()->getUserDatabase()->isUserHaveOp(user->getUin())
- 		<< "SuperUser:" << GetProfile()->getUserDatabase()->isSuperUser(user->getUin())
-		<< user->getUserFlags();
-
 	if((GetProfile()->getUserDatabase()->isSuperUser(user->getUin())))
 		message = "!" + user->getNick() + ": " + msg;
 	else if((GetProfile()->getUserDatabase()->isUserHaveOp(user->getUin())))
