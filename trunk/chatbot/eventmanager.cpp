@@ -71,7 +71,6 @@ void EventManager::MessageEvent()
     }
 
     UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(sender);
-	qDebug() << "EventManager:" << user->getNick() << user->getUin() << user->getUserFlags();
     QString msg = QString::fromAscii((const char*)m_event->event.msg.message);
     QString message;
 
@@ -112,7 +111,7 @@ void EventManager::welcomeMessage()
     if(user->getNick().isEmpty())
         welcome = "Witaj!\nWpisz /nick 'Nick' aby ustawic swoj nick.\nWpisz /join aby dolaczyc do czatu.";
     else
-        welcome = QString("Witaj %1! Wpisz /join aby dolaczyc do czatu.").arg(user->getNick());
+        welcome = QString("Witaj %1! Wpisz /join aby dolaczyc do czatu.").arg(GetProfile()->getUserDatabase()->makeUserNick(user));
     emit sendMessageTo(m_event->event.msg.sender, welcome);
 }
 
