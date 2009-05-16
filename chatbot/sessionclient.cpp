@@ -110,7 +110,7 @@ bool SessionClient::Login()
         return false;
     }
 
-    qDebug() << "Polaczono.";
+    qDebug() << "Laczenie...";
 
     scheduler = new SessionScheduler(session);
     scheduler->start();

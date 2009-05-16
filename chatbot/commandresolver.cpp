@@ -237,7 +237,7 @@ void CommandResolver::nickCommand()
 
         QString debugMessage = QString("%1 %2 zmienia nick na %3").arg(user->getUin()).arg(user->getNick()).arg(newNick);
         qDebug() << debugMessage;
-        GetProfile()->getSession()->sendMessageToSuperUser(user->getUin(), debugMessage);
+        //GetProfile()->getSession()->sendMessageToSuperUser(user->getUin(), debugMessage);
         user->setNick(newNick);
         GetProfile()->getUserDatabase()->saveDatabase();
     }
@@ -320,10 +320,11 @@ void CommandResolver::whoCommand()
 	{
 		foreach(UserInfoTOPtr u, usersOnChannel)
 		{
+			QString userNick = GetProfile()->getUserDatabase()->makeUserNick(u);
 			if(i<usersOnChannel.size())
-				listOfUsers += QString("[%1] %2, ").arg(u->getUin()).arg(u->getNick());
+				listOfUsers += QString("[%1] %2, ").arg(u->getUin()).arg(userNick);
 			else
-				listOfUsers += QString("[%1] %2").arg(u->getUin()).arg(u->getNick());
+				listOfUsers += QString("[%1] %2").arg(u->getUin()).arg(userNick);
 			i++;
 		}
 	}
@@ -331,16 +332,17 @@ void CommandResolver::whoCommand()
 	{
     	foreach(UserInfoTOPtr u, usersOnChannel)
 	    {
-				if(i<usersOnChannel.size())
-        	    	listOfUsers += u->getNick() + ", ";
-				else
-					listOfUsers += u->getNick();
-				i++;
+			QString userNick = GetProfile()->getUserDatabase()->makeUserNick(u);
+			if(i<usersOnChannel.size())
+        	   	listOfUsers += userNick + ", ";
+			else
+				listOfUsers += userNick;
+			i++;
 	    }
 	}
 
     QString msg = QString("%1 %2 %3").arg(user->getUin()).arg(user->getNick()).arg(CMD_WHO);
-    GetProfile()->getSession()->sendMessageToSuperUser(user->getUin(), msg);
+    //GetProfile()->getSession()->sendMessageToSuperUser(user->getUin(), msg);
     GetProfile()->getSession()->sendMessageTo(user->getUin(), listOfUsers);
 }
 

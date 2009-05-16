@@ -71,6 +71,7 @@ void EventManager::MessageEvent()
     }
 
     UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(sender);
+	qDebug() << "EventManager:" << user->getNick() << user->getUin() << user->getUserFlags();
     QString msg = QString::fromAscii((const char*)m_event->event.msg.message);
     QString message;
 
