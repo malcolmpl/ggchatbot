@@ -8,10 +8,10 @@
   * priv
   * ignore ?
   * unignore
-  * op SM
-  * deop SM
-  * voice
-  * devoice
+  * ~~op SM~~
+  * ~~deop SM~~
+  * ~~voice~~
+  * ~~devoice~~
   * whois (katalog publiczny) +
   * friend (wiadomosc, ze ktos jest na czacie)
   * unfriend
@@ -19,14 +19,14 @@
 
 = Features =
   * czas dzialania czatu
-  * OP ustawia voice
+  * ~~OP ustawia voice~~
   * V ustawia
   * wordkick - zablokowane slowa w pliku tekstowym
   * zabezpieczenie przed floodem (nie mozna 2 razy tego samego tekstu wpisac)
   * reconectowanie bota (syndrom 5:30) 
   * bot na czacie ?
-  * logi +
-  * nicki (3-12) znakow +
+  * ~~logi +~~
+  * ~~nicki (14) znakow +~~
   * obrazki - wlasne emoty?
   * wlasne pokoje ?
   * setprivate - uin nie widoczny dla innych (SM,OP nie pokazuje sie, ze wchodzi, wychodzi i w liscie - wlaczone pokazuje, ze opuscil czata)
