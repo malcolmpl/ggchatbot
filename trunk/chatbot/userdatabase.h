@@ -46,7 +46,9 @@ public:
     bool isUserHaveVoice(uin_t uin);
     bool isUserHaveOp(uin_t uin);
     bool isSuperUser(uin_t uin);
-    
+   
+	QString makeUserNick(UserInfoTOPtr);
+ 
 private:
     void readUsersListConfig();
     void saveUsersListConfig();

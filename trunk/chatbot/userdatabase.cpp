@@ -140,7 +140,7 @@ bool UserDatabase::isUserInDatabase(uin_t uin)
         user->setUin(uin);
         addUser(user);
 
-        return false;
+        return true;
     }
 
     return true;
@@ -160,7 +160,7 @@ bool UserDatabase::isUserHaveNick(uin_t uin)
 
 bool UserDatabase::isUserHaveVoice(uin_t uin)
 {
-    if(isUserHaveNick(uin))
+    if(!isUserHaveNick(uin))
         return false;
 
     UserInfoTOPtr user = getUserInfo(uin);
@@ -172,7 +172,7 @@ bool UserDatabase::isUserHaveVoice(uin_t uin)
 
 bool UserDatabase::isUserHaveOp(uin_t uin)
 {
-    if(isUserHaveNick(uin))
+    if(!isUserHaveNick(uin))
         return false;
 
     UserInfoTOPtr user = getUserInfo(uin);
@@ -184,7 +184,7 @@ bool UserDatabase::isUserHaveOp(uin_t uin)
 
 bool UserDatabase::isSuperUser(uin_t uin)
 {
-    if(isUserHaveNick(uin))
+    if(!isUserHaveNick(uin))
         return false;
 
     UserInfoTOPtr user = getUserInfo(uin);
@@ -192,5 +192,19 @@ bool UserDatabase::isSuperUser(uin_t uin)
 		return true;
 
 	return false;
+}
+
+QString UserDatabase::makeUserNick(UserInfoTOPtr u)
+{
+	if(isUserHaveVoice(u->getUin()))
+		return "+" + u->getNick();
+
+	if(isUserHaveOp(u->getUin()))
+		return "@" + u->getNick();
+
+	if(isSuperUser(u->getUin()))
+		return "!" + u->getNick();
+
+	return u->getNick();
 }
 
