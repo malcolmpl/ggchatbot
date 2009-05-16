@@ -221,7 +221,7 @@ void CommandResolver::nickCommand()
             {
                 if(u->getUin() == user->getUin())
                 {
-                    GetProfile()->getSession()->sendMessageTo(user->getUin(), QString("Hej %1, juz masz ustawiony nick!").arg(user->getNick()));
+                    GetProfile()->getSession()->sendMessageTo(user->getUin(), QString("Hej %1, juz masz ustawiony nick!").arg(GetProfile()->getUserDatabase()->makeUserNick(user)));
                     return;
                 }
                 GetProfile()->getSession()->sendMessageTo(user->getUin(), MSG_NICK_EXIST);
@@ -231,15 +231,20 @@ void CommandResolver::nickCommand()
 
         if(!user->getNick().isEmpty())
         {
-            QString message = QString("%1 zmienia nick na %2").arg(user->getNick()).arg(newNick);
+			QString oldNick = GetProfile()->getUserDatabase()->makeUserNick(user);
+			user->setNick(newNick);
+			QString newNick = GetProfile()->getUserDatabase()->makeUserNick(user);
+            QString message = QString("%1 zmienia nick na %2").arg(oldNick).arg(newNick);
             GetProfile()->getSession()->sendMessage(message);
         }
-
-        QString debugMessage = QString("%1 %2 zmienia nick na %3").arg(user->getUin()).arg(user->getNick()).arg(newNick);
-        qDebug() << debugMessage;
-        //GetProfile()->getSession()->sendMessageToSuperUser(user->getUin(), debugMessage);
-        user->setNick(newNick);
-        GetProfile()->getUserDatabase()->saveDatabase();
+		else
+		{
+	        QString debugMessage = QString("%1 %2 zmienia nick na %3").arg(user->getUin()).arg(user->getNick()).arg(newNick);
+    	    qDebug() << debugMessage;
+        	//GetProfile()->getSession()->sendMessageToSuperUser(user->getUin(), debugMessage);
+	        user->setNick(newNick);
+    	    GetProfile()->getUserDatabase()->saveDatabase();
+		}
     }
 }
 
@@ -276,7 +281,7 @@ void CommandResolver::joinCommand()
     user->setOnChannel(true);
     GetProfile()->getUserDatabase()->saveDatabase();
     whoCommand();
-    QString msg = "Przychodzi " + user->getNick();
+    QString msg = "Przychodzi " + GetProfile()->getUserDatabase()->makeUserNick(user);
     qDebug() << "UIN:" << user->getUin() << msg;
     GetProfile()->getSession()->sendMessage(msg);
 }
@@ -293,7 +298,7 @@ void CommandResolver::leaveCommand()
         reason = lastString;
     }
 
-    QString msg = "Odchodzi " + user->getNick() + " " + reason;
+    QString msg = "Odchodzi " + GetProfile()->getUserDatabase()->makeUserNick(user) + " " + reason;
     qDebug() << "UIN:" << user->getUin() << msg;
     GetProfile()->getSession()->sendMessage(msg);
     user->setOnChannel(false);
@@ -407,7 +412,7 @@ void CommandResolver::kickCommand()
 
 void CommandResolver::kickHelperCommand(UserInfoTOPtr user)
 {
-    QString msg = QString("%1 wylatuje z czatu. %2").arg(user->getNick()).arg(lastString);
+    QString msg = QString("%1 wylatuje z czatu. %2").arg(GetProfile()->getUserDatabase()->makeUserNick(user)).arg(lastString);
     if(user->getOnChannel())
         GetProfile()->getSession()->sendMessage(msg);
     user->setOnChannel(false);
@@ -480,9 +485,9 @@ void CommandResolver::banHelperCommand(UserInfoTOPtr user, uint banTime, QString
 {
     QString message;
     if(description.isEmpty())
-        message = QString("%1 zostal zbanowany na %2 minut.").arg(user->getNick()).arg(banTime);
+        message = QString("%1 zostal zbanowany na %2 minut.").arg(GetProfile()->getUserDatabase()->makeUserNick(user)).arg(banTime);
     else
-        message = QString("%1 zostal zbanowany na %2 minut. Powod: %3").arg(user->getNick()).arg(banTime).arg(description);
+        message = QString("%1 zostal zbanowany na %2 minut. Powod: %3").arg(GetProfile()->getUserDatabase()->makeUserNick(user)).arg(banTime).arg(description);
 
     GetProfile()->getSession()->sendMessage(message);
 
@@ -547,6 +552,8 @@ void CommandResolver::unbanCommand()
 
 void CommandResolver::unbanHelperCommand(UserInfoTOPtr u)
 {
+	QString message = QString("%1 zostal odbanowany.").arg(GetProfile()->getUserDatabase()->makeUserNick(u));
+	GetProfile()->getSession()->sendMessage(message);
 	u->setBanned(false);
 	u->setBanTime(QDateTime());
 }
@@ -566,6 +573,9 @@ void CommandResolver::topicCommand()
         QString topic = rx.cap(1);
 
         GetProfile()->getSession()->ChangeStatus(topic);
+		
+		QString message = QString("%1 zmienil temat na: %2").arg(GetProfile()->getUserDatabase()->makeUserNick(user)).arg(topic);
+		GetProfile()->getSession()->sendMessage(message);
     }
 }
 
@@ -592,7 +602,7 @@ void CommandResolver::opCommand()
             {
 				if(u->getUserFlags() < GGChatBot::SUPER_USER_FLAG)
 				{
-					QString msg = QString("%1 ustawia op dla %2").arg(user->getNick()).arg(u->getNick());
+					QString msg = QString("%1 ustawia op dla %2").arg(GetProfile()->getUserDatabase()->makeUserNick(user)).arg(u->getNick());
 					u->setUserFlags(GGChatBot::OP_USER_FLAG);
 					GetProfile()->getSession()->sendMessage(msg);
             	    return;
@@ -630,7 +640,7 @@ void CommandResolver::voiceCommand()
             {
 				if(u->getUserFlags() < GGChatBot::SUPER_USER_FLAG)
 				{
-					QString msg = QString("%1 ustawia voice dla %2").arg(user->getNick()).arg(u->getNick());
+					QString msg = QString("%1 ustawia voice dla %2").arg(GetProfile()->getUserDatabase()->makeUserNick(user)).arg(u->getNick());
 					u->setUserFlags(GGChatBot::VOICE_USER_FLAG);
 					GetProfile()->getSession()->sendMessage(msg);
             	    return;
@@ -668,7 +678,7 @@ void CommandResolver::removeFlagsCommand()
             {
 				if(u->getUserFlags() < GGChatBot::SUPER_USER_FLAG)
 				{
-					QString msg = QString("%1 zabiera przywileje %2").arg(user->getNick()).arg(u->getNick());
+					QString msg = QString("%1 zabiera przywileje %2").arg(GetProfile()->getUserDatabase()->makeUserNick(user)).arg(u->getNick());
 					u->setUserFlags(GGChatBot::NONE_FLAG);
 					GetProfile()->getSession()->sendMessage(msg);
             	    return;
