@@ -311,7 +311,6 @@ void CommandResolver::whoCommand()
     if(!user->getOnChannel())
         return;
 
-    QString listOfUsers = "Osoby na czacie:\n";
     QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
 	QList<UserInfoTOPtr> usersOnChannel;
 	foreach(UserInfoTOPtr u, users)
@@ -319,6 +318,8 @@ void CommandResolver::whoCommand()
 		if(GetProfile()->getUserDatabase()->isUserOnChannel(u->getUin()))
 			usersOnChannel.push_back(u);
 	}
+
+	QString listOfUsers = QString("Osoby na czacie [%1]:\n").arg(usersOnChannel.size());
 
 	int i = 0;
 	if(user->getUserFlags() > GGChatBot::OP_USER_FLAG)
@@ -485,9 +486,9 @@ void CommandResolver::banHelperCommand(UserInfoTOPtr user, uint banTime, QString
 {
     QString message;
     if(description.isEmpty())
-        message = QString("%1 zostal zbanowany na %2 minut.").arg(GetProfile()->getUserDatabase()->makeUserNick(user)).arg(banTime);
+        message = QString("%1 dostaje bana na %2 minut.").arg(GetProfile()->getUserDatabase()->makeUserNick(user)).arg(banTime);
     else
-        message = QString("%1 zostal zbanowany na %2 minut. Powod: %3").arg(GetProfile()->getUserDatabase()->makeUserNick(user)).arg(banTime).arg(description);
+        message = QString("%1 dostaje bana na %2 minut. Powod: %3").arg(GetProfile()->getUserDatabase()->makeUserNick(user)).arg(banTime).arg(description);
 
     GetProfile()->getSession()->sendMessage(message);
 
@@ -574,7 +575,7 @@ void CommandResolver::topicCommand()
 
         GetProfile()->getSession()->ChangeStatus(topic);
 		
-		QString message = QString("%1 zmienil temat na: %2").arg(GetProfile()->getUserDatabase()->makeUserNick(user)).arg(topic);
+		QString message = QString("%1 zmienia temat na: %2").arg(GetProfile()->getUserDatabase()->makeUserNick(user)).arg(topic);
 		GetProfile()->getSession()->sendMessage(message);
     }
 }
