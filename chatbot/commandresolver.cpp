@@ -255,7 +255,7 @@ void CommandResolver::joinCommand()
         return;
 
     if(user->getNick().isEmpty())
-	return;
+		user->setNick(QString("Ktos%1").arg(user->getUin()));
 
     if(user->getBanned())
     {

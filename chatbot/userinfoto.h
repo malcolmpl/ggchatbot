@@ -61,6 +61,8 @@ public:
     void setBanReason(QString v) { m_banReason = v; }
     QString getBanReason() const { return m_banReason; }
 
+	void setLastMessage(QString v) { m_lastMessage = v; }
+	QString getLastMessage() const { return m_lastMessage; }
 private:
     uin_t m_uin;
     QString m_nick;
@@ -71,6 +73,7 @@ private:
     bool m_banned;
     QDateTime m_banTime;
     QString m_banReason;
+	QString m_lastMessage;
 };
 
 typedef boost::shared_ptr<UserInfoTO> UserInfoTOPtr;

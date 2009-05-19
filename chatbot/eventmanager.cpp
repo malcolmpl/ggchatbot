@@ -60,7 +60,22 @@ void EventManager::MessageEvent()
     // dodajemy usera do listy
     uin_t sender = m_event->event.msg.sender;
     isUserOnChannel(sender);
-    
+
+    UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(sender);
+    QString msg = QString::fromAscii((const char*)m_event->event.msg.message);
+	QString message;
+
+	if(user->getLastMessage() == msg)
+	{
+		message = "Nie powtarzaj sie!";
+		emit sendMessage(user->getUin(), message);
+		return;
+	}
+	else
+	{
+		user->setLastMessage(msg);
+	}
+
     if(checkCommand())
         return;
     
@@ -70,8 +85,6 @@ void EventManager::MessageEvent()
         return;
     }
 
-    UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(sender);
-    QString msg = QString::fromAscii((const char*)m_event->event.msg.message);
     QString message;
 
 	if((GetProfile()->getUserDatabase()->isSuperUser(user->getUin())))
