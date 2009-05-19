@@ -85,8 +85,6 @@ void EventManager::MessageEvent()
         return;
     }
 
-    QString message;
-
 	if((GetProfile()->getUserDatabase()->isSuperUser(user->getUin())))
 		message = "!" + user->getNick() + ": " + msg;
 	else if((GetProfile()->getUserDatabase()->isUserHaveOp(user->getUin())))
