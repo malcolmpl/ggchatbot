@@ -68,7 +68,7 @@ void EventManager::MessageEvent()
 	if(user->getLastMessage() == msg)
 	{
 		message = "Nie powtarzaj sie!";
-		emit sendMessage(user->getUin(), message);
+		emit sendMessageTo(user->getUin(), message);
 		return;
 	}
 	else
