@@ -417,6 +417,7 @@ void CommandResolver::kickHelperCommand(UserInfoTOPtr user)
     if(user->getOnChannel())
         GetProfile()->getSession()->sendMessage(msg);
     user->setOnChannel(false);
+	qDebug() << msg;
 }
 
 void CommandResolver::banCommand()
@@ -502,6 +503,8 @@ void CommandResolver::banHelperCommand(UserInfoTOPtr user, uint banTime, QString
     else
         currentDate = currentDate.addSecs(banTime*60);
     user->setBanTime(currentDate);
+
+	qDebug() << message;
 }
 
 void CommandResolver::unbanCommand()
@@ -557,6 +560,7 @@ void CommandResolver::unbanHelperCommand(UserInfoTOPtr u)
 	GetProfile()->getSession()->sendMessage(message);
 	u->setBanned(false);
 	u->setBanTime(QDateTime());
+	qDebug() << message;
 }
 
 void CommandResolver::topicCommand()
@@ -577,6 +581,8 @@ void CommandResolver::topicCommand()
 		
 		QString message = QString("%1 zmienia temat na: %2").arg(GetProfile()->getUserDatabase()->makeUserNick(user)).arg(topic);
 		GetProfile()->getSession()->sendMessage(message);
+
+		qDebug() << message;
     }
 }
 
@@ -606,6 +612,7 @@ void CommandResolver::opCommand()
 					QString msg = QString("%1 ustawia op dla %2").arg(GetProfile()->getUserDatabase()->makeUserNick(user)).arg(u->getNick());
 					u->setUserFlags(GGChatBot::OP_USER_FLAG);
 					GetProfile()->getSession()->sendMessage(msg);
+					qDebug() << msg;
             	    return;
 				}
 				else
@@ -644,6 +651,7 @@ void CommandResolver::voiceCommand()
 					QString msg = QString("%1 ustawia voice dla %2").arg(GetProfile()->getUserDatabase()->makeUserNick(user)).arg(u->getNick());
 					u->setUserFlags(GGChatBot::VOICE_USER_FLAG);
 					GetProfile()->getSession()->sendMessage(msg);
+					qDebug() << msg;
             	    return;
 				}
 				else
@@ -682,6 +690,7 @@ void CommandResolver::removeFlagsCommand()
 					QString msg = QString("%1 zabiera przywileje %2").arg(GetProfile()->getUserDatabase()->makeUserNick(user)).arg(u->getNick());
 					u->setUserFlags(GGChatBot::NONE_FLAG);
 					GetProfile()->getSession()->sendMessage(msg);
+					qDebug() << msg;
             	    return;
 				}
             }

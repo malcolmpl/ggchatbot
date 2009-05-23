@@ -77,11 +77,15 @@ void EventManager::MessageEvent()
 	}
 
     if(checkCommand())
+	{
+		showUserDebug(user, msg);
         return;
+	}
     
     if(!isUserOnChannel(sender))
     {
         welcomeMessage();
+		showUserDebug(user, msg);
         return;
     }
 

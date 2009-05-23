@@ -23,6 +23,7 @@
 #include <QDate>
 #include <QFile>
 #include <QRegExp>
+#include <QString>
 
 #include "connectionthread.h"
 #include "logscheduler.h"
@@ -31,19 +32,20 @@ QTextStream *logOutput;
 
 void logHandler(QtMsgType type, const char *msg)
 {
+	QString strTime = QString("[%1]").arg(QTime::currentTime().toString("hh:mm:ss"));
     switch (type)
     {
        case QtDebugMsg:
-           fprintf(stderr, "Debug: %s\n", msg);
+           fprintf(stderr, "%s %s\n", strTime.toAscii().data(), msg);
            break;
        case QtWarningMsg:
-           fprintf(stderr, "Warning: %s\n", msg);
+           fprintf(stderr, "Warning: %s %s\n", strTime.toAscii().data(), msg);
            break;
        case QtCriticalMsg:
-           fprintf(stderr, "Critical: %s\n", msg);
+           fprintf(stderr, "Critical: %s %s\n", strTime.toAscii().data(), msg);
            break;
        case QtFatalMsg:
-           fprintf(stderr, "Fatal: %s\n", msg);
+           fprintf(stderr, "Fatal: %s %s\n", strTime.toAscii().data(), msg);
            break;
     }
 
