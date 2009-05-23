@@ -85,7 +85,6 @@ void EventManager::MessageEvent()
     if(!isUserOnChannel(sender))
     {
         welcomeMessage();
-		showUserDebug(user, msg);
         return;
     }
 
