@@ -277,6 +277,9 @@ void CommandResolver::joinCommand()
                 msg = QString("Przykro nam, masz zakaz wjazdu do: %1. Powod: %2").arg(banTime.toString("dd MMMM yyyy h:mm:ss")).arg(user->getBanReason());
 
             GetProfile()->getSession()->sendMessageTo(user->getUin(), msg);
+
+            // clear old banned persons nicks
+            user->setNick(QString());
             return;
         }
     }
@@ -500,6 +503,7 @@ void CommandResolver::banHelperCommand(UserInfoTOPtr user, uint banTime, QString
     kickHelperCommand(user);
     user->setBanned(true);
     user->setBanReason(description);
+    user->setNick(QString());
     QDateTime currentDate = QDateTime::currentDateTime();
     if(banTime == 0)
         currentDate = currentDate.addYears(1);        // jesli banTime==0 to dajemy bana na rok

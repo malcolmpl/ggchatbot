@@ -61,7 +61,8 @@ public:
     void setBanReason(QString v) { m_banReason = v; }
     QString getBanReason() const { return m_banReason; }
 
-	void setLastMessage(QString v) { m_lastMessage = v; }
+    void setLastMessage(QString v) { m_lastMessage = v; }
+
 	QString getLastMessage() const { return m_lastMessage; }
 private:
     uin_t m_uin;
