@@ -25,7 +25,7 @@
 #include <QDebug>
 
 // 10 minutes in seconds
-const int INACTIVE_TIME = 60*10;
+const int INACTIVE_TIME = 60;
 
 KickUserJob::KickUserJob()
 {
@@ -45,6 +45,8 @@ void KickUserJob::makeJob()
             // it not working on special users
             if(user->getUserFlags() >= GGChatBot::OP_USER_FLAG)
                 continue;
+
+            qDebug() << "Checking time:" << user->getUin() << user->getLastSeen().secsTo(now) << INACTIVE_TIME;
 
             if(user->getLastSeen().secsTo(now) > INACTIVE_TIME)
             {
