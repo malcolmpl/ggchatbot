@@ -76,11 +76,11 @@ void SessionScheduler::addJob(JobPtr j)
 
 void SessionScheduler::removeJob(JobPtr j)
 {
-    foreach(JobPtr job, jobsList)
+    for(QList<JobPtr>::iterator i = jobsList.begin(); i != jobsList.end(); i++)
     {
-        if(job == j)
+        if(j == (*i))
         {
-            jobsList.removeOne(j);
+            jobsList.erase(i);
             return;
         }
     }
