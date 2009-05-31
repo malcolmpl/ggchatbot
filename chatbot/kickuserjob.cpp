@@ -25,7 +25,7 @@
 #include <QDebug>
 
 // 10 minutes in seconds
-const int INACTIVE_TIME = 60;
+const int INACTIVE_TIME = 60*10;
 
 KickUserJob::KickUserJob()
 {
