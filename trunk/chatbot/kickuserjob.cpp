@@ -22,8 +22,10 @@
 #include "userdatabase.h"
 #include "sessionclient.h"
 
+#include <QDebug>
+
 // 10 minutes in seconds
-const int INACTIVE_TIME = 1000*60*10;
+const int INACTIVE_TIME = 60*10;
 
 KickUserJob::KickUserJob()
 {
@@ -49,10 +51,10 @@ void KickUserJob::makeJob()
                 // kick user
                 QString msg = QString("%1 wylatuje z czatu. Nie spac, zwiedzac!").arg(GetProfile()->getUserDatabase()->makeUserNick(user));
                 GetProfile()->getSession()->sendMessage(msg);
+                qDebug() << msg;
                 msg = QString("Zostales automatycznie wylogowany z powodu braku aktywnosci przez 10 minut. Aby powrocic wpisz: /start");
                 GetProfile()->getSession()->sendMessageTo(user->getUin(), msg);
                 user->setOnChannel(false);
-                qDebug() << msg;
             }
         }
     }
