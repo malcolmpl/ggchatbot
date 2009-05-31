@@ -549,9 +549,9 @@ void CommandResolver::banHelperCommand(UserInfoTOPtr user, uint banTime, QString
 {
     QString message;
     if(description.isEmpty())
-        message = QString("%1 dostaje bana na %2 minut.").arg(GetProfile()->getUserDatabase()->makeUserNick(user)).arg(banTime);
+        message = QString("%1 dostaje bana na %2 minut.").arg(user->getUin()).arg(banTime);
     else
-        message = QString("%1 dostaje bana na %2 minut. Powod: %3").arg(GetProfile()->getUserDatabase()->makeUserNick(user)).arg(banTime).arg(description);
+        message = QString("%1 dostaje bana na %2 minut. Powod: %3").arg(user->getUin()).arg(banTime).arg(description);
 
     GetProfile()->getSession()->sendMessage(message);
 
