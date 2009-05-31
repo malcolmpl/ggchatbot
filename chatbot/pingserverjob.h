@@ -17,41 +17,21 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/lgpl-3.0.html>.
 */
 
-#ifndef _SESSIONSCHEDULER_H
-#define	_SESSIONSCHEDULER_H
+#ifndef PINGSERVERJOB_H
+#define PINGSERVERJOB_H
 
 #include <libgadu.h>
-
-#include <QThread>
-#include <QList>
-
 #include "job.h"
 
-class QTimer;
-class QTime;
-
-class SessionScheduler : public QThread
+class PingServerJob : public Job
 {
     Q_OBJECT
 public:
-    SessionScheduler();
-    virtual ~SessionScheduler();
+    PingServerJob(gg_session *s);
+    void makeJob();
 
-    void run();
-    void addJob(JobPtr j);
-    void removeJob(JobPtr j);
-
-private slots:
-    void timerEvent();
-    
 private:
-    void pingServer();
-    bool checkTime(int sec);
-
-    QTimer *timer;
-    QTime *time;
-    QList<JobPtr> jobsList;
+    gg_session *session;
 };
 
-#endif	/* _SESSIONSCHEDULER_H */
-
+#endif // PINGSERVERJOB_H

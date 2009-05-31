@@ -28,6 +28,7 @@
 #include "libgadu.h"
 #include "eventmanager.h"
 #include "profilebase.h"
+#include "pingserverjob.h"
 
 typedef boost::shared_ptr<gg_session*> SessionPtr;
 typedef boost::shared_ptr<gg_event*> EventPtr;
@@ -62,6 +63,7 @@ private:
     SessionScheduler *scheduler;
     fd_set rd, wd, ex;
     struct timeval tv;
+    JobPtr pingServer;
 
     void FreeSession(gg_session *session);
     void Logout(gg_session *session);
