@@ -65,7 +65,7 @@ private:
     fd_set rd, wd, ex;
     struct timeval tv;
     JobPtr pingServer;
-    QSharedPointer<KickUserJob> kickUser;
+    boost::shared_ptr<KickUserJob> kickUser;
 
     void FreeSession(gg_session *session);
     void Logout(gg_session *session);
