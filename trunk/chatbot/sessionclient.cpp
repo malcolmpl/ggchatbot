@@ -112,7 +112,9 @@ bool SessionClient::Login()
 
     qDebug() << "Laczenie...";
 
-    scheduler = new SessionScheduler(session);
+    scheduler = new SessionScheduler();
+    pingServer = JobPtr(new PingServerJob(session));
+    scheduler->addJob(pingServer);
     scheduler->start();
     
     return true;

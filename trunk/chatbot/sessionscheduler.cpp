@@ -23,10 +23,8 @@
 #include <QTime>
 #include <QDebug>
 
-SessionScheduler::SessionScheduler(gg_session *s)
+SessionScheduler::SessionScheduler()
 {
-    session = s;
-
     time = new QTime();
     time->start();
 
@@ -38,6 +36,7 @@ SessionScheduler::SessionScheduler(gg_session *s)
 
 SessionScheduler::~SessionScheduler()
 {
+    jobsList.clear();
 }
 
 void SessionScheduler::run()
@@ -45,11 +44,11 @@ void SessionScheduler::run()
     exec();
 }
 
-bool SessionScheduler::checkTime(int sec)
+bool SessionScheduler::checkTime(int msec)
 {
-    int seconds = time->elapsed() / 1000;
+    int seconds = time->elapsed();
 
-    if(!(seconds % sec))
+    if(!(seconds % msec))
         return true;
 
     return false;
@@ -57,17 +56,32 @@ bool SessionScheduler::checkTime(int sec)
 
 void SessionScheduler::timerEvent()
 {
-    if(!session)
-        return;
-    
-    pingServer();
-}
-
-void SessionScheduler::pingServer()
-{
-    if(checkTime(20))
+    foreach(JobPtr job, jobsList)
     {
-        gg_ping(session);
+        if(checkTime(job->timerPeriod()))
+            job->makeJob();
     }
 }
 
+void SessionScheduler::addJob(JobPtr j)
+{
+    foreach(JobPtr job, jobsList)
+    {
+        if(job == j)
+            return;
+    }
+
+    jobsList.push_back(j);
+}
+
+void SessionScheduler::removeJob(JobPtr j)
+{
+    foreach(JobPtr job, jobsList)
+    {
+        if(job == j)
+        {
+            jobsList.removeOne(j);
+            return;
+        }
+    }
+}

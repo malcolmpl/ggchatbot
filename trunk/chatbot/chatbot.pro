@@ -17,7 +17,8 @@ SOURCES += main.cpp \
     logscheduler.cpp \
     sessionscheduler.cpp \
     commandresolver.cpp \
-    job.cpp
+    job.cpp \
+    pingserverjob.cpp
 HEADERS += connectionthread.h \
     sessionclient.h \
     eventmanager.h \
@@ -30,4 +31,5 @@ HEADERS += connectionthread.h \
     logscheduler.h \
     sessionscheduler.h \
     commandresolver.h \
-    job.h
+    job.h \
+    pingserverjob.h
