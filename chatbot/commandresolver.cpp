@@ -82,103 +82,103 @@ bool CommandResolver::checkCommand(gg_event *event)
     if((pos = rx.indexIn(str, pos)) != -1)
     {
         QString command = rx.cap(1);
-        if(command == CMD_NICK)
+        if(command.compare(CMD_NICK, Qt::CaseInsensitive)==0)
         {
             lastString = removeCommand(str, CMD_NICK);
             nickCommand();
             return true;
         }
-        else if(command == CMD_JOIN)
+        else if(command.compare(CMD_JOIN, Qt::CaseInsensitive)==0)
         {
             lastString = removeCommand(str, CMD_JOIN);
             joinCommand();
             return true;
         }
-		else if(command == CMD_START)
+        else if(command.compare(CMD_START, Qt::CaseInsensitive)==0)
 		{
 	    	lastString = removeCommand(str, CMD_START);
 		    joinCommand();
 		    return true;
 		}
-        else if(command == CMD_LEAVE)
+        else if(command.compare(CMD_LEAVE, Qt::CaseInsensitive)==0)
         {
             lastString = removeCommand(str, CMD_LEAVE);
             leaveCommand();
             return true;
         }
-		else if(command == CMD_STOP)
+        else if(command.compare(CMD_STOP, Qt::CaseInsensitive)==0)
 		{
 	    	lastString = removeCommand(str, CMD_STOP);
 		    leaveCommand();
 		    return true;
 		}
-        else if(command == CMD_QUIT)
+        else if(command.compare(CMD_QUIT, Qt::CaseInsensitive)==0)
         {
             lastString = removeCommand(str, CMD_QUIT);
             leaveCommand();
             return true;
         }
-        else if(command == CMD_WHO)
+        else if(command.compare(CMD_WHO, Qt::CaseInsensitive)==0)
         {
             lastString = removeCommand(str, CMD_WHO);
             whoCommand();
             return true;
         }
-		else if(command == CMD_KTO)
+        else if(command.compare(CMD_KTO, Qt::CaseInsensitive)==0)
 		{
 	    	lastString = removeCommand(str, CMD_KTO);
 		    whoCommand();
 		    return true;
 		}
-        else if(command == CMD_HELP)
+        else if(command.compare(CMD_HELP, Qt::CaseInsensitive)==0)
         {
             lastString = removeCommand(str, CMD_HELP);
             helpCommand();
             return true;
         }
-        else if(command == CMD_POMOC)
+        else if(command.compare(CMD_POMOC, Qt::CaseInsensitive)==0)
         {
             lastString = removeCommand(str, CMD_POMOC);
             helpCommand();
             return true;
         }
-        else if(command == CMD_KICK)
+        else if(command.compare(CMD_KICK, Qt::CaseInsensitive)==0)
         {
             lastString = removeCommand(str, CMD_KICK);
             kickCommand();
             return true;
         }
-        else if(command == CMD_BAN)
+        else if(command.compare(CMD_BAN, Qt::CaseInsensitive)==0)
         {
             lastString = removeCommand(str, CMD_BAN);
             banCommand();
             return true;
         }
-        else if(command == CMD_TOPIC)
+        else if(command.compare(CMD_TOPIC, Qt::CaseInsensitive)==0)
         {
             lastString = removeCommand(str, CMD_TOPIC);
             topicCommand();
             return true;
         }
-		else if(command == CMD_UNBAN)
+        else if(command.compare(CMD_UNBAN, Qt::CaseInsensitive)==0)
 		{
 			lastString = removeCommand(str, CMD_UNBAN);
 			unbanCommand();
 			return true;
 		}
-		else if(command == CMD_OP)
+        else if(command.compare(CMD_OP, Qt::CaseInsensitive)==0)
 		{
 			lastString = removeCommand(str, CMD_OP);
 			opCommand();
 			return true;
 		}
-		else if(command == CMD_VOICE)
+        else if(command.compare(CMD_VOICE, Qt::CaseInsensitive)==0)
 		{
 			lastString = removeCommand(str, CMD_VOICE);
 			voiceCommand();
 			return true;
 		}
-		else if(command == CMD_REMOVEFLAGS)
+        else if(command.compare(CMD_REMOVEFLAGS, Qt::CaseInsensitive)==0)
 		{
 			lastString = removeCommand(str, CMD_REMOVEFLAGS);
 			removeFlagsCommand();
@@ -233,15 +233,18 @@ void CommandResolver::nickCommand()
         {
 			QString oldNick = GetProfile()->getUserDatabase()->makeUserNick(user);
 			user->setNick(newNick);
-			QString newNick = GetProfile()->getUserDatabase()->makeUserNick(user);
-            QString message = QString("%1 zmienia nick na %2").arg(oldNick).arg(newNick);
-            GetProfile()->getSession()->sendMessage(message);
+            if(user->getOnChannel())
+            {
+                QString newNick = GetProfile()->getUserDatabase()->makeUserNick(user);
+                QString message = QString("%1 zmienia nick na %2").arg(oldNick).arg(newNick);
+                GetProfile()->getSession()->sendMessage(message);
+            }
         }
 		else
 		{
 	        QString debugMessage = QString("%1 %2 zmienia nick na %3").arg(user->getUin()).arg(user->getNick()).arg(newNick);
     	    qDebug() << debugMessage;
-        	//GetProfile()->getSession()->sendMessageToSuperUser(user->getUin(), debugMessage);
+            GetProfile()->getSession()->sendMessageToSuperUser(user->getUin(), debugMessage);
 	        user->setNick(newNick);
     	    GetProfile()->getUserDatabase()->saveDatabase();
 		}
