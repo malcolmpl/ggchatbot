@@ -57,7 +57,6 @@ void SessionScheduler::timerEvent()
 {
     foreach(JobPtr job, jobsList)
     {
-        qDebug() << job->timerPeriod();
         if(checkTime(job->timerPeriod()))
             job->makeJob();
     }
