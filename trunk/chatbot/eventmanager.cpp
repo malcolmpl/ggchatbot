@@ -65,6 +65,9 @@ void EventManager::MessageEvent()
     QString msg = QString::fromAscii((const char*)m_event->event.msg.message);
 	QString message;
 
+    // refresh user time action
+    user->setLastSeen(QDateTime::currentDateTime());
+
 	if(user->getLastMessage() == msg)
 	{
 		message = "Nie powtarzaj sie!";

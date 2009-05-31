@@ -18,7 +18,11 @@ SOURCES += main.cpp \
     sessionscheduler.cpp \
     commandresolver.cpp \
     job.cpp \
-    pingserverjob.cpp
+    pingserverjob.cpp \
+    kickuserjob.cpp
+
+
+
 HEADERS += connectionthread.h \
     sessionclient.h \
     eventmanager.h \
@@ -32,4 +36,5 @@ HEADERS += connectionthread.h \
     sessionscheduler.h \
     commandresolver.h \
     job.h \
-    pingserverjob.h
+    pingserverjob.h \
+    kickuserjob.h

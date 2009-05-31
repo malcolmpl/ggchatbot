@@ -29,6 +29,7 @@
 #include "eventmanager.h"
 #include "profilebase.h"
 #include "pingserverjob.h"
+#include "kickuserjob.h"
 
 typedef boost::shared_ptr<gg_session*> SessionPtr;
 typedef boost::shared_ptr<gg_event*> EventPtr;
@@ -64,6 +65,7 @@ private:
     fd_set rd, wd, ex;
     struct timeval tv;
     JobPtr pingServer;
+    QSharedPointer<KickUserJob> kickUser;
 
     void FreeSession(gg_session *session);
     void Logout(gg_session *session);
