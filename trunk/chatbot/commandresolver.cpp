@@ -619,7 +619,7 @@ void CommandResolver::unbanCommand()
 
 void CommandResolver::unbanHelperCommand(UserInfoTOPtr u)
 {
-	QString message = QString("%1 zostal odbanowany.").arg(GetProfile()->getUserDatabase()->makeUserNick(u));
+    QString message = QString("%1 zostal odbanowany.").arg(u->getUin());
 	GetProfile()->getSession()->sendMessage(message);
 	u->setBanned(false);
 	u->setBanTime(QDateTime());
