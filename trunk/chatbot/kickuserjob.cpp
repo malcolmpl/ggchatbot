@@ -30,7 +30,11 @@ const int INACTIVE_TIME = 60*10;
 KickUserJob::KickUserJob()
 {
     // one minute
-    setTimerPeriod(1000*60);
+    setTimerPeriod(60);
+}
+
+KickUserJob::~KickUserJob()
+{
 }
 
 void KickUserJob::makeJob()
@@ -45,8 +49,6 @@ void KickUserJob::makeJob()
             // it not working on special users
             if(user->getUserFlags() >= GGChatBot::OP_USER_FLAG)
                 continue;
-
-            qDebug() << "Checking time:" << user->getUin() << user->getLastSeen().secsTo(now) << INACTIVE_TIME;
 
             if(user->getLastSeen().secsTo(now) > INACTIVE_TIME)
             {

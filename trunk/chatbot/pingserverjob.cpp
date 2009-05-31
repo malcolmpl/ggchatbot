@@ -24,7 +24,11 @@
 PingServerJob::PingServerJob(gg_session *s)
 {
     session = s;
-    setTimerPeriod(20000);
+    setTimerPeriod(20);
+}
+
+PingServerJob::~PingServerJob()
+{
 }
 
 void PingServerJob::makeJob()

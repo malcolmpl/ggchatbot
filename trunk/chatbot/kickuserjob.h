@@ -27,6 +27,7 @@ class KickUserJob : public Job, public ProfileBase
 {
 public:
     KickUserJob();
+    virtual ~KickUserJob();
     void makeJob();
 };
 
