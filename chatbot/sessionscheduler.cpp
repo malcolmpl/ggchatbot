@@ -44,11 +44,10 @@ void SessionScheduler::run()
     exec();
 }
 
-bool SessionScheduler::checkTime(int msec)
+bool SessionScheduler::checkTime(int sec)
 {
-    int seconds = time->elapsed();
-
-    if(!(seconds % msec))
+    int seconds = time->secsTo(QTime::currentTime());
+    if(!(seconds % sec))
         return true;
 
     return false;
@@ -58,6 +57,7 @@ void SessionScheduler::timerEvent()
 {
     foreach(JobPtr job, jobsList)
     {
+        qDebug() << job->timerPeriod();
         if(checkTime(job->timerPeriod()))
             job->makeJob();
     }

@@ -28,6 +28,7 @@ class PingServerJob : public Job
     Q_OBJECT
 public:
     PingServerJob(gg_session *s);
+    virtual ~PingServerJob();
     void makeJob();
 
 private:
