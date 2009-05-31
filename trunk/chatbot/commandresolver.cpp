@@ -31,22 +31,30 @@
 
 namespace
 {
-    const int MAX_NICK_LENGTH		= 14;
+    const int MAX_NICK_LENGTH           = 14;
 
     const QString CMD_NICK              = "/nick";
     const QString CMD_JOIN              = "/join";
-    const QString CMD_START		= "/start";
+    const QString CMD_JOIN_ALIAS        = "/j";
+    const QString CMD_START             = "/start";
+    const QString CMD_START_ALIAS       = "/s";
     const QString CMD_LEAVE             = "/leave";
-    const QString CMD_STOP		= "/stop";
+    const QString CMD_LEAVE_ALIAS       = "/l";
+    const QString CMD_STOP              = "/stop";
     const QString CMD_QUIT              = "/quit";
+    const QString CMD_QUIT_ALIAS        = "/q";
     const QString CMD_WHO               = "/who";
-    const QString CMD_KTO		= "/kto";
+    const QString CMD_KTO               = "/kto";
     const QString CMD_HELP              = "/help";
+    const QString CMD_HELP_ALIAS        = "/h";
     const QString CMD_POMOC             = "/pomoc";
     const QString CMD_KICK              = "/kick";
+    const QString CMD_KICK_ALIAS        = "/k";
     const QString CMD_BAN               = "/ban";
-	const QString CMD_UNBAN				= "/unban";
+    const QString CMD_BAN_ALIAS         = "/b";
+    const QString CMD_UNBAN				= "/unban";
     const QString CMD_TOPIC             = "/topic";
+    const QString CMD_TOPIC_ALIAS       = "/t";
 	const QString CMD_OP				= "/op";
 	const QString CMD_VOICE				= "/voice";
 	const QString CMD_REMOVEFLAGS		= "/removeflags";
@@ -94,15 +102,33 @@ bool CommandResolver::checkCommand(gg_event *event)
             joinCommand();
             return true;
         }
+        else if(command.compare(CMD_JOIN_ALIAS, Qt::CaseInsensitive)==0)
+        {
+            lastString = removeCommand(str, CMD_JOIN_ALIAS);
+            joinCommand();
+            return true;
+        }
         else if(command.compare(CMD_START, Qt::CaseInsensitive)==0)
 		{
 	    	lastString = removeCommand(str, CMD_START);
 		    joinCommand();
 		    return true;
 		}
+        else if(command.compare(CMD_START_ALIAS, Qt::CaseInsensitive)==0)
+        {
+            lastString = removeCommand(str, CMD_START_ALIAS);
+            joinCommand();
+            return true;
+        }
         else if(command.compare(CMD_LEAVE, Qt::CaseInsensitive)==0)
         {
             lastString = removeCommand(str, CMD_LEAVE);
+            leaveCommand();
+            return true;
+        }
+        else if(command.compare(CMD_LEAVE_ALIAS, Qt::CaseInsensitive)==0)
+        {
+            lastString = removeCommand(str, CMD_LEAVE_ALIAS);
             leaveCommand();
             return true;
         }
@@ -115,6 +141,12 @@ bool CommandResolver::checkCommand(gg_event *event)
         else if(command.compare(CMD_QUIT, Qt::CaseInsensitive)==0)
         {
             lastString = removeCommand(str, CMD_QUIT);
+            leaveCommand();
+            return true;
+        }
+        else if(command.compare(CMD_QUIT_ALIAS, Qt::CaseInsensitive)==0)
+        {
+            lastString = removeCommand(str, CMD_QUIT_ALIAS);
             leaveCommand();
             return true;
         }
@@ -136,6 +168,12 @@ bool CommandResolver::checkCommand(gg_event *event)
             helpCommand();
             return true;
         }
+        else if(command.compare(CMD_HELP_ALIAS, Qt::CaseInsensitive)==0)
+        {
+            lastString = removeCommand(str, CMD_HELP_ALIAS);
+            helpCommand();
+            return true;
+        }
         else if(command.compare(CMD_POMOC, Qt::CaseInsensitive)==0)
         {
             lastString = removeCommand(str, CMD_POMOC);
@@ -148,15 +186,33 @@ bool CommandResolver::checkCommand(gg_event *event)
             kickCommand();
             return true;
         }
+        else if(command.compare(CMD_KICK_ALIAS, Qt::CaseInsensitive)==0)
+        {
+            lastString = removeCommand(str, CMD_KICK_ALIAS);
+            kickCommand();
+            return true;
+        }
         else if(command.compare(CMD_BAN, Qt::CaseInsensitive)==0)
         {
             lastString = removeCommand(str, CMD_BAN);
             banCommand();
             return true;
         }
+        else if(command.compare(CMD_BAN_ALIAS, Qt::CaseInsensitive)==0)
+        {
+            lastString = removeCommand(str, CMD_BAN_ALIAS);
+            banCommand();
+            return true;
+        }
         else if(command.compare(CMD_TOPIC, Qt::CaseInsensitive)==0)
         {
             lastString = removeCommand(str, CMD_TOPIC);
+            topicCommand();
+            return true;
+        }
+        else if(command.compare(CMD_TOPIC_ALIAS, Qt::CaseInsensitive)==0)
+        {
+            lastString = removeCommand(str, CMD_TOPIC_ALIAS);
             topicCommand();
             return true;
         }
