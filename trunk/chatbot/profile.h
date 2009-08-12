@@ -20,16 +20,16 @@
 #ifndef PROFILE_H_
 #define PROFILE_H_
 
-#include <boost/shared_ptr.hpp>
+#include <QSharedPointer>
+#include "sessionclientptr.h"
+#include "profileptr.h"
 
 class UserDatabase;
 class BotSettings;
 class BotSettingsTO;
-class SessionClient;
 
-typedef boost::shared_ptr<UserDatabase> UserDatabasePtr;
-typedef boost::shared_ptr<BotSettings> BotSettingsPtr;
-typedef boost::shared_ptr<SessionClient> SessionClientPtr;
+typedef QSharedPointer<UserDatabase> UserDatabasePtr;
+typedef QSharedPointer<BotSettings> BotSettingsPtr;
 
 class Profile
 {
@@ -40,7 +40,7 @@ public:
     BotSettingsTO getBotSettings() const;
     UserDatabasePtr getUserDatabase() const;
     SessionClientPtr getSession() const;
-    void setSession(const SessionClientPtr);
+    void setSession(const SessionClientPtr v);
     
 private:
     void Init();
@@ -49,7 +49,5 @@ private:
     UserDatabasePtr m_userDatabase;
     SessionClientPtr m_sessionClient;
 };
-
-typedef boost::shared_ptr<Profile> ProfilePtr;
 
 #endif //PROFILE_H_

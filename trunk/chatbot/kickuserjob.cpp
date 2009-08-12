@@ -21,6 +21,7 @@
 #include "userinfoto.h"
 #include "userdatabase.h"
 #include "sessionclient.h"
+#include "profile.h"
 
 #include <QDebug>
 

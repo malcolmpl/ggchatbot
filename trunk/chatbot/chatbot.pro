@@ -20,9 +20,6 @@ SOURCES += main.cpp \
     job.cpp \
     pingserverjob.cpp \
     kickuserjob.cpp
-
-
-
 HEADERS += connectionthread.h \
     sessionclient.h \
     eventmanager.h \
@@ -37,4 +34,6 @@ HEADERS += connectionthread.h \
     commandresolver.h \
     job.h \
     pingserverjob.h \
-    kickuserjob.h
+    kickuserjob.h \
+    sessionclientptr.h \
+    profileptr.h

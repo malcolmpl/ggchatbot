@@ -22,7 +22,7 @@
 
 #include <QtCore>
 #include <QtDebug>
-#include <boost/shared_ptr.hpp>
+#include <QSharedPointer>
 #include <time.h>
 
 #include "libgadu.h"
@@ -30,9 +30,10 @@
 #include "profilebase.h"
 #include "pingserverjob.h"
 #include "kickuserjob.h"
+#include "sessionclientptr.h"
 
-typedef boost::shared_ptr<gg_session*> SessionPtr;
-typedef boost::shared_ptr<gg_event*> EventPtr;
+typedef QSharedPointer<gg_session*> SessionPtr;
+typedef QSharedPointer<gg_event*> EventPtr;
 
 class SessionScheduler;
 
@@ -65,7 +66,7 @@ private:
     fd_set rd, wd, ex;
     struct timeval tv;
     JobPtr pingServer;
-    boost::shared_ptr<KickUserJob> kickUser;
+    QSharedPointer<KickUserJob> kickUser;
 
     void FreeSession(gg_session *session);
     void Logout(gg_session *session);
@@ -76,8 +77,6 @@ private:
     bool WaitForEvent();
     void EventLoop();
 };
-
-typedef boost::shared_ptr<SessionClient> SessionClientPtr;
 
 #endif	/* _SESSIONCLIENT_H */
 

@@ -21,6 +21,7 @@
 #include "botsettingsto.h"
 #include "sessionscheduler.h"
 #include "userdatabase.h"
+#include "profile.h"
 
 #include <errno.h>
 #include <QCoreApplication>
@@ -114,7 +115,7 @@ bool SessionClient::Login()
 
     scheduler = new SessionScheduler();
     pingServer = JobPtr(new PingServerJob(session));
-    kickUser = boost::shared_ptr<KickUserJob>(new KickUserJob());
+    kickUser = QSharedPointer<KickUserJob>(new KickUserJob());
     kickUser->SetProfile(GetProfile());
     scheduler->addJob(pingServer);
     scheduler->addJob(kickUser);

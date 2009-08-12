@@ -22,10 +22,10 @@
 
 #include <QSettings>
 #include <QtDebug>
-#include <boost/shared_ptr.hpp>
+#include <QSharedPointer>
 #include "botsettingsto.h"
 
-typedef boost::shared_ptr<QSettings> SettingsPtr;
+typedef QSharedPointer<QSettings> SettingsPtr;
 
 class BotSettings
 {

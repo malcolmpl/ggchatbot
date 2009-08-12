@@ -22,12 +22,12 @@
 
 #include "userinfoto.h"
 
-#include <boost/shared_ptr.hpp>
+#include <QSharedPointer>
 
 #include <QList>
 #include <QSettings>
 
-typedef boost::shared_ptr<QSettings> SettingsPtr;
+typedef QSharedPointer<QSettings> SettingsPtr;
 
 class UserDatabase
 {
@@ -47,7 +47,7 @@ public:
     bool isUserHaveOp(uin_t uin);
     bool isSuperUser(uin_t uin);
    
-	QString makeUserNick(UserInfoTOPtr);
+    QString makeUserNick(UserInfoTOPtr);
  
 private:
     void readUsersListConfig();

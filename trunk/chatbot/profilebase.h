@@ -20,7 +20,7 @@
 #ifndef _PROFILEBASE_H
 #define	_PROFILEBASE_H
 
-#include "profile.h"
+#include "profileptr.h"
 
 class ProfileBase
 {

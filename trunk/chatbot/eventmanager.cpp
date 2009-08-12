@@ -21,6 +21,7 @@
 #include "eventmanager.h"
 #include "userinfoto.h"
 #include "debug.h"
+#include "profile.h"
 
 #include <QtDebug>
 

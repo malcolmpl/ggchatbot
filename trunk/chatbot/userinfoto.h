@@ -23,7 +23,7 @@
 #include "libgadu.h"
 #include "common.h"
 
-#include <boost/shared_ptr.hpp>
+#include <QSharedPointer>
 
 #include <QString>
 #include <QDateTime>
@@ -74,10 +74,10 @@ private:
     bool m_banned;
     QDateTime m_banTime;
     QString m_banReason;
-	QString m_lastMessage;
+    QString m_lastMessage;
 };
 
-typedef boost::shared_ptr<UserInfoTO> UserInfoTOPtr;
+typedef QSharedPointer<UserInfoTO> UserInfoTOPtr;
 
 #endif	/* _USERINFOTO_H */
 
