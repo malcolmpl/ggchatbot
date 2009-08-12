@@ -18,6 +18,7 @@
 */
 
 #include "profilebase.h"
+#include "profile.h"
 
 ProfileBase::ProfileBase()
 {

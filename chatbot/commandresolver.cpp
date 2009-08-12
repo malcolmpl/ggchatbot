@@ -24,6 +24,7 @@
 #include "botsettings.h"
 #include "userdatabase.h"
 #include "commandresolver.h"
+#include "profile.h"
 
 #include <QDebug>
 #include <QRegExp>
@@ -261,14 +262,14 @@ void CommandResolver::nickCommand()
 
     if((pos = rx.indexIn(lastString, pos)) != -1)
     {
-		UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
-    	    QString newNick = rx.cap(1);
-		if(newNick.size() > MAX_NICK_LENGTH)
-		{
-	    	QString msg = "Maksymalna dlugosc nicka to 14 znakow!";
-	    	GetProfile()->getSession()->sendMessageTo(user->getUin(), msg);
-	    	return;
-		}
+        UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
+        QString newNick = rx.cap(1);
+        if(newNick.size() > MAX_NICK_LENGTH)
+        {
+            QString msg = "Maksymalna dlugosc nicka to 14 znakow!";
+            GetProfile()->getSession()->sendMessageTo(user->getUin(), msg);
+            return;
+        }
 
         QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
         foreach(UserInfoTOPtr u, users)

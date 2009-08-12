@@ -18,6 +18,7 @@
 */
 
 #include "connectionthread.h"
+#include "profile.h"
 
 #include <QtDebug>
 
@@ -45,7 +46,7 @@ void ConnectionThread::startServer()
     profile->setSession(sessionClient);
     sessionClient->SetProfile(profile);
 
-    QObject::connect(sessionClient.get(), SIGNAL(endServer()), this, SLOT(quit()));
+    QObject::connect(sessionClient.data(), SIGNAL(endServer()), this, SLOT(quit()));
 
     sessionClient->MakeConnection();
 }

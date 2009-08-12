@@ -20,6 +20,7 @@
 #include "profile.h"
 #include "userdatabase.h"
 #include "botsettings.h"
+#include "sessionclient.h"
 
 
 Profile::Profile()

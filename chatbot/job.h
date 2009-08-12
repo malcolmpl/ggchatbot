@@ -21,7 +21,7 @@
 #define JOB_H
 
 #include <QObject>
-#include <boost/shared_ptr.hpp>
+#include <QSharedPointer>
 
 class Job : public QObject
 {
@@ -39,6 +39,6 @@ private:
     int period;
 };
 
-typedef boost::shared_ptr<Job> JobPtr;
+typedef QSharedPointer<Job> JobPtr;
 
 #endif // JOB_H
