@@ -46,7 +46,7 @@ void ConnectionThread::startServer()
     profile->setSession(sessionClient);
     sessionClient->SetProfile(profile);
 
-    QObject::connect(sessionClient.data(), SIGNAL(endServer()), this, SLOT(quit()));
+    QObject::connect(sessionClient, SIGNAL(endServer()), this, SLOT(quit()));
 
     sessionClient->MakeConnection();
 }
