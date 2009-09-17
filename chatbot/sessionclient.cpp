@@ -236,7 +236,7 @@ void SessionClient::sendMessage(QString message)
     QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
     foreach(UserInfoTOPtr user, users)
     {
-        if(GetProfile()->getUserDatabase()->isUserOnChannel(user->getUin()))
+        if(GetProfile()->getUserDatabase()->isUserOnChannel(user))
             gg_send_message(session, GG_CLASS_CHAT, user->getUin(), (const unsigned char*)message.toAscii().data());
     }
 }
@@ -249,7 +249,7 @@ void SessionClient::sendMessage(uin_t uin, QString message)
     QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
     foreach(UserInfoTOPtr user, users)
     {
-        if(user->getUin() != uin && GetProfile()->getUserDatabase()->isUserOnChannel(user->getUin()))
+        if(user->getUin() != uin && GetProfile()->getUserDatabase()->isUserOnChannel(user))
             sendMessageTo(user->getUin(), message);
     }
 }
@@ -264,13 +264,12 @@ void SessionClient::sendMessageTo(uin_t uin, QString message)
 
 void SessionClient::sendMessageToSuperUser(uin_t uin, QString message)
 {
-    if(!GetProfile()->getUserDatabase()->isUserOnChannel(uin))
-        return;
-    
     QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
     foreach(UserInfoTOPtr user, users)
     {
-        if(GetProfile()->getUserDatabase()->isSuperUser(user->getUin()))
+        if(user->getUin() == uin
+           && GetProfile()->getUserDatabase()->isSuperUser(user)
+           && GetProfile()->getUserDatabase()->isUserOnChannel(user))
             sendMessageTo(user->getUin(), message);
     }
 }

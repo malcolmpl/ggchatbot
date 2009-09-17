@@ -47,10 +47,6 @@ private:
     
     void AckEvent();
     void MessageEvent();
-
-    bool isUserInDatabase(uin_t uin);
-    bool isUserOnChannel(uin_t uin);
-    UserInfoTOPtr getUser(uin_t uin);
     void welcomeMessage();
     bool checkCommand();
 };
