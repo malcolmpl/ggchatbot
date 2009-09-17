@@ -1,10 +1,10 @@
 #ifndef SESSIONCLIENTPTR_H
 #define SESSIONCLIENTPTR_H
 
-#include <QSharedPointer>
+#include <QPointer>
 
 class SessionClient;
 
-typedef QSharedPointer<SessionClient> SessionClientPtr;
+typedef QPointer<SessionClient> SessionClientPtr;
 
 #endif // SESSIONCLIENTPTR_H

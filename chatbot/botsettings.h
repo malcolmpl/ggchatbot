@@ -22,13 +22,14 @@
 
 #include <QSettings>
 #include <QtDebug>
-#include <QSharedPointer>
+#include <QPointer>
 #include "botsettingsto.h"
 
-typedef QSharedPointer<QSettings> SettingsPtr;
+typedef QPointer<QSettings> SettingsPtr;
 
-class BotSettings
+class BotSettings : public QObject
 {
+    Q_OBJECT
 public:
     BotSettings();
     virtual ~BotSettings();

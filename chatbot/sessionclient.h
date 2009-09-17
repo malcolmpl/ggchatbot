@@ -22,7 +22,7 @@
 
 #include <QtCore>
 #include <QtDebug>
-#include <QSharedPointer>
+#include <QPointer>
 #include <time.h>
 
 #include "libgadu.h"
@@ -32,8 +32,8 @@
 #include "kickuserjob.h"
 #include "sessionclientptr.h"
 
-typedef QSharedPointer<gg_session*> SessionPtr;
-typedef QSharedPointer<gg_event*> EventPtr;
+typedef QPointer<gg_session*> SessionPtr;
+typedef QPointer<gg_event*> EventPtr;
 
 class SessionScheduler;
 
@@ -66,7 +66,7 @@ private:
     fd_set rd, wd, ex;
     struct timeval tv;
     JobPtr pingServer;
-    QSharedPointer<KickUserJob> kickUser;
+    JobPtr kickUser;
 
     void FreeSession(gg_session *session);
     void Logout(gg_session *session);

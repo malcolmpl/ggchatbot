@@ -22,15 +22,16 @@
 
 #include "userinfoto.h"
 
-#include <QSharedPointer>
+#include <QPointer>
 
 #include <QList>
 #include <QSettings>
 
-typedef QSharedPointer<QSettings> SettingsPtr;
+typedef QPointer<QSettings> SettingsPtr;
 
-class UserDatabase
+class UserDatabase : public QObject
 {
+    Q_OBJECT
 public:
     UserDatabase();
     virtual ~UserDatabase();
