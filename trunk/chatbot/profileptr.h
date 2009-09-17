@@ -1,10 +1,10 @@
 #ifndef PROFILEPTR_H
 #define PROFILEPTR_H
 
-#include <QSharedPointer>
+#include <QPointer>
 
 class Profile;
 
-typedef QSharedPointer<Profile> ProfilePtr;
+typedef QPointer<Profile> ProfilePtr;
 
 #endif // PROFILEPTR_H

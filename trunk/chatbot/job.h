@@ -21,7 +21,7 @@
 #define JOB_H
 
 #include <QObject>
-#include <QSharedPointer>
+#include <QPointer>
 
 class Job : public QObject
 {
@@ -39,6 +39,6 @@ private:
     int period;
 };
 
-typedef QSharedPointer<Job> JobPtr;
+typedef QPointer<Job> JobPtr;
 
 #endif // JOB_H

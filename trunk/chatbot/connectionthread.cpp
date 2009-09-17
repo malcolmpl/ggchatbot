@@ -41,8 +41,8 @@ void ConnectionThread::run()
 void ConnectionThread::startServer()
 {
     qDebug() << "startServer() called";
-    ProfilePtr profile = ProfilePtr(new Profile());
-    sessionClient = SessionClientPtr(new SessionClient());
+    ProfilePtr profile = new Profile();
+    sessionClient = new SessionClient();
     profile->setSession(sessionClient);
     sessionClient->SetProfile(profile);
 

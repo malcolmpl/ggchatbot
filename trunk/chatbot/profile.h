@@ -20,7 +20,7 @@
 #ifndef PROFILE_H_
 #define PROFILE_H_
 
-#include <QSharedPointer>
+#include <QPointer>
 #include "sessionclientptr.h"
 #include "profileptr.h"
 
@@ -28,11 +28,12 @@ class UserDatabase;
 class BotSettings;
 class BotSettingsTO;
 
-typedef QSharedPointer<UserDatabase> UserDatabasePtr;
-typedef QSharedPointer<BotSettings> BotSettingsPtr;
+typedef QPointer<UserDatabase> UserDatabasePtr;
+typedef QPointer<BotSettings> BotSettingsPtr;
 
-class Profile
+class Profile : public QObject
 {
+    Q_OBJECT
 public:
     Profile();
     virtual ~Profile();

@@ -23,13 +23,14 @@
 #include "libgadu.h"
 #include "common.h"
 
-#include <QSharedPointer>
+#include <QPointer>
 
 #include <QString>
 #include <QDateTime>
 
-class UserInfoTO
+class UserInfoTO : public QObject
 {
+    Q_OBJECT
 public:
     UserInfoTO();
     virtual ~UserInfoTO();
@@ -77,7 +78,7 @@ private:
     QString m_lastMessage;
 };
 
-typedef QSharedPointer<UserInfoTO> UserInfoTOPtr;
+typedef QPointer<UserInfoTO> UserInfoTOPtr;
 
 #endif	/* _USERINFOTO_H */
 

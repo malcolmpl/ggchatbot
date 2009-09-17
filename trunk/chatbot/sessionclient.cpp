@@ -115,8 +115,9 @@ bool SessionClient::Login()
 
     scheduler = new SessionScheduler();
     pingServer = JobPtr(new PingServerJob(session));
-    kickUser = QSharedPointer<KickUserJob>(new KickUserJob());
-    kickUser->SetProfile(GetProfile());
+    KickUserJob *k = new KickUserJob();
+    k->SetProfile(GetProfile());
+    kickUser = JobPtr(k);
     scheduler->addJob(pingServer);
     scheduler->addJob(kickUser);
     scheduler->start();
