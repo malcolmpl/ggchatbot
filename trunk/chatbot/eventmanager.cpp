@@ -60,7 +60,6 @@ void EventManager::MessageEvent()
 {
     // dodajemy usera do listy
     uin_t sender = m_event->event.msg.sender;
-    isUserOnChannel(sender);
 
     UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(sender);
     QString msg = QString::fromAscii((const char*)m_event->event.msg.message);
@@ -69,60 +68,45 @@ void EventManager::MessageEvent()
     // refresh user time action
     user->setLastSeen(QDateTime::currentDateTime());
 
-	if(user->getLastMessage() == msg)
-	{
-		message = "Nie powtarzaj sie!";
-		emit sendMessageTo(user->getUin(), message);
-		return;
-	}
-	else
-	{
-		user->setLastMessage(msg);
-	}
+    if(user->getLastMessage() == msg)
+    {
+        message = "Nie powtarzaj sie!";
+        emit sendMessageTo(user->getUin(), message);
+        return;
+    }
+    else
+    {
+        user->setLastMessage(msg);
+    }
 
     if(checkCommand())
-	{
-		showUserDebug(user, msg);
+    {
+        showUserDebug(user, msg);
         return;
-	}
+    }
     
-    if(!isUserOnChannel(sender))
+    if(!GetProfile()->getUserDatabase()->isUserOnChannel(user))
     {
         welcomeMessage();
         return;
     }
 
-	if((GetProfile()->getUserDatabase()->isSuperUser(user->getUin())))
-		message = "!" + user->getNick() + ": " + msg;
-	else if((GetProfile()->getUserDatabase()->isUserHaveOp(user->getUin())))
-		message = "@" + user->getNick() + ": " + msg;
-	else if((GetProfile()->getUserDatabase()->isUserHaveVoice(user->getUin())))
-		message = "+" + user->getNick() + ": " + msg;
-	else
-		message = user->getNick() + ": " + msg;
+    if((GetProfile()->getUserDatabase()->isSuperUser(user)))
+        message = "!" + user->getNick() + ": " + msg;
+    else if((GetProfile()->getUserDatabase()->isUserHaveOp(user)))
+        message = "@" + user->getNick() + ": " + msg;
+    else if((GetProfile()->getUserDatabase()->isUserHaveVoice(user)))
+        message = "+" + user->getNick() + ": " + msg;
+    else
+        message = user->getNick() + ": " + msg;
 
     emit sendMessage(user->getUin(), message);
     showUserDebug(user, msg);
 }
 
-bool EventManager::isUserOnChannel(uin_t uin)
-{
-    return GetProfile()->getUserDatabase()->isUserOnChannel(uin);
-}
-
-bool EventManager::isUserInDatabase(uin_t uin)
-{
-    return GetProfile()->getUserDatabase()->isUserInDatabase(uin);
-}
-
-UserInfoTOPtr EventManager::getUser(uin_t uin)
-{
-    return GetProfile()->getUserDatabase()->getUserInfo(uin);
-}
-
 void EventManager::welcomeMessage()
 {
-    UserInfoTOPtr user = getUser(m_event->event.msg.sender);
+    UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
     QString msg = QString::fromAscii((const char*)m_event->event.msg.message);
     showUserDebug(user, msg);
     QString welcome;

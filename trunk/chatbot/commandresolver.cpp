@@ -378,7 +378,7 @@ void CommandResolver::whoCommand()
 	QList<UserInfoTOPtr> usersOnChannel;
 	foreach(UserInfoTOPtr u, users)
 	{
-		if(GetProfile()->getUserDatabase()->isUserOnChannel(u->getUin()))
+                if(GetProfile()->getUserDatabase()->isUserOnChannel(u))
 			usersOnChannel.push_back(u);
 	}
 

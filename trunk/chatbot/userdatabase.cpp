@@ -89,7 +89,7 @@ void UserDatabase::saveUsersListConfig()
     settings->endArray();
 }
 
-UserInfoTOPtr UserDatabase::getUserInfo(uin_t uin) const
+UserInfoTOPtr UserDatabase::getUserInfo(uin_t uin)
 {
     foreach(UserInfoTOPtr user, m_usersList)
     {
@@ -97,7 +97,12 @@ UserInfoTOPtr UserDatabase::getUserInfo(uin_t uin) const
             return user;
     }
 
-    return UserInfoTOPtr();
+    // This user not exist in database yet. We should add it.
+    UserInfoTOPtr user = UserInfoTOPtr(new UserInfoTO());
+    user->setUin(uin);
+    addUser(user);
+
+    return user;
 }
 
 void UserDatabase::addUser(const UserInfoTOPtr u)
@@ -120,12 +125,8 @@ void UserDatabase::saveDatabase()
     saveUsersListConfig();
 }
 
-bool UserDatabase::isUserOnChannel(uin_t uin)
+bool UserDatabase::isUserOnChannel(UserInfoTOPtr user)
 {
-    if(!isUserHaveNick(uin))
-        return false;
-
-    UserInfoTOPtr user = getUserInfo(uin);
     if(!user->getOnChannel())
         return false;
 
@@ -146,63 +147,47 @@ bool UserDatabase::isUserInDatabase(uin_t uin)
     return true;
 }
 
-bool UserDatabase::isUserHaveNick(uin_t uin)
+bool UserDatabase::isUserHaveNick(UserInfoTOPtr user)
 {
-    if(!isUserInDatabase(uin))
-        return false;
-
-    UserInfoTOPtr user = getUserInfo(uin);
     if(user->getNick().isEmpty())
         return false;
 
     return true;
 }
 
-bool UserDatabase::isUserHaveVoice(uin_t uin)
+bool UserDatabase::isUserHaveVoice(UserInfoTOPtr user)
 {
-    if(!isUserHaveNick(uin))
-        return false;
-
-    UserInfoTOPtr user = getUserInfo(uin);
     if(user->getUserFlags() == GGChatBot::VOICE_USER_FLAG)
-		return true;
+        return true;
 
-	return false;
+    return false;
 }
 
-bool UserDatabase::isUserHaveOp(uin_t uin)
+bool UserDatabase::isUserHaveOp(UserInfoTOPtr user)
 {
-    if(!isUserHaveNick(uin))
-        return false;
-
-    UserInfoTOPtr user = getUserInfo(uin);
     if(user->getUserFlags() == GGChatBot::OP_USER_FLAG)
-		return true;
+        return true;
 
-	return false;
+    return false;
 }
 
-bool UserDatabase::isSuperUser(uin_t uin)
+bool UserDatabase::isSuperUser(UserInfoTOPtr user)
 {
-    if(!isUserHaveNick(uin))
-        return false;
-
-    UserInfoTOPtr user = getUserInfo(uin);
     if(user->getUserFlags() == GGChatBot::SUPER_USER_FLAG)
-		return true;
+        return true;
 
-	return false;
+    return false;
 }
 
 QString UserDatabase::makeUserNick(UserInfoTOPtr u)
 {
-	if(isUserHaveVoice(u->getUin()))
+        if(isUserHaveVoice(u))
 		return "+" + u->getNick();
 
-	if(isUserHaveOp(u->getUin()))
+        if(isUserHaveOp(u))
 		return "@" + u->getNick();
 
-	if(isSuperUser(u->getUin()))
+        if(isSuperUser(u))
 		return "!" + u->getNick();
 
 	return u->getNick();

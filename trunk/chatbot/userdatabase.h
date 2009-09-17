@@ -35,17 +35,17 @@ public:
     UserDatabase();
     virtual ~UserDatabase();
 
-    UserInfoTOPtr getUserInfo(uin_t uin) const;
+    UserInfoTOPtr getUserInfo(uin_t uin);
     void addUser(const UserInfoTOPtr user);
     void saveDatabase();
     QList<UserInfoTOPtr> getUserList() { return m_usersList; }
 
-    bool isUserOnChannel(uin_t uin);
-    bool isUserInDatabase(uin_t uin);
-    bool isUserHaveNick(uin_t uin);
-    bool isUserHaveVoice(uin_t uin);
-    bool isUserHaveOp(uin_t uin);
-    bool isSuperUser(uin_t uin);
+    bool isUserOnChannel(UserInfoTOPtr user);
+    bool isUserInDatabase(uin_t user);
+    bool isUserHaveNick(UserInfoTOPtr user);
+    bool isUserHaveVoice(UserInfoTOPtr user);
+    bool isUserHaveOp(UserInfoTOPtr user);
+    bool isSuperUser(UserInfoTOPtr user);
    
     QString makeUserNick(UserInfoTOPtr);
  
