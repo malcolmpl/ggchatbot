@@ -50,7 +50,7 @@ public slots:
     void sendMessage(uin_t uin, QString message);
     void sendMessageTo(uin_t uin, QString message);
     void sendMessageToSuperUser(uin_t uin, QString message);
-    void ChangeStatus(QString description = "v0.3", int status = GG_STATUS_AVAIL_DESCR);
+    void ChangeStatus(QString description = "v0.3", int status = GG_STATUS_FFC);
     
 signals:
     void endServer();
