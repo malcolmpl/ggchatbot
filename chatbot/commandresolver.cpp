@@ -85,6 +85,7 @@ bool CommandResolver::checkCommand(gg_event *event)
     m_event = event;
     
     QRegExp rx("^(/\\w+).*");
+    QString bla = GGChatBot::cp2unicode((const char*)m_event->event.msg.message);
     QString str = GGChatBot::makeInternalMessage(GGChatBot::cp2unicode((const char*)m_event->event.msg.message));
     int pos = 0;
 
@@ -110,11 +111,11 @@ bool CommandResolver::checkCommand(gg_event *event)
             return true;
         }
         else if(command.compare(CMD_START, Qt::CaseInsensitive)==0)
-		{
-	    	lastString = removeCommand(str, CMD_START);
-		    joinCommand();
-		    return true;
-		}
+        {
+            lastString = removeCommand(str, CMD_START);
+            joinCommand();
+            return true;
+        }
         else if(command.compare(CMD_START_ALIAS, Qt::CaseInsensitive)==0)
         {
             lastString = removeCommand(str, CMD_START_ALIAS);
@@ -134,11 +135,11 @@ bool CommandResolver::checkCommand(gg_event *event)
             return true;
         }
         else if(command.compare(CMD_STOP, Qt::CaseInsensitive)==0)
-		{
-	    	lastString = removeCommand(str, CMD_STOP);
-		    leaveCommand();
-		    return true;
-		}
+        {
+            lastString = removeCommand(str, CMD_STOP);
+            leaveCommand();
+            return true;
+        }
         else if(command.compare(CMD_QUIT, Qt::CaseInsensitive)==0)
         {
             lastString = removeCommand(str, CMD_QUIT);
@@ -158,11 +159,11 @@ bool CommandResolver::checkCommand(gg_event *event)
             return true;
         }
         else if(command.compare(CMD_KTO, Qt::CaseInsensitive)==0)
-		{
-	    	lastString = removeCommand(str, CMD_KTO);
-		    whoCommand();
-		    return true;
-		}
+        {
+            lastString = removeCommand(str, CMD_KTO);
+            whoCommand();
+            return true;
+        }
         else if(command.compare(CMD_HELP, Qt::CaseInsensitive)==0)
         {
             lastString = removeCommand(str, CMD_HELP);
@@ -218,29 +219,29 @@ bool CommandResolver::checkCommand(gg_event *event)
             return true;
         }
         else if(command.compare(CMD_UNBAN, Qt::CaseInsensitive)==0)
-		{
-			lastString = removeCommand(str, CMD_UNBAN);
-			unbanCommand();
-			return true;
-		}
+        {
+            lastString = removeCommand(str, CMD_UNBAN);
+            unbanCommand();
+            return true;
+        }
         else if(command.compare(CMD_OP, Qt::CaseInsensitive)==0)
-		{
-			lastString = removeCommand(str, CMD_OP);
-			opCommand();
-			return true;
-		}
+        {
+            lastString = removeCommand(str, CMD_OP);
+            opCommand();
+            return true;
+        }
         else if(command.compare(CMD_VOICE, Qt::CaseInsensitive)==0)
-		{
-			lastString = removeCommand(str, CMD_VOICE);
-			voiceCommand();
-			return true;
-		}
+        {
+            lastString = removeCommand(str, CMD_VOICE);
+            voiceCommand();
+            return true;
+        }
         else if(command.compare(CMD_REMOVEFLAGS, Qt::CaseInsensitive)==0)
-		{
-			lastString = removeCommand(str, CMD_REMOVEFLAGS);
-			removeFlagsCommand();
-			return true;
-		}
+        {
+            lastString = removeCommand(str, CMD_REMOVEFLAGS);
+            removeFlagsCommand();
+            return true;
+        }
     }
 
     return false;
@@ -375,40 +376,40 @@ void CommandResolver::whoCommand()
         return;
 
     QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
-	QList<UserInfoTOPtr> usersOnChannel;
-	foreach(UserInfoTOPtr u, users)
-	{
-                if(GetProfile()->getUserDatabase()->isUserOnChannel(u))
-			usersOnChannel.push_back(u);
-	}
+    QList<UserInfoTOPtr> usersOnChannel;
+    foreach(UserInfoTOPtr u, users)
+    {
+        if(GetProfile()->getUserDatabase()->isUserOnChannel(u))
+        usersOnChannel.push_back(u);
+    }
 
-	QString listOfUsers = QString("Osoby na czacie [%1]:\n").arg(usersOnChannel.size());
+    QString listOfUsers = QString("Osoby na czacie [%1]:\n").arg(usersOnChannel.size());
 
-	int i = 0;
-	if(user->getUserFlags() > GGChatBot::OP_USER_FLAG)
-	{
-		foreach(UserInfoTOPtr u, usersOnChannel)
-		{
-			QString userNick = GetProfile()->getUserDatabase()->makeUserNick(u);
-			if(i<usersOnChannel.size())
-				listOfUsers += QString("[%1] %2, ").arg(u->getUin()).arg(userNick);
-			else
-				listOfUsers += QString("[%1] %2").arg(u->getUin()).arg(userNick);
-			i++;
-		}
-	}
-	else
-	{
+    int i = 1;
+    if(user->getUserFlags() > GGChatBot::OP_USER_FLAG)
+    {
+        foreach(UserInfoTOPtr u, usersOnChannel)
+        {
+            QString userNick = GetProfile()->getUserDatabase()->makeUserNick(u);
+            if(i<usersOnChannel.size())
+                listOfUsers += QString("[%1] %2, ").arg(u->getUin()).arg(userNick);
+            else
+                listOfUsers += QString("[%1] %2").arg(u->getUin()).arg(userNick);
+            i++;
+        }
+    }
+    else
+    {
     	foreach(UserInfoTOPtr u, usersOnChannel)
-	    {
-			QString userNick = GetProfile()->getUserDatabase()->makeUserNick(u);
-			if(i<usersOnChannel.size())
-        	   	listOfUsers += userNick + ", ";
-			else
-				listOfUsers += userNick;
-			i++;
-	    }
-	}
+        {
+            QString userNick = GetProfile()->getUserDatabase()->makeUserNick(u);
+            if(i<usersOnChannel.size())
+                listOfUsers += userNick + ", ";
+            else
+                listOfUsers += userNick;
+            i++;
+        }
+    }
 
     QString msg = QString("%1 %2 %3").arg(user->getUin()).arg(user->getNick()).arg(CMD_WHO);
     //GetProfile()->getSession()->sendMessageToSuperUser(user->getUin(), msg);

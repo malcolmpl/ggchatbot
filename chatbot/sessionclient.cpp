@@ -37,7 +37,7 @@ SessionClient::~SessionClient()
 
 void SessionClient::MakeConnection()
 {
-	QObject::disconnect(&eventManager, 0, 0, 0);
+    QObject::disconnect(&eventManager, 0, 0, 0);
     qRegisterMetaType<uin_t>("uin_t");
     eventManager.SetProfile(GetProfile());
     QObject::connect(&eventManager, SIGNAL(sendMessage(QString)), this, SLOT(sendMessage(QString)));

@@ -1,8 +1,10 @@
 QT -= gui
 LIBS += -lgadu
 TARGET = ggchatbot
-CONFIG += console debug
-CONFIG -= app_bundle release
+CONFIG += console \
+    debug
+CONFIG -= app_bundle \
+    release
 TEMPLATE = app
 SOURCES += main.cpp \
     connectionthread.cpp \
@@ -20,7 +22,7 @@ SOURCES += main.cpp \
     job.cpp \
     pingserverjob.cpp \
     kickuserjob.cpp \
-    common.cpp
+    common.cpp \
 
 HEADERS += connectionthread.h \
     sessionclient.h \
@@ -40,4 +42,3 @@ HEADERS += connectionthread.h \
     sessionclientptr.h \
     profileptr.h \
     common.h
-
