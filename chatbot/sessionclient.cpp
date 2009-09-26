@@ -103,6 +103,7 @@ bool SessionClient::Login()
     loginParams.uin = uin;
     loginParams.password = GetProfile()->getBotSettings().getPassword().toAscii().data();
     loginParams.async = 1;
+    loginParams.encoding = GG_ENCODING_UTF8;
 
     if (!( session = gg_login(&loginParams) ) )
     {
