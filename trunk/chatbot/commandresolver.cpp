@@ -386,7 +386,7 @@ void CommandResolver::whoCommand()
     QString listOfUsers = QString("Osoby na czacie [%1]:\n").arg(usersOnChannel.size());
 
     int i = 1;
-    if(user->getUserFlags() > GGChatBot::OP_USER_FLAG)
+    if(user->getUserFlags() >= GGChatBot::OP_USER_FLAG)
     {
         foreach(UserInfoTOPtr u, usersOnChannel)
         {
