@@ -62,8 +62,8 @@ void EventManager::MessageEvent()
     uin_t sender = m_event->event.msg.sender;
 
     UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(sender);
-    QString msg = QString::fromAscii((const char*)m_event->event.msg.message);
-	QString message;
+    QString msg = GGChatBot::makeInternalMessage(GGChatBot::cp2unicode((const char*)m_event->event.msg.message));
+    QString message;
 
     // refresh user time action
     user->setLastSeen(QDateTime::currentDateTime());
