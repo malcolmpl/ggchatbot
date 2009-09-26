@@ -19,12 +19,12 @@
 
 #include "userinfoto.h"
 
-
 #include "sessionclient.h"
 #include "botsettings.h"
 #include "userdatabase.h"
 #include "commandresolver.h"
 #include "profile.h"
+#include "common.h"
 
 #include <QDebug>
 #include <QRegExp>
@@ -53,23 +53,23 @@ namespace
     const QString CMD_KICK_ALIAS        = "/k";
     const QString CMD_BAN               = "/ban";
     const QString CMD_BAN_ALIAS         = "/b";
-    const QString CMD_UNBAN				= "/unban";
+    const QString CMD_UNBAN             = "/unban";
     const QString CMD_TOPIC             = "/topic";
     const QString CMD_TOPIC_ALIAS       = "/t";
-	const QString CMD_OP				= "/op";
-	const QString CMD_VOICE				= "/voice";
-	const QString CMD_REMOVEFLAGS		= "/removeflags";
+    const QString CMD_OP                = "/op";
+    const QString CMD_VOICE             = "/voice";
+    const QString CMD_REMOVEFLAGS       = "/removeflags";
 
     const QString MSG_NICK_EXIST        = "Uzytkownik o takim nicku juz istnieje!";
     const QString MSG_HELP              = "Dostepne komendy:\n/nick 'Nick' - zmiana nicka\n" \
         "/join /start - wejscie na czat\n/leave /stop /quit 'tekst'- opuszczenie czatu, opcjonalnie z tekstem\n" \
         "/who /kto - spis osob dostepnych na czacie\n/help /pomoc - pomoc ktora wlasnie czytasz ;)";
 
-	const QString MSG_HELP_FOR_OPS		= "Dostepne komendy:\n/nick 'Nick' - zmiana nicka\n" \
+    const QString MSG_HELP_FOR_OPS      = "Dostepne komendy:\n/nick 'Nick' - zmiana nicka\n" \
         "/join /start - wejscie na czat\n/leave /stop /quit 'tekst'- opuszczenie czatu\n" \
         "/who /kto - spis osob dostepnych na czacie\n/help /pomoc - pomoc\n/ban /unban nick/numer czas opis - banowanie" \
-		", czas w minutach, 0=rok\n/kick nick/numer opis - wywalenie z czatu\n/op numer - ustawia flage op'a\n" \
-		"/voice numer - ustawia flage voice\n/removeflags numer - zdejmuje wszystkie flagi";
+        ", czas w minutach, 0=rok\n/kick nick/numer opis - wywalenie z czatu\n/op numer - ustawia flage op'a\n" \
+        "/voice numer - ustawia flage voice\n/removeflags numer - zdejmuje wszystkie flagi";
 }
 
 CommandResolver::CommandResolver()
@@ -85,7 +85,7 @@ bool CommandResolver::checkCommand(gg_event *event)
     m_event = event;
     
     QRegExp rx("^(/\\w+).*");
-    QString str = QString::fromAscii((const char*)m_event->event.msg.message);
+    QString str = GGChatBot::makeInternalMessage(GGChatBot::cp2unicode((const char*)m_event->event.msg.message));
     int pos = 0;
 
     if((pos = rx.indexIn(str, pos)) != -1)

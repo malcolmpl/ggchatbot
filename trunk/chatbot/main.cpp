@@ -32,7 +32,7 @@ QTextStream *logOutput;
 
 void logHandler(QtMsgType type, const char *msg)
 {
-	QString strTime = QString("[%1]").arg(QTime::currentTime().toString("hh:mm:ss"));
+    QString strTime = QString("[%1]").arg(QTime::currentTime().toString("hh:mm:ss"));
     switch (type)
     {
        case QtDebugMsg:
@@ -68,9 +68,12 @@ int main(int argc, char *argv[])
 {
     qInstallMsgHandler(&logHandler);
     QCoreApplication app(argc, argv);
+    //QTextCodec::setCodecForCStrings (QTextCodec::codecForName ("UTF-8"));
 
     LogScheduler *logSched = new LogScheduler();
     logSched->start();
+
+    qDebug() << "ق";
 
     ConnectionThread *connection = new ConnectionThread();
     QObject::connect(connection, SIGNAL(finished()), &app, SLOT(quit()));
