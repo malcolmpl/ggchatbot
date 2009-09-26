@@ -26,7 +26,6 @@
 
 namespace GGChatBot
 {
-   
     const int NONE_FLAG                 = 0;
     const int VOICE_USER_FLAG           = 1;
     const int OP_USER_FLAG              = 2;
