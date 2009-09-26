@@ -141,7 +141,8 @@ bool SessionClient::SendContactList()
 void SessionClient::ChangeStatus(QString description, int status)
 {
     qDebug() << "Zmieniam status na: " << description;
-    gg_change_status_descr(session, status, description.toAscii());
+    QByteArray data = GGChatBot::unicode2cp(GGChatBot::makeMessage(description));
+    gg_change_status_descr(session, status, data.data());
 }
 
 bool SessionClient::WaitForEvent()
@@ -235,11 +236,14 @@ void SessionClient::sendMessage(QString message)
     if(!session)
         return;
 
+    message = GGChatBot::makeMessage(message);
+    QByteArray data = GGChatBot::unicode2cp(message);
+
     QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
     foreach(UserInfoTOPtr user, users)
     {
         if(GetProfile()->getUserDatabase()->isUserOnChannel(user))
-            gg_send_message(session, GG_CLASS_CHAT, user->getUin(), (const unsigned char*)message.toAscii().data());
+            gg_send_message(session, GG_CLASS_CHAT, user->getUin(), (const unsigned char*)data.data());
     }
 }
 
@@ -260,8 +264,10 @@ void SessionClient::sendMessageTo(uin_t uin, QString message)
 {
     if(!session)
         return;
+    
+    QByteArray data = GGChatBot::unicode2cp(GGChatBot::makeMessage(message));
 
-    gg_send_message(session, GG_CLASS_CHAT, uin, (const unsigned char*)message.toAscii().data());
+    gg_send_message(session, GG_CLASS_CHAT, uin, (const unsigned char*)data.data());
 }
 
 void SessionClient::sendMessageToSuperUser(uin_t uin, QString message)

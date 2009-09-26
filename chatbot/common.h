@@ -20,13 +20,24 @@
 #ifndef _COMMON_H
 #define	_COMMON_H
 
+#include <QTextCodec>
+#include <QByteArray>
+#include <QString>
+
 namespace GGChatBot
 {
    
-	const int NONE_FLAG 			= 0;
-    const int VOICE_USER_FLAG 		= 1;
-    const int OP_USER_FLAG 			= 2;
-    const int SUPER_USER_FLAG 		= 4;
+    const int NONE_FLAG                 = 0;
+    const int VOICE_USER_FLAG           = 1;
+    const int OP_USER_FLAG              = 2;
+    const int SUPER_USER_FLAG           = 4;
+
+    QString cp2unicode(const QByteArray &buf);
+    QByteArray unicode2cp(const QString &buf);
+    QByteArray unicode2latin(const QString &buf);
+
+    QString makeInternalMessage(QString buf);
+    QString makeMessage(QString buf);
 }
 
 #endif	/* _COMMON_H */
