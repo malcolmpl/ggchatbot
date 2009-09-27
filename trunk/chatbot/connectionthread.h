@@ -21,7 +21,7 @@
 #define CONNECTIONTHREAD_H
 
 #include <QThread>
-#include <QApplication>
+#include <QCoreApplication>
 #include <boost/shared_ptr.hpp>
 #include "sessionclient.h"
 
@@ -43,8 +43,8 @@ class ConnectionThread : public QThread
             p->quit();
             while(p->isRunning())
             {
-                QApplication::processEvents();
-                QApplication::instance()->thread()->msleep(100);
+                QCoreApplication::processEvents();
+                QCoreApplication::instance()->thread()->msleep(100);
             }
             delete p;
         }
