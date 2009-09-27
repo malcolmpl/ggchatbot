@@ -1,11 +1,13 @@
-QT -= gui
 LIBS += -lgadu
 TARGET = ggchatbot
 CONFIG += console \
     debug
+
 CONFIG -= app_bundle \
     release
+
 TEMPLATE = app
+
 SOURCES += main.cpp \
     connectionthread.cpp \
     sessionclient.cpp \

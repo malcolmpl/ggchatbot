@@ -36,6 +36,15 @@ SessionScheduler::SessionScheduler()
 
 SessionScheduler::~SessionScheduler()
 {
+    if(time)
+        delete time;
+
+    if(timer)
+    {
+        timer->stop();
+        delete timer;
+    }
+
     jobsList.clear();
 }
 
