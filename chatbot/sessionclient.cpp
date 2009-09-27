@@ -107,12 +107,15 @@ bool SessionClient::Login()
 
     if (!( session = gg_login(&loginParams) ) )
     {
-        qDebug() << "Nie udalo sie polaczyc.";   //printf("Nie uda?o si? po??czy?: %s\n", strerror(errno));
+        qDebug() << "Nie udalo sie polaczyc.";
         emit endServer();
         return false;
     }
 
     qDebug() << "Laczenie...";
+
+    if(scheduler)
+        delete scheduler;
 
     scheduler = new SessionScheduler();
     pingServer = JobPtr(new PingServerJob(session));
@@ -176,7 +179,7 @@ void SessionClient::EventLoop()
 
         if (!wynik)
         {
-		QCoreApplication::instance()->processEvents();
+            QCoreApplication::instance()->processEvents();
             continue;
         }
 
@@ -195,7 +198,7 @@ void SessionClient::EventLoop()
             if(!WaitForEvent())
             {
                 qDebug() << "Rozlaczono z serwerem, ponawiam...";
-                QTimer::singleShot(1, this, SLOT(MakeConnection()));
+                QTimer::singleShot(5000, this, SLOT(MakeConnection()));
                 return;
             }
 
@@ -218,9 +221,10 @@ void SessionClient::EventLoop()
 
             if(event->type == GG_EVENT_CONN_FAILED)
             {
-                qDebug() << "Connection failed :(";
+                qDebug() << "Connection failed. Ponawiam.";
                 //emit restartConnection();
-                emit endServer();
+                //emit endServer();
+                QTimer::singleShot(5000, this, SLOT(MakeConnection()));
                 return;
             }
 

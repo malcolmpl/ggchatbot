@@ -73,17 +73,13 @@ int main(int argc, char *argv[])
     LogScheduler *logSched = new LogScheduler();
     logSched->start();
 
-    qDebug() << "ق";
-
-    ConnectionThread *connection = new ConnectionThread();
-    QObject::connect(connection, SIGNAL(finished()), &app, SLOT(quit()));
+    ConnectionThreadPtr connection = ConnectionThread::Create();
+    QObject::connect(connection.get(), SIGNAL(finished()), &app, SLOT(quit()));
 //    QObject::connect(connection, SIGNAL(finished()), logSched, SLOT(quit()), Qt::DirectConnection);
     connection->start();
     connection->startServer();
 
     int ret = app.exec();
-
-    delete connection;
 
     return ret;
 }

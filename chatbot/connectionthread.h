@@ -20,17 +20,45 @@
 #ifndef CONNECTIONTHREAD_H
 #define CONNECTIONTHREAD_H
 
-#include <QtCore/QThread>
+#include <QThread>
+#include <QApplication>
+#include <boost/shared_ptr.hpp>
 #include "sessionclient.h"
+
+class ConnectionThread;
+
+typedef boost::shared_ptr<ConnectionThread> ConnectionThreadPtr;
 
 class ConnectionThread : public QThread
 {
     Q_OBJECT
+    Q_DISABLE_COPY(ConnectionThread)
+
+    template <typename T>
+    class deleter
+    {
+        public:
+        inline void operator()(T *p)
+        {
+            p->quit();
+            while(p->isRunning())
+            {
+                QApplication::processEvents();
+                QApplication::instance()->thread()->msleep(100);
+            }
+            delete p;
+        }
+    };
 public:
     ConnectionThread(QObject *parent = 0);
     ~ConnectionThread();
 
     void run();
+
+    static ConnectionThreadPtr Create()
+    {
+        return ConnectionThreadPtr(new ConnectionThread, ConnectionThread::deleter<ConnectionThread>());
+    }
     
 public slots:
     void startServer();
