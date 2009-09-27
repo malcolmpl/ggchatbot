@@ -2,7 +2,7 @@
 
 = List commands =
   * listban
-  * idlekick (zostaja OP I SM)
+  * ~~idlekick (zostaja OP I SM)~~
   * moderate (wlacza SM,OP mowia V OP SM)
   * unmoderate
   * priv
@@ -20,10 +20,10 @@
 = Features =
   * czas dzialania czatu
   * ~~OP ustawia voice~~
-  * V ustawia
+  * V ustawia ?? co ustawia ??
   * wordkick - zablokowane slowa w pliku tekstowym
   * zabezpieczenie przed floodem (nie mozna 2 razy tego samego tekstu wpisac)
-  * reconectowanie bota (syndrom 5:30) 
+  * ~~reconectowanie bota (syndrom 5:30)~~
   * bot na czacie ?
   * ~~logi +~~
   * ~~nicki (14) znakow +~~
