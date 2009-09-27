@@ -1,3 +1,4 @@
+QT -= gui
 LIBS += -lgadu
 TARGET = ggchatbot
 CONFIG += console \

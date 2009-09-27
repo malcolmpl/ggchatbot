@@ -66,13 +66,14 @@ public:
 
 	QString getLastMessage() const { return m_lastMessage; }
 private:
-    uin_t m_uin;
-    QString m_nick;
-    int m_flags;
-    bool m_onChannel;
     QString m_channelName;
+    bool m_onChannel;
+    int m_flags;
     QDateTime m_lastSeen;
+    uin_t m_uin;
     bool m_banned;
+
+    QString m_nick;
     QDateTime m_banTime;
     QString m_banReason;
     QString m_lastMessage;
