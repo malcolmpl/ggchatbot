@@ -55,7 +55,7 @@ void KickUserJob::makeJob()
             {
                 // kick user
                 QString msg = QString("%1 wylatuje z czatu. Nie spac, zwiedzac!").arg(GetProfile()->getUserDatabase()->makeUserNick(user));
-                GetProfile()->getSession()->sendMessage(msg);
+                GetProfile()->getSession()->sendMessage(user->getUin(), msg);
                 qDebug() << msg;
                 msg = QString("Zostales automatycznie wylogowany z powodu braku aktywnosci przez 10 minut. Aby powrocic wpisz: /start");
                 GetProfile()->getSession()->sendMessageTo(user->getUin(), msg);

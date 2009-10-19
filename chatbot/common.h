@@ -31,6 +31,8 @@ namespace GGChatBot
     const int OP_USER_FLAG              = 2;
     const int SUPER_USER_FLAG           = 4;
 
+    const int CHANNEL_MODERATED         = 1;
+
     QString cp2unicode(const QByteArray &buf);
     QByteArray unicode2cp(const QString &buf);
     QByteArray unicode2latin(const QString &buf);

@@ -253,7 +253,7 @@ void SessionClient::sendMessage(QString message)
 
 void SessionClient::sendMessage(uin_t uin, QString message)
 {
-    if(!session)
+    if(!session || checkChannelFlags(uin))
         return;
 
     QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
@@ -284,5 +284,18 @@ void SessionClient::sendMessageToSuperUser(uin_t uin, QString message)
            && GetProfile()->getUserDatabase()->isUserOnChannel(user))
             sendMessageTo(user->getUin(), message);
     }
+}
+
+bool SessionClient::checkChannelFlags(uin_t uin)
+{
+    int channelFlags = GetProfile()->getBotSettings().getChannelFlags();
+    if(channelFlags == 0)
+        return false;
+
+    UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(uin);
+    if(user->getUserFlags() >= GGChatBot::VOICE_USER_FLAG)
+        return false;
+
+    return true;
 }
 

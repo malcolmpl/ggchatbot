@@ -45,6 +45,8 @@ void BotSettings::ReadBotSettings()
         m_botSettings.setUin(settings->value("UIN", 0).toUInt());
         m_botSettings.setPassword(settings->value("Password", "pass").toString());
         m_botSettings.setDefaultDescription(settings->value("DefaultDescription", "v0.3").toString());
+        m_botSettings.setChannelFlags(settings->value("ChannelFlags", 0).toInt());
+        m_botSettings.setWhoDescription(settings->value("WhoDescription", "").toString());
     settings->endGroup();
 }
 
@@ -57,5 +59,7 @@ void BotSettings::SaveBotSettings()
         settings->setValue("UIN", m_botSettings.getUin());
         settings->setValue("Password", m_botSettings.getPassword());
         settings->setValue("DefaultDescription", m_botSettings.getDefaultDescription());
+        settings->setValue("ChannelFlags", m_botSettings.getChannelFlags());
+        settings->setValue("WhoDescription", m_botSettings.getWhoDescription());
     settings->endGroup();
 }

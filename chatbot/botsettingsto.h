@@ -40,12 +40,20 @@ public:
 
     void setDefaultDescription(const QString v) { m_defaultDescription = v; }
     QString getDefaultDescription() const { return m_defaultDescription; }
+
+    void setChannelFlags(const int v) { m_channelFlags = v; }
+    int getChannelFlags() { return m_channelFlags; }
+
+    void setWhoDescription(const QString v) { m_whoDescription = v; }
+    QString getWhoDescription() const { return m_whoDescription; }
     
 private:
     int m_level;
     uin_t m_uin;
     QString m_password;
     QString m_defaultDescription;
+    QString m_whoDescription;
+    int m_channelFlags;
 };
 
 #endif	/* _BOTSETTINGSTO_H */
