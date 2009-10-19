@@ -787,6 +787,9 @@ void CommandResolver::removeFlagsCommand()
 // TODO: poprawic to!
 void CommandResolver::moderateCommand()
 {
+    if(m_channelFlags>0)
+        return;
+
     UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
 
     m_channelFlags = GGChatBot::CHANNEL_MODERATED;
@@ -800,6 +803,9 @@ void CommandResolver::moderateCommand()
 
 void CommandResolver::unmoderateCommand()
 {
+    if(m_channelFlags==0)
+        return;
+
     m_channelFlags = GGChatBot::NONE_FLAG;
     BotSettingsTO bs = GetProfile()->getBotSettings();
     bs.setChannelFlags(m_channelFlags);
