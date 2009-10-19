@@ -71,7 +71,8 @@ namespace
         "/join /start - wejscie na czat\n/leave /stop /quit 'tekst'- opuszczenie czatu\n" \
         "/who /kto - spis osob dostepnych na czacie\n/help /pomoc - pomoc\n/ban /unban nick/numer czas opis - banowanie" \
         ", czas w minutach, 0=rok\n/kick nick/numer opis - wywalenie z czatu\n/op numer - ustawia flage op'a\n" \
-        "/voice numer - ustawia flage voice\n/removeflags numer - zdejmuje wszystkie flagi";
+        "/voice numer - ustawia flage voice\n/removeflags numer - zdejmuje wszystkie flagi" \
+        "/moderate /unmoderate - ustawia/zdejmuje czat moderowany";
 }
 
 CommandResolver::CommandResolver()
@@ -428,6 +429,9 @@ void CommandResolver::whoCommand()
     if(!whoDesc.isEmpty())
         listOfUsers += "\n" + whoDesc;
 
+    if(m_channelFlags)
+        listOfUsers += "\nCZAT MODEROWANY !! Tylko osoby z voice/op moga rozmawiac.";
+
     QString msg = QString("%1 %2 %3").arg(user->getUin()).arg(user->getNick()).arg(CMD_WHO);
     //GetProfile()->getSession()->sendMessageToSuperUser(user->getUin(), msg);
     GetProfile()->getSession()->sendMessageTo(user->getUin(), listOfUsers);
@@ -783,10 +787,15 @@ void CommandResolver::removeFlagsCommand()
 // TODO: poprawic to!
 void CommandResolver::moderateCommand()
 {
+    UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
+
     m_channelFlags = GGChatBot::CHANNEL_MODERATED;
     BotSettingsTO bs = GetProfile()->getBotSettings();
     bs.setChannelFlags(m_channelFlags);
     GetProfile()->setBotSettings(bs);
+
+    QString msg = QString("CZAT MODEROWANY !! Tylko osoby z voice/op moga rozmawiac.");
+    GetProfile()->getSession()->sendMessage(msg);
 }
 
 void CommandResolver::unmoderateCommand()
@@ -795,5 +804,8 @@ void CommandResolver::unmoderateCommand()
     BotSettingsTO bs = GetProfile()->getBotSettings();
     bs.setChannelFlags(m_channelFlags);
     GetProfile()->setBotSettings(bs);
+
+    QString msg = QString("Moderacja zostala wylaczona !!");
+    GetProfile()->getSession()->sendMessage(msg);
 }
 
