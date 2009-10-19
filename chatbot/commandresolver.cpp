@@ -71,7 +71,7 @@ namespace
         "/join /start - wejscie na czat\n/leave /stop /quit 'tekst'- opuszczenie czatu\n" \
         "/who /kto - spis osob dostepnych na czacie\n/help /pomoc - pomoc\n/ban /unban nick/numer czas opis - banowanie" \
         ", czas w minutach, 0=rok\n/kick nick/numer opis - wywalenie z czatu\n/op numer - ustawia flage op'a\n" \
-        "/voice numer - ustawia flage voice\n/removeflags numer - zdejmuje wszystkie flagi" \
+        "/voice numer - ustawia flage voice\n/removeflags numer - zdejmuje wszystkie flagi\n" \
         "/moderate /unmoderate - ustawia/zdejmuje czat moderowany";
 }
 
