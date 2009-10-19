@@ -39,6 +39,7 @@ public:
     virtual ~Profile();
 
     BotSettingsTO getBotSettings() const;
+    void setBotSettings(const BotSettingsTO);
     UserDatabasePtr getUserDatabase() const;
     SessionClientPtr getSession() const;
     void setSession(const SessionClientPtr v);

@@ -45,6 +45,12 @@ BotSettingsTO Profile::getBotSettings() const
     return m_botSettings->getBotSettings();
 }
 
+void Profile::setBotSettings(const BotSettingsTO bs)
+{
+    m_botSettings->setBotSettings(bs);
+    m_botSettings->SaveBotSettings();
+}
+
 UserDatabasePtr Profile::getUserDatabase() const
 {
     return m_userDatabase;

@@ -784,12 +784,16 @@ void CommandResolver::removeFlagsCommand()
 void CommandResolver::moderateCommand()
 {
     m_channelFlags = GGChatBot::CHANNEL_MODERATED;
-    GetProfile()->getBotSettings().setChannelFlags(m_channelFlags);
+    BotSettingsTO bs = GetProfile()->getBotSettings();
+    bs.setChannelFlags(m_channelFlags);
+    GetProfile()->setBotSettings(bs);
 }
 
 void CommandResolver::unmoderateCommand()
 {
     m_channelFlags = GGChatBot::NONE_FLAG;
-    GetProfile()->getBotSettings().setChannelFlags(m_channelFlags);
+    BotSettingsTO bs = GetProfile()->getBotSettings();
+    bs.setChannelFlags(m_channelFlags);
+    GetProfile()->setBotSettings(bs);
 }
 

@@ -36,7 +36,9 @@ public:
     void ReadBotSettings();
     void SaveBotSettings();
 
-    BotSettingsTO getBotSettings() { return m_botSettings; }
+    BotSettingsTO getBotSettings() const { return m_botSettings; }
+    void setBotSettings(const BotSettingsTO v) { m_botSettings = v; }
+
 private:
     SettingsPtr settings;
     BotSettingsTO m_botSettings;
