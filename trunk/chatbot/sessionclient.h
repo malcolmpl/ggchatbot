@@ -44,6 +44,8 @@ public:
     SessionClient(QObject *parent = 0);
     ~SessionClient();
 
+    bool checkChannelFlags(uin_t uin);
+
 public slots:
     void MakeConnection();
     void sendMessage(QString message);

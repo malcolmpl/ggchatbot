@@ -38,6 +38,7 @@ public:
 private:
     gg_event *m_event;
     QString lastString;
+    int m_channelFlags;
 
     QString removeCommand(QString message, QString command);
 
@@ -56,6 +57,8 @@ private:
 	void opCommand();
 	void voiceCommand();
 	void removeFlagsCommand();
+    void moderateCommand();
+    void unmoderateCommand();
 };
 
 #endif	/* _COMMANDRESOLVER_H */

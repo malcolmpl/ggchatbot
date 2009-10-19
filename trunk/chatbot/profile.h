@@ -1,4 +1,4 @@
-/*
+    /*
     This file is part of GGChatBot.
 
     Copyright (C) 2009  Dariusz Mikulski <dariusz.mikulski@gmail.com>
