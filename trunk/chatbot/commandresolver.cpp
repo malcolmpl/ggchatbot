@@ -805,7 +805,7 @@ void CommandResolver::unmoderateCommand()
 {
     UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
 
-    if(m_channelFlags>0 || user->getUserFlags() < GGChatBot::OP_USER_FLAG)
+    if(m_channelFlags==0 || user->getUserFlags() < GGChatBot::OP_USER_FLAG)
         return;
 
     m_channelFlags = GGChatBot::NONE_FLAG;
