@@ -39,6 +39,14 @@ namespace GGChatBot
 
     QString makeInternalMessage(QString buf);
     QString makeMessage(QString buf);
+
+    class UserNick
+    {
+    public:
+	QString nick;
+	unsigned char *format;
+	int formatlen;
+    };
 }
 
 #endif	/* _COMMON_H */

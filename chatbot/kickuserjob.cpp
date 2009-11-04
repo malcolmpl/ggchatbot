@@ -22,6 +22,7 @@
 #include "userdatabase.h"
 #include "sessionclient.h"
 #include "profile.h"
+#include "common.h"
 
 #include <QDebug>
 
@@ -54,7 +55,8 @@ void KickUserJob::makeJob()
             if(user->getLastSeen().secsTo(now) > INACTIVE_TIME)
             {
                 // kick user
-                QString msg = QString("%1 wylatuje z czatu. Nie spac, zwiedzac!").arg(GetProfile()->getUserDatabase()->makeUserNick(user));
+                GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(user);
+                QString msg = QString("%1 wylatuje z czatu. Nie spac, zwiedzac!").arg(userNick.nick);
                 GetProfile()->getSession()->sendMessage(user->getUin(), msg);
                 qDebug() << msg;
                 msg = QString("Zostales automatycznie wylogowany z powodu braku aktywnosci przez 10 minut. Aby powrocic wpisz: /start");

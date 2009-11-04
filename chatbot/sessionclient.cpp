@@ -43,6 +43,8 @@ void SessionClient::MakeConnection()
     QObject::connect(&eventManager, SIGNAL(sendMessage(QString)), this, SLOT(sendMessage(QString)));
     QObject::connect(&eventManager, SIGNAL(sendMessage(uin_t, QString)), this, SLOT(sendMessage(uin_t, QString)));
     QObject::connect(&eventManager, SIGNAL(sendMessageTo(uin_t, QString)), this, SLOT(sendMessageTo(uin_t, QString)));
+    QObject::connect(&eventManager, SIGNAL(sendMessageRichtext(uin_t, QString, const unsigned char*, int)), this, SLOT(sendMessageRichtext(uin_t, QString, const unsigned char*, int)));
+    QObject::connect(&eventManager, SIGNAL(sendMessageRichtextTo(uin_t, QString, const unsigned char*, int)), this, SLOT(sendMessageRichtextTo(uin_t, QString, const unsigned char*, int)));
 
     SetDebugLevel();
 
@@ -104,6 +106,7 @@ bool SessionClient::Login()
     loginParams.password = GetProfile()->getBotSettings().getPassword().toAscii().data();
     loginParams.async = 1;
     loginParams.encoding = GG_ENCODING_UTF8;
+    loginParams.protocol_features = GG_FEATURE_ALL;
 
     if (!( session = gg_login(&loginParams) ) )
     {
@@ -249,6 +252,32 @@ void SessionClient::sendMessage(QString message)
         if(GetProfile()->getUserDatabase()->isUserOnChannel(user))
             gg_send_message(session, GG_CLASS_CHAT, user->getUin(), (const unsigned char*)data.data());
     }
+}
+
+void SessionClient::sendMessageRichtext(uin_t uin, QString message, const unsigned char* format, int formatlen)
+{
+    if(!session || checkChannelFlags(uin))
+        return;
+
+    message = GGChatBot::makeMessage(message);
+    QByteArray data = GGChatBot::unicode2cp(message);
+
+    QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
+    foreach(UserInfoTOPtr user, users)
+    {
+        if(user->getUin() != uin && GetProfile()->getUserDatabase()->isUserOnChannel(user))
+            gg_send_message_richtext(session, GG_CLASS_CHAT, user->getUin(), (const unsigned char*)data.data(), format, formatlen);
+    }
+}
+
+void SessionClient::sendMessageRichtextTo(uin_t uin, QString message, const unsigned char *format, int formatlen)
+{
+    if(!session)
+	return;
+
+    QByteArray data = GGChatBot::unicode2cp(GGChatBot::makeMessage(message));
+
+    gg_send_message_richtext(session, GG_CLASS_CHAT, uin, (const unsigned char*)data.data(), format, formatlen);
 }
 
 void SessionClient::sendMessage(uin_t uin, QString message)

@@ -25,6 +25,7 @@
 namespace
 {
     const QString USERS_CONFIG = "users.ini";
+    const int LAST_DAYS_SEEN = 30; // clear uin information after 30 days
 }
 
 UserDatabase::UserDatabase()
@@ -35,7 +36,7 @@ UserDatabase::UserDatabase()
 
 UserDatabase::~UserDatabase()
 {
-    cleanOnChannel();
+//    cleanOnChannel();
     saveUsersListConfig();
 }
 
@@ -57,10 +58,10 @@ void UserDatabase::readUsersListConfig()
         settings->setArrayIndex(i);
         user->setNick(settings->value("nick").toString());
         user->setUin(settings->value("UIN").toUInt());
-		user->setUserFlags(settings->value("Flags").toUInt());
+	user->setUserFlags(settings->value("Flags").toUInt());
         user->setLastSeen(settings->value("lastSeen").toDateTime());
         user->setChannelName(settings->value("channel").toString());
-        user->setOnChannel(false);
+	user->setOnChannel(settings->value("onChannel").toBool());
         user->setBanned(settings->value("banned").toBool());
         user->setBanTime(settings->value("banTime").toDateTime());
         user->setBanReason(settings->value("banReason").toString());
@@ -73,8 +74,17 @@ void UserDatabase::saveUsersListConfig()
 {
     qDebug() << "Zapisywanie bazy uzytkownikow...";
     settings->beginWriteArray("users");
+
+    QDateTime now = QDateTime::currentDateTime();
+
     for (int i = 0; i < m_usersList.size(); ++i)
     {
+	if(m_usersList.at(i)->getLastSeen().daysTo(now) >= LAST_DAYS_SEEN)
+	{
+	    qDebug() << "Usuwam informacje o " << m_usersList.at(i)->getUin() << m_usersList.at(i)->getNick();
+	    continue;
+	}
+
         settings->setArrayIndex(i);
         settings->setValue("nick", m_usersList.at(i)->getNick());
         settings->setValue("UIN", m_usersList.at(i)->getUin());
@@ -173,23 +183,88 @@ bool UserDatabase::isUserHaveOp(UserInfoTOPtr user)
 
 bool UserDatabase::isSuperUser(UserInfoTOPtr user)
 {
-    if(user->getUserFlags() == GGChatBot::SUPER_USER_FLAG)
+    if(user->getUserFlags() > GGChatBot::SUPER_USER_FLAG)
         return true;
 
     return false;
 }
 
-QString UserDatabase::makeUserNick(UserInfoTOPtr u)
+GGChatBot::UserNick UserDatabase::makeUserNick(UserInfoTOPtr u)
 {
-        if(isUserHaveVoice(u))
-		return "+" + u->getNick();
+    GGChatBot::UserNick userNick;
+    unsigned char *format;
+    gg_msg_richtext_format rtf;
+    gg_msg_richtext_color rtc, rtc_black;
+    int formatlen = 2*(sizeof(rtf) + sizeof(rtc));
+    format = new unsigned char[formatlen];
+    rtf.font = 0;
 
-        if(isUserHaveOp(u))
-		return "@" + u->getNick();
+    rtc_black.red = 0;
+    rtc_black.green = 0;
+    rtc_black.blue = 0;
 
-        if(isSuperUser(u))
-		return "!" + u->getNick();
+    if(isUserHaveVoice(u))
+    {
+	rtc.red = 0;
+	rtc.green = 255;
+	rtc.blue = 0;
+	rtf.position = 2;
+	rtf.font |= GG_FONT_COLOR;
+	memcpy(format, &rtf, sizeof(rtf));
+	format += sizeof(rtf);
+	memcpy(format, &rtc, sizeof(rtc));
+	format += sizeof(rtc);
+	userNick.nick = "<+" + u->getNick() + ">";
+    }
+    else if(isUserHaveOp(u))
+    {
+	rtc.red = 0;
+	rtc.green = 0;
+	rtc.blue = 255;
+	rtf.position = 2;
+	rtf.font |= GG_FONT_COLOR;
+        memcpy(format, &rtf, sizeof(rtf));
+        format += sizeof(rtf);
+        memcpy(format, &rtc, sizeof(rtc));
+        format += sizeof(rtc);
+        userNick.nick = "<@" + u->getNick() + ">";
+    }
+    else if(isSuperUser(u))
+    {
+        rtc.red = 255;
+        rtc.green = 0;
+        rtc.blue = 0;
+	rtf.position = 2;
+	rtf.font |= GG_FONT_COLOR;
+        memcpy(format, &rtf, sizeof(rtf));
+        format += sizeof(rtf);
+        memcpy(format, &rtc, sizeof(rtc));
+        format += sizeof(rtc);
+        userNick.nick = "<!" + u->getNick() + ">";
+    }
+    else
+    {
+        rtc.red = 0;
+        rtc.green = 0;
+        rtc.blue = 0;
+	rtf.position = 1;
+	rtf.font |= GG_FONT_COLOR;
+        memcpy(format, &rtf, sizeof(rtf));
+        format += sizeof(rtf);
+        memcpy(format, &rtc, sizeof(rtc));
+        format += sizeof(rtc);
+	userNick.nick = "<" + u->getNick() + ">";	
+    }
 
-	return u->getNick();
+    rtf.font = 0;
+    rtf.position = rtf.position + u->getNick().length();
+    memcpy(format, &rtf, sizeof(rtf));
+    format += sizeof(rtf);
+    memcpy(format, &rtc_black, sizeof(rtc_black));
+
+    userNick.format = format;
+    userNick.formatlen = formatlen;
+
+    return userNick;
 }
 

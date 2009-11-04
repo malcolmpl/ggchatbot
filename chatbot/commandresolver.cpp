@@ -293,7 +293,8 @@ void CommandResolver::nickCommand()
             {
                 if(u->getUin() == user->getUin())
                 {
-                    GetProfile()->getSession()->sendMessageTo(user->getUin(), QString("Hej %1, juz masz ustawiony nick!").arg(GetProfile()->getUserDatabase()->makeUserNick(user)));
+		    GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(user);
+                    GetProfile()->getSession()->sendMessageTo(user->getUin(), QString("Hej %1, juz masz ustawiony nick!").arg(userNick.nick));
                     return;
                 }
                 GetProfile()->getSession()->sendMessageTo(user->getUin(), MSG_NICK_EXIST);
@@ -303,23 +304,25 @@ void CommandResolver::nickCommand()
 
         if(!user->getNick().isEmpty())
         {
-			QString oldNick = GetProfile()->getUserDatabase()->makeUserNick(user);
-			user->setNick(newNick);
+	    GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(user);
+	    QString oldNick = userNick.nick;
+	    user->setNick(newNick);
             if(user->getOnChannel())
             {
-                QString newNick = GetProfile()->getUserDatabase()->makeUserNick(user);
+		GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(user);
+                QString newNick = userNick.nick;
                 QString message = QString("%1 zmienia nick na %2").arg(oldNick).arg(newNick);
                 GetProfile()->getSession()->sendMessage(message);
             }
         }
-		else
-		{
-	        QString debugMessage = QString("%1 %2 zmienia nick na %3").arg(user->getUin()).arg(user->getNick()).arg(newNick);
+        else
+        {
+            QString debugMessage = QString("%1 %2 zmienia nick na %3").arg(user->getUin()).arg(user->getNick()).arg(newNick);
     	    qDebug() << debugMessage;
             GetProfile()->getSession()->sendMessageToSuperUser(user->getUin(), debugMessage);
-	        user->setNick(newNick);
+	    user->setNick(newNick);
     	    GetProfile()->getUserDatabase()->saveDatabase();
-		}
+        }
     }
 }
 
@@ -359,7 +362,8 @@ void CommandResolver::joinCommand()
     user->setOnChannel(true);
     GetProfile()->getUserDatabase()->saveDatabase();
     whoCommand();
-    QString msg = "Przychodzi " + GetProfile()->getUserDatabase()->makeUserNick(user);
+    GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(user);
+    QString msg = "Przychodzi " + userNick.nick;
     qDebug() << "UIN:" << user->getUin() << msg;
     GetProfile()->getSession()->sendMessage(msg);
 }
@@ -376,7 +380,8 @@ void CommandResolver::leaveCommand()
         reason = lastString;
     }
 
-    QString msg = "Odchodzi " + GetProfile()->getUserDatabase()->makeUserNick(user) + " " + reason;
+    GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(user);
+    QString msg = "Odchodzi " + userNick.nick + " " + reason;
     qDebug() << "UIN:" << user->getUin() << msg;
     GetProfile()->getSession()->sendMessage(msg);
     user->setOnChannel(false);
@@ -404,11 +409,11 @@ void CommandResolver::whoCommand()
     {
         foreach(UserInfoTOPtr u, usersOnChannel)
         {
-            QString userNick = GetProfile()->getUserDatabase()->makeUserNick(u);
+            GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(u);
             if(i<usersOnChannel.size())
-                listOfUsers += QString("[%1] %2, ").arg(u->getUin()).arg(userNick);
+                listOfUsers += QString("[%1] %2, ").arg(u->getUin()).arg(userNick.nick);
             else
-                listOfUsers += QString("[%1] %2").arg(u->getUin()).arg(userNick);
+                listOfUsers += QString("[%1] %2").arg(u->getUin()).arg(userNick.nick);
             i++;
         }
     }
@@ -416,11 +421,11 @@ void CommandResolver::whoCommand()
     {
     	foreach(UserInfoTOPtr u, usersOnChannel)
         {
-            QString userNick = GetProfile()->getUserDatabase()->makeUserNick(u);
+            GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(u);
             if(i<usersOnChannel.size())
-                listOfUsers += userNick + ", ";
+                listOfUsers += userNick.nick + ", ";
             else
-                listOfUsers += userNick;
+                listOfUsers += userNick.nick;
             i++;
         }
     }
@@ -498,7 +503,8 @@ void CommandResolver::kickCommand()
 
 void CommandResolver::kickHelperCommand(UserInfoTOPtr user)
 {
-    QString msg = QString("%1 wylatuje z czatu. %2").arg(GetProfile()->getUserDatabase()->makeUserNick(user)).arg(lastString);
+    GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(user);
+    QString msg = QString("%1 wylatuje z czatu. %2").arg(userNick.nick).arg(lastString);
     if(user->getOnChannel())
         GetProfile()->getSession()->sendMessage(msg);
     user->setOnChannel(false);
@@ -664,11 +670,12 @@ void CommandResolver::topicCommand()
         QString topic = rx.cap(1);
 
         GetProfile()->getSession()->ChangeStatus(topic);
-		
-		QString message = QString("%1 zmienia temat na: %2").arg(GetProfile()->getUserDatabase()->makeUserNick(user)).arg(topic);
+	
+	GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(user);	
+        QString message = QString("%1 zmienia temat na: %2").arg(userNick.nick).arg(topic);
         GetProfile()->getSession()->sendMessage(message);
 
-		qDebug() << message;
+        qDebug() << message;
     }
 }
 
@@ -690,22 +697,23 @@ void CommandResolver::opCommand()
         QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
         foreach(UserInfoTOPtr u, users)
         {
-			QString uin = QString("%1").arg(u->getUin());
+            QString uin = QString("%1").arg(u->getUin());
             if(uin == uinToOp)
             {
-				if(u->getUserFlags() < GGChatBot::SUPER_USER_FLAG)
-				{
-					QString msg = QString("%1 ustawia op dla %2").arg(GetProfile()->getUserDatabase()->makeUserNick(user)).arg(u->getNick());
-					u->setUserFlags(GGChatBot::OP_USER_FLAG);
+                if(u->getUserFlags() < GGChatBot::SUPER_USER_FLAG)
+                {
+		    GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(user);
+                    QString msg = QString("%1 ustawia op dla %2").arg(userNick.nick).arg(u->getNick());
+                    u->setUserFlags(GGChatBot::OP_USER_FLAG);
                     GetProfile()->getSession()->sendMessage(msg);
-					qDebug() << msg;
+                    qDebug() << msg;
             	    return;
-				}
-				else
-				{
-					GetProfile()->getSession()->sendMessageTo(user->getUin(), QString("Nie mozesz tego zrobic!"));
-					return;
-				}
+                }
+                else
+                {
+                    GetProfile()->getSession()->sendMessageTo(user->getUin(), QString("Nie mozesz tego zrobic!"));
+                    return;
+                }
             }
         }
     }
@@ -729,22 +737,23 @@ void CommandResolver::voiceCommand()
         QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
         foreach(UserInfoTOPtr u, users)
         {
-			QString uin = QString("%1").arg(u->getUin());
+            QString uin = QString("%1").arg(u->getUin());
             if(uin == uinToVoice)
             {
-				if(u->getUserFlags() < GGChatBot::SUPER_USER_FLAG)
-				{
-					QString msg = QString("%1 ustawia voice dla %2").arg(GetProfile()->getUserDatabase()->makeUserNick(user)).arg(u->getNick());
-					u->setUserFlags(GGChatBot::VOICE_USER_FLAG);
+                if(u->getUserFlags() < GGChatBot::SUPER_USER_FLAG)
+                {
+		    GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(user);
+                    QString msg = QString("%1 ustawia voice dla %2").arg(userNick.nick).arg(u->getNick());
+                    u->setUserFlags(GGChatBot::VOICE_USER_FLAG);
                     GetProfile()->getSession()->sendMessage(msg);
-					qDebug() << msg;
+                    qDebug() << msg;
             	    return;
-				}
-				else
-				{
-					GetProfile()->getSession()->sendMessageTo(user->getUin(), QString("Nie mozesz tego zrobic!"));
-					return;
-				}
+                }
+                else
+                {
+                    GetProfile()->getSession()->sendMessageTo(user->getUin(), QString("Nie mozesz tego zrobic!"));
+                    return;
+                }
             }
         }
     }
@@ -756,8 +765,8 @@ void CommandResolver::removeFlagsCommand()
 
     if(user->getUserFlags() < GGChatBot::OP_USER_FLAG)
         return;
-   
-	QRegExp rx("^(\\w+).*");
+
+    QRegExp rx("^(\\w+).*");
     int pos = 0;
 
     if((pos = rx.indexIn(lastString, pos)) != -1)
@@ -768,17 +777,18 @@ void CommandResolver::removeFlagsCommand()
         QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
         foreach(UserInfoTOPtr u, users)
         {
-			QString uin = QString("%1").arg(u->getUin());
+            QString uin = QString("%1").arg(u->getUin());
             if(uin == uinToRM)
             {
-				if(u->getUserFlags() < GGChatBot::SUPER_USER_FLAG)
-				{
-					QString msg = QString("%1 zabiera przywileje %2").arg(GetProfile()->getUserDatabase()->makeUserNick(user)).arg(u->getNick());
-					u->setUserFlags(GGChatBot::NONE_FLAG);
+                if(u->getUserFlags() < GGChatBot::SUPER_USER_FLAG)
+                {
+		    GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(user);
+                    QString msg = QString("%1 zabiera przywileje %2").arg(userNick.nick).arg(u->getNick());
+                    u->setUserFlags(GGChatBot::NONE_FLAG);
                     GetProfile()->getSession()->sendMessage(msg);
-					qDebug() << msg;
+                    qDebug() << msg;
             	    return;
-				}
+                }
             }
         }
     }
