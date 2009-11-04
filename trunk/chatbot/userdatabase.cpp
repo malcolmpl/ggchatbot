@@ -193,78 +193,84 @@ bool UserDatabase::isSuperUser(UserInfoTOPtr user)
 GGChatBot::UserNick UserDatabase::makeUserNick(UserInfoTOPtr u)
 {
     GGChatBot::UserNick userNick;
-    unsigned char *format;
-    gg_msg_richtext_format rtf;
-    gg_msg_richtext_color rtc, rtc_black;
-    int formatlen = 2*(sizeof(rtf) + sizeof(rtc));
-    format = new unsigned char[formatlen];
-    rtf.font = 0;
+    unsigned char *result;
+    gg_msg_richtext header;
+    gg_msg_richtext_format format;
+    gg_msg_richtext_color color, color_black;
+    unsigned int memoryPosition = sizeof(gg_msg_richtext);
+    int resultlen = sizeof(gg_msg_richtext) + 2*(sizeof(format) + sizeof(color));
+    result = new unsigned char[resultlen];
+    format.font = 0;
 
-    rtc_black.red = 0;
-    rtc_black.green = 0;
-    rtc_black.blue = 0;
+    header.flag = 2;
+    header.length = gg_fix16(resultlen - sizeof(gg_msg_richtext));
+    memcpy(result, &header, sizeof(header));
+
+    color_black.red = 0;
+    color_black.green = 0;
+    color_black.blue = 0;
 
     if(isUserHaveVoice(u))
     {
-	rtc.red = 0;
-	rtc.green = 255;
-	rtc.blue = 0;
-	rtf.position = 2;
-	rtf.font |= GG_FONT_COLOR;
-	memcpy(format, &rtf, sizeof(rtf));
-	format += sizeof(rtf);
-	memcpy(format, &rtc, sizeof(rtc));
-	format += sizeof(rtc);
+	color.red = 0;
+	color.green = 150;
+	color.blue = 0;
+	format.position = gg_fix16(2);
+	format.font |= GG_FONT_COLOR;
+	memcpy(result + memoryPosition, &format, sizeof(format));
+	memoryPosition += sizeof(format);
+	memcpy(result + memoryPosition, &color, sizeof(color));
+	memoryPosition += sizeof(color);
 	userNick.nick = "<+" + u->getNick() + ">";
     }
     else if(isUserHaveOp(u))
     {
-	rtc.red = 0;
-	rtc.green = 0;
-	rtc.blue = 255;
-	rtf.position = 2;
-	rtf.font |= GG_FONT_COLOR;
-        memcpy(format, &rtf, sizeof(rtf));
-        format += sizeof(rtf);
-        memcpy(format, &rtc, sizeof(rtc));
-        format += sizeof(rtc);
+	color.red = 51;
+	color.green = 0;
+	color.blue = 204;
+	format.position = gg_fix16(2);
+	format.font |= GG_FONT_COLOR;
+        memcpy(result + memoryPosition, &format, sizeof(format));
+        memoryPosition += sizeof(format);
+        memcpy(result + memoryPosition, &color, sizeof(color));
+        memoryPosition += sizeof(color);
         userNick.nick = "<@" + u->getNick() + ">";
     }
     else if(isSuperUser(u))
     {
-        rtc.red = 255;
-        rtc.green = 0;
-        rtc.blue = 0;
-	rtf.position = 2;
-	rtf.font |= GG_FONT_COLOR;
-        memcpy(format, &rtf, sizeof(rtf));
-        format += sizeof(rtf);
-        memcpy(format, &rtc, sizeof(rtc));
-        format += sizeof(rtc);
+        color.red = 255;
+        color.green = 0;
+        color.blue = 0;
+	format.position = gg_fix16(2);
+	format.font |= GG_FONT_COLOR;
+        memcpy(result + memoryPosition, &format, sizeof(format));
+        memoryPosition += sizeof(format);
+        memcpy(result + memoryPosition, &color, sizeof(color));
+        memoryPosition += sizeof(color);
         userNick.nick = "<!" + u->getNick() + ">";
     }
     else
     {
-        rtc.red = 0;
-        rtc.green = 0;
-        rtc.blue = 0;
-	rtf.position = 1;
-	rtf.font |= GG_FONT_COLOR;
-        memcpy(format, &rtf, sizeof(rtf));
-        format += sizeof(rtf);
-        memcpy(format, &rtc, sizeof(rtc));
-        format += sizeof(rtc);
+        color.red = 100;
+        color.green = 0;
+        color.blue = 0;
+	format.position = gg_fix16(1);
+	format.font |= GG_FONT_COLOR;
+        memcpy(result + memoryPosition, &format, sizeof(format));
+        memoryPosition += sizeof(format);
+        memcpy(result + memoryPosition, &color, sizeof(color));
+        memoryPosition += sizeof(color);
 	userNick.nick = "<" + u->getNick() + ">";	
     }
 
-    rtf.font = 0;
-    rtf.position = rtf.position + u->getNick().length();
-    memcpy(format, &rtf, sizeof(rtf));
-    format += sizeof(rtf);
-    memcpy(format, &rtc_black, sizeof(rtc_black));
+    format.font = 0;
+    format.position = gg_fix16(format.position + u->getNick().length());
+    memcpy(result + memoryPosition, &format, sizeof(format));
+    memoryPosition += sizeof(format);
+    memcpy(result + memoryPosition, &color_black, sizeof(color_black));
 
-    userNick.format = format;
-    userNick.formatlen = formatlen;
+    userNick.format = result;
+    userNick.formatlen = resultlen;
 
     return userNick;
 }
