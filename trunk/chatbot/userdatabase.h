@@ -21,6 +21,7 @@
 #define	_USERDATABASE_H
 
 #include "userinfoto.h"
+#include "common.h"
 
 #include <QPointer>
 
@@ -48,7 +49,7 @@ public:
     bool isUserHaveOp(UserInfoTOPtr user);
     bool isSuperUser(UserInfoTOPtr user);
    
-    QString makeUserNick(UserInfoTOPtr);
+    GGChatBot::UserNick makeUserNick(UserInfoTOPtr);
  
 private:
     void readUsersListConfig();

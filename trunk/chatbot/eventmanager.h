@@ -40,6 +40,8 @@ signals:
     void sendMessage(QString message);
     void sendMessage(uin_t uin, QString message);
     void sendMessageTo(uin_t uin, QString message);
+    void sendMessageRichtext(uin_t, QString, const unsigned char*, int);
+    void sendMessageRichtextTo(uin_t, QString, const unsigned char*, int);
 
 private:
     gg_event *m_event;

@@ -68,17 +68,6 @@ void EventManager::MessageEvent()
     // refresh user time action
     user->setLastSeen(QDateTime::currentDateTime());
 
-    if(user->getLastMessage() == msg)
-    {
-        message = "Nie powtarzaj sie!";
-        emit sendMessageTo(user->getUin(), message);
-        return;
-    }
-    else
-    {
-        user->setLastMessage(msg);
-    }
-
     if(checkCommand())
     {
         showUserDebug(user, msg);
@@ -91,16 +80,91 @@ void EventManager::MessageEvent()
         return;
     }
 
-    if((GetProfile()->getUserDatabase()->isSuperUser(user)))
-        message = "!" + user->getNick() + ": " + msg;
-    else if((GetProfile()->getUserDatabase()->isUserHaveOp(user)))
-        message = "@" + user->getNick() + ": " + msg;
-    else if((GetProfile()->getUserDatabase()->isUserHaveVoice(user)))
-        message = "+" + user->getNick() + ": " + msg;
+    if(user->getLastMessage() == msg)
+    {
+        message = "Nie powtarzaj sie!";
+        emit sendMessageTo(user->getUin(), message);
+        return;
+    }
     else
-        message = user->getNick() + ": " + msg;
+    {
+        user->setLastMessage(msg);
+    }
 
-    emit sendMessage(user->getUin(), message);
+    unsigned char * format;
+    gg_msg_richtext_format rtf;
+    gg_msg_richtext_color rtc, rtc_black;
+    rtf.font = 0;
+
+    rtc_black.red = 0;
+    rtc_black.green = 0;
+    rtc_black.blue = 0;
+
+    int formatlen = 2*(sizeof(rtf) + sizeof(rtc));
+
+    format = new unsigned char[formatlen];
+
+    if((GetProfile()->getUserDatabase()->isSuperUser(user)))
+    {
+        message = "<!" + user->getNick() + "> " + msg;
+	rtc.red = 255;
+	rtc.green = 0;
+	rtc.blue = 0;
+	rtf.position = 2;
+	rtf.font |= GG_FONT_COLOR;
+	memcpy(format, &rtf, sizeof(rtf));
+	format += sizeof(rtf);
+	memcpy(format, &rtc, sizeof(rtc));
+	format += sizeof(rtc);
+    }
+    else if((GetProfile()->getUserDatabase()->isUserHaveOp(user)))
+    {
+        message = "<@" + user->getNick() + "> " + msg;
+        rtc.red = 0;
+        rtc.green = 0;
+        rtc.blue = 255;
+        rtf.position = 2;
+        rtf.font |= GG_FONT_COLOR;
+        memcpy(format, &rtf, sizeof(rtf));
+        format += sizeof(rtf);
+        memcpy(format, &rtc, sizeof(rtc));
+        format += sizeof(rtc);
+
+    }
+    else if((GetProfile()->getUserDatabase()->isUserHaveVoice(user)))
+    {
+        message = "<+" + user->getNick() + "> " + msg;
+        rtc.red = 0;
+        rtc.green = 255;
+        rtc.blue = 0;
+        rtf.position = 2;
+        rtf.font |= GG_FONT_COLOR;
+        memcpy(format, &rtf, sizeof(rtf));
+        format += sizeof(rtf);
+        memcpy(format, &rtc, sizeof(rtc));
+        format += sizeof(rtc);
+    }
+    else
+    {
+        message = "<" + user->getNick() + "> " + msg;
+        rtc.red = 0;
+        rtc.green = 0;
+        rtc.blue = 0;
+        rtf.position = 1;
+        rtf.font |= GG_FONT_COLOR;
+        memcpy(format, &rtf, sizeof(rtf));
+        format += sizeof(rtf);
+        memcpy(format, &rtc, sizeof(rtc));
+        format += sizeof(rtc);
+    }										
+
+    rtf.font = 0;
+    rtf.position = rtf.position + user->getNick().length();
+    memcpy(format, &rtf, sizeof(rtf));
+    format += sizeof(rtf);
+    memcpy(format, &rtc_black, sizeof(rtc_black));
+   
+    emit sendMessageRichtext(sender, message, format, formatlen);
     showUserDebug(user, msg);
 }
 
@@ -111,10 +175,16 @@ void EventManager::welcomeMessage()
     showUserDebug(user, msg);
     QString welcome;
     if(user->getNick().isEmpty())
+    {
         welcome = "Witaj!\nWpisz /nick 'Nick' aby ustawic swoj nick.\nWpisz /join aby dolaczyc do czatu.";
+	emit sendMessageTo(m_event->event.msg.sender, welcome);
+    }
     else
-        welcome = QString("Witaj %1! Wpisz /join aby dolaczyc do czatu.").arg(GetProfile()->getUserDatabase()->makeUserNick(user));
-    emit sendMessageTo(m_event->event.msg.sender, welcome);
+    {
+        GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(user);
+        welcome = QString("Witaj %1! Wpisz /join aby dolaczyc do czatu.").arg(userNick.nick);
+	emit sendMessageRichtextTo(m_event->event.msg.sender, welcome, userNick.format, userNick.formatlen);
+    }
 }
 
 bool EventManager::checkCommand()
