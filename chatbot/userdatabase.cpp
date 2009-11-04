@@ -52,6 +52,9 @@ void UserDatabase::readUsersListConfig()
 {
     qDebug() << "Odczytywanie bazy uzytkownikow...";
     int size = settings->beginReadArray("users");
+
+    QDateTime now = QDateTime::currentDateTime();
+
     for (int i = 0; i < size; ++i)
     {
         UserInfoTOPtr user = UserInfoTOPtr(new UserInfoTO());
@@ -65,6 +68,13 @@ void UserDatabase::readUsersListConfig()
         user->setBanned(settings->value("banned").toBool());
         user->setBanTime(settings->value("banTime").toDateTime());
         user->setBanReason(settings->value("banReason").toString());
+
+	if(user->getLastSeen().daysTo(now) >= LAST_DAYS_SEEN)
+	{
+	    qDebug() << "Usuwam z bazy informacje o" << user->getUin() << user->getNick();
+	    continue;
+	}
+
         m_usersList.push_back(user);
     }
     settings->endArray();
@@ -75,16 +85,8 @@ void UserDatabase::saveUsersListConfig()
     qDebug() << "Zapisywanie bazy uzytkownikow...";
     settings->beginWriteArray("users");
 
-    QDateTime now = QDateTime::currentDateTime();
-
     for (int i = 0; i < m_usersList.size(); ++i)
     {
-	if(m_usersList.at(i)->getLastSeen().daysTo(now) >= LAST_DAYS_SEEN)
-	{
-	    qDebug() << "Usuwam informacje o " << m_usersList.at(i)->getUin() << m_usersList.at(i)->getNick();
-	    continue;
-	}
-
         settings->setArrayIndex(i);
         settings->setValue("nick", m_usersList.at(i)->getNick());
         settings->setValue("UIN", m_usersList.at(i)->getUin());
