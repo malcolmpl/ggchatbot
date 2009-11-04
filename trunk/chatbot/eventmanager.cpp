@@ -176,7 +176,7 @@ void EventManager::welcomeMessage()
     QString welcome;
     if(user->getNick().isEmpty())
     {
-        welcome = "Witaj!\nWpisz /nick 'Nick' aby ustawic swoj nick.\nWpisz /join aby dolaczyc do czatu.";
+        welcome = "Witaj!\nWpisz /nick 'Nick' aby ustawic swoj nick a nastepnie\nwpisz /join aby dolaczyc do czatu.\nnp:\n/nick Ania\n/join\n\nMilej zabawy :-)";
 	emit sendMessageTo(m_event->event.msg.sender, welcome);
     }
     else
