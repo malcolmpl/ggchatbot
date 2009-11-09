@@ -312,7 +312,7 @@ void CommandResolver::nickCommand()
 		GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(user);
                 QString newNick = userNick.nick;
                 QString message = QString("%1 zmienia nick na %2").arg(oldNick).arg(newNick);
-                GetProfile()->getSession()->sendMessage(message);
+                GetProfile()->getSession()->sendMessage(user->getUin(), message);
             }
         }
         else
@@ -383,7 +383,7 @@ void CommandResolver::leaveCommand()
     GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(user);
     QString msg = "Odchodzi " + userNick.nick + " " + reason;
     qDebug() << "UIN:" << user->getUin() << msg;
-    GetProfile()->getSession()->sendMessage(msg);
+    GetProfile()->getSession()->sendMessage(user->getUin(), msg);
     user->setOnChannel(false);
     GetProfile()->getUserDatabase()->saveDatabase();
 }
