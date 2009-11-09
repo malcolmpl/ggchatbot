@@ -746,8 +746,7 @@ void CommandResolver::voiceCommand()
             {
                 if(u->getUserFlags() < GGChatBot::SUPER_USER_FLAG)
                 {
-		    GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(user);
-                    QString msg = QString("%1 ustawia voice dla %2").arg(userNick.nick).arg(u->getNick());
+                    QString msg = QString("%1 tajemniczo dostaje voice.").arg(u->getNick());
                     u->setUserFlags(GGChatBot::VOICE_USER_FLAG);
                     GetProfile()->getSession()->sendMessage(msg);
                     qDebug() << msg;
@@ -786,8 +785,7 @@ void CommandResolver::removeFlagsCommand()
             {
                 if(u->getUserFlags() < GGChatBot::SUPER_USER_FLAG)
                 {
-		    GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(user);
-                    QString msg = QString("%1 zabiera przywileje %2").arg(userNick.nick).arg(u->getNick());
+                    QString msg = QString("%1 tajemniczo traci przywileje.").arg(u->getNick());
                     u->setUserFlags(GGChatBot::NONE_FLAG);
                     GetProfile()->getSession()->sendMessage(msg);
                     qDebug() << msg;
