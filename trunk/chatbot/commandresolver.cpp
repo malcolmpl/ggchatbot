@@ -381,9 +381,13 @@ void CommandResolver::leaveCommand()
     }
 
     GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(user);
-    QString msg = "Odchodzi " + userNick.nick + " " + reason;
+    QString msg;
+    if(m_channelFlags>0)
+        msg = "Odchodzi " + userNick.nick;
+    else
+        msg = "Odchodzi " + userNick.nick + " " + reason;
     qDebug() << "UIN:" << user->getUin() << msg;
-    GetProfile()->getSession()->sendMessage(user->getUin(), msg);
+    GetProfile()->getSession()->sendMessage(msg);
     user->setOnChannel(false);
     GetProfile()->getUserDatabase()->saveDatabase();
 }
