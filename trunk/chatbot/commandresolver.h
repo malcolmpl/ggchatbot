@@ -39,6 +39,7 @@ private:
     gg_event *m_event;
     QString lastString;
     int m_channelFlags;
+    QString m_topic;
 
     QString removeCommand(QString message, QString command);
 
@@ -51,14 +52,15 @@ private:
     void kickHelperCommand(UserInfoTOPtr);
     void banCommand();
     void banHelperCommand(UserInfoTOPtr, uint, QString);
-	void unbanCommand();
-	void unbanHelperCommand(UserInfoTOPtr);
+    void unbanCommand();
+    void unbanHelperCommand(UserInfoTOPtr);
     void topicCommand();
-	void opCommand();
-	void voiceCommand();
-	void removeFlagsCommand();
+    void opCommand();
+    void voiceCommand();
+    void removeFlagsCommand();
     void moderateCommand();
     void unmoderateCommand();
+    void setTopic(QString, bool showMessage = true);
 };
 
 #endif	/* _COMMANDRESOLVER_H */
