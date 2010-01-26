@@ -55,6 +55,7 @@ public:
 
     void setBanned(bool v) { m_banned = v; }
     bool getBanned() const { return m_banned; }
+    bool isBanned() const { return m_banned; }
 
     void setBanTime(QDateTime v) { m_banTime = v; }
     QDateTime getBanTime() const { return m_banTime; }
@@ -64,7 +65,7 @@ public:
 
     void setLastMessage(QString v) { m_lastMessage = v; }
 
-	QString getLastMessage() const { return m_lastMessage; }
+    QString getLastMessage() const { return m_lastMessage; }
 private:
     QString m_channelName;
     bool m_onChannel;

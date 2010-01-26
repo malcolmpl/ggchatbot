@@ -44,6 +44,7 @@ namespace
     const QString CMD_STOP              = "/stop";
     const QString CMD_QUIT              = "/quit";
     const QString CMD_QUIT_ALIAS        = "/q";
+    const QString CMD_KONIEC		= "/koniec";
     const QString CMD_WHO               = "/who";
     const QString CMD_KTO               = "/kto";
     const QString CMD_HELP              = "/help";
@@ -64,11 +65,11 @@ namespace
 
     const QString MSG_NICK_EXIST        = "Uzytkownik o takim nicku juz istnieje!";
     const QString MSG_HELP              = "Dostepne komendy:\n/nick 'Nick' - zmiana nicka\n" \
-        "/join /start - wejscie na czat\n/leave /stop /quit 'tekst'- opuszczenie czatu, opcjonalnie z tekstem\n" \
-        "/who /kto - spis osob dostepnych na czacie\n/help /pomoc - pomoc ktora wlasnie czytasz ;)";
+        "/start - wejscie na czat\n/koniec 'tekst'- opuszczenie czatu, opcjonalnie z tekstem\n" \
+        "/kto - spis osob dostepnych na czacie\n/pomoc - pomoc ktora wlasnie czytasz ;)";
 
     const QString MSG_HELP_FOR_OPS      = "Dostepne komendy:\n/nick 'Nick' - zmiana nicka\n" \
-        "/join /start - wejscie na czat\n/leave /stop /quit 'tekst'- opuszczenie czatu\n" \
+        "/join /start - wejscie na czat\n/leave /stop /quit /koniec 'tekst'- opuszczenie czatu\n" \
         "/who /kto - spis osob dostepnych na czacie\n/help /pomoc - pomoc\n/ban /unban nick/numer czas opis - banowanie" \
         ", czas w minutach, 0=rok\n/kick nick/numer opis - wywalenie z czatu\n/op numer - ustawia flage op'a\n" \
         "/voice numer - ustawia flage voice\n/removeflags numer - zdejmuje wszystkie flagi\n" \
@@ -154,6 +155,12 @@ bool CommandResolver::checkCommand(gg_event *event)
             leaveCommand();
             return true;
         }
+	else if(command.compare(CMD_KONIEC, Qt::CaseInsensitive)==0)
+	{
+	    lastString = removeCommand(str, CMD_KONIEC);
+	    leaveCommand();
+	    return true;
+	}
         else if(command.compare(CMD_WHO, Qt::CaseInsensitive)==0)
         {
             lastString = removeCommand(str, CMD_WHO);
@@ -656,11 +663,14 @@ void CommandResolver::unbanCommand()
 
 void CommandResolver::unbanHelperCommand(UserInfoTOPtr u)
 {
+    if(!u->isBanned())
+	return;
+
     QString message = QString("%1 zostal odbanowany.").arg(u->getUin());
     GetProfile()->getSession()->sendMessage(message);
-	u->setBanned(false);
-	u->setBanTime(QDateTime());
-	qDebug() << message;
+    u->setBanned(false);
+    u->setBanTime(QDateTime());
+    qDebug() << message;
 }
 
 void CommandResolver::topicCommand()
