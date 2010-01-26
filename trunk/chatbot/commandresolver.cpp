@@ -269,7 +269,7 @@ QString CommandResolver::removeCommand(QString message, QString command)
 
 void CommandResolver::nickCommand()
 {
-    if(lastString.isEmpty())
+    if(lastString.isEmpty() || m_channelFlags>0)
         return;
     
     QRegExp rx("^(\\w+).*");
@@ -313,6 +313,9 @@ void CommandResolver::nickCommand()
                 QString newNick = userNick.nick;
                 QString message = QString("%1 zmienia nick na %2").arg(oldNick).arg(newNick);
                 GetProfile()->getSession()->sendMessage(user->getUin(), message);
+
+		message = QString("Zmieniasz nick na %1").arg(newNick);
+		GetProfile()->getSession()->sendMessageTo(user->getUin(), message);
             }
         }
         else
@@ -365,7 +368,9 @@ void CommandResolver::joinCommand()
     GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(user);
     QString msg = "Przychodzi " + userNick.nick;
     qDebug() << "UIN:" << user->getUin() << msg;
-    GetProfile()->getSession()->sendMessage(msg);
+
+    if(m_channelFlags==0)
+        GetProfile()->getSession()->sendMessage(msg);
 }
 
 void CommandResolver::leaveCommand()
@@ -381,13 +386,12 @@ void CommandResolver::leaveCommand()
     }
 
     GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(user);
-    QString msg;
-    if(m_channelFlags>0)
-        msg = "Odchodzi " + userNick.nick;
-    else
-        msg = "Odchodzi " + userNick.nick + " " + reason;
+    QString msg = "Odchodzi " + userNick.nick + " " + reason;
     qDebug() << "UIN:" << user->getUin() << msg;
-    GetProfile()->getSession()->sendMessage(msg);
+
+    if(m_channelFlags==0)
+        GetProfile()->getSession()->sendMessage(msg);
+
     user->setOnChannel(false);
     GetProfile()->getUserDatabase()->saveDatabase();
 }
@@ -677,7 +681,7 @@ void CommandResolver::topicCommand()
 	
 	GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(user);	
         QString message = QString("%1 zmienia temat na: %2").arg(userNick.nick).arg(topic);
-        GetProfile()->getSession()->sendMessage(message);
+	GetProfile()->getSession()->sendMessage(message);
 
         qDebug() << message;
     }

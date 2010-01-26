@@ -29,6 +29,7 @@
 SessionClient::SessionClient(QObject *parent)
     : QObject(parent)
 {
+    scheduler = NULL;
 }
 
 SessionClient::~SessionClient()
@@ -105,8 +106,8 @@ bool SessionClient::Login()
     loginParams.uin = uin;
     loginParams.password = GetProfile()->getBotSettings().getPassword().toAscii().data();
     loginParams.async = 1;
-    loginParams.encoding = GG_ENCODING_UTF8;
-    loginParams.protocol_features = GG_FEATURE_ALL;
+    //loginParams.encoding = GG_ENCODING_UTF8;
+    //loginParams.protocol_features = GG_FEATURE_ALL;
 
     if (!( session = gg_login(&loginParams) ) )
     {
@@ -118,7 +119,10 @@ bool SessionClient::Login()
     qDebug() << "Laczenie...";
 
     if(scheduler)
+    {
+	qDebug() << "Deleting Sheduler";
         delete scheduler;
+    }
 
     scheduler = new SessionScheduler();
     pingServer = JobPtr(new PingServerJob(session));
