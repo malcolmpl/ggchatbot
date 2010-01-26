@@ -80,7 +80,7 @@ void EventManager::MessageEvent()
         return;
     }
 
-    if(user->getLastMessage() == msg)
+    if(user->getLastMessage() == msg && user->getUserFlags() < GGChatBot::VOICE_USER_FLAG)
     {
         message = "Nie powtarzaj sie!";
         emit sendMessageTo(user->getUin(), message);
