@@ -338,12 +338,13 @@ void CommandResolver::nickCommand()
 
 void CommandResolver::joinCommand()
 {
+    setTopic(m_topic, false);
     UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
     if(user->getOnChannel())
         return;
 
     if(user->getNick().isEmpty())
-		user->setNick(QString("Ktos%1").arg(user->getUin()));
+	user->setNick(QString("Ktos%1").arg(user->getUin()));
 
     if(user->getBanned())
     {
@@ -382,6 +383,7 @@ void CommandResolver::joinCommand()
 
 void CommandResolver::leaveCommand()
 {
+    setTopic(m_topic, false);
     UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
     if(!user->getOnChannel())
         return;
@@ -685,16 +687,38 @@ void CommandResolver::topicCommand()
 
     if((pos = rx.indexIn(lastString, pos)) != -1)
     {
-        QString topic = rx.cap(1);
+        m_topic = rx.cap(1);
+        setTopic(m_topic);
+    }
+}
+
+void CommandResolver::setTopic(QString topic, bool showMessage)
+{
+	UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
+	int usersCount = 0;
+        QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
+	QString oldTopic = topic;
+
+	foreach(UserInfoTOPtr u, users)
+	{
+            if(u->getOnChannel())
+		usersCount++;
+	}
+
+	QString usersCountText = QString(" | %1 os.").arg(usersCount);
+	if(topic.size()+usersCountText.size() > 255)
+	    topic.chop(usersCountText.size());
+	topic += usersCountText;
 
         GetProfile()->getSession()->ChangeStatus(topic);
 	
 	GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(user);	
-        QString message = QString("%1 zmienia temat na: %2").arg(userNick.nick).arg(topic);
-	GetProfile()->getSession()->sendMessage(message);
+        QString message = QString("%1 zmienia temat na: %2").arg(userNick.nick).arg(oldTopic);
+
+	if(showMessage)
+	    GetProfile()->getSession()->sendMessage(message);
 
         qDebug() << message;
-    }
 }
 
 void CommandResolver::opCommand()
