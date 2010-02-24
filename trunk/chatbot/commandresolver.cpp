@@ -525,7 +525,8 @@ void CommandResolver::kickHelperCommand(UserInfoTOPtr user)
     if(user->getOnChannel())
         GetProfile()->getSession()->sendMessage(msg);
     user->setOnChannel(false);
-	qDebug() << msg;
+    qDebug() << msg;
+    setTopic(m_topic, false);
 }
 
 void CommandResolver::banCommand()
@@ -613,7 +614,8 @@ void CommandResolver::banHelperCommand(UserInfoTOPtr user, uint banTime, QString
         currentDate = currentDate.addSecs(banTime*60);
     user->setBanTime(currentDate);
 
-	qDebug() << message;
+    qDebug() << message;
+    setTopic(m_topic, false);
 }
 
 void CommandResolver::unbanCommand()
@@ -694,31 +696,36 @@ void CommandResolver::topicCommand()
 
 void CommandResolver::setTopic(QString topic, bool showMessage)
 {
-	UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
-	int usersCount = 0;
-        QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
-	QString oldTopic = topic;
+    // Remove line below if you want setting automatically topic
+    if(!showMessage)
+        return;
 
-	foreach(UserInfoTOPtr u, users)
-	{
-            if(u->getOnChannel())
-		usersCount++;
-	}
 
-	QString usersCountText = QString(" | %1 os.").arg(usersCount);
-	if(topic.size()+usersCountText.size() > 255)
-	    topic.chop(usersCountText.size());
-	topic += usersCountText;
+    UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
+    int usersCount = 0;
+    QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
+    QString oldTopic = topic;
 
-        GetProfile()->getSession()->ChangeStatus(topic);
+    foreach(UserInfoTOPtr u, users)
+    {
+        if(u->getOnChannel())
+	    usersCount++;
+    }
+
+    QString usersCountText = QString(" | %1 os.").arg(usersCount);
+//  if(topic.size()+usersCountText.size() > 255)
+//      topic.chop(usersCountText.size());
+//  topic += usersCountText;
+
+    GetProfile()->getSession()->ChangeStatus(topic);
 	
-	GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(user);	
-        QString message = QString("%1 zmienia temat na: %2").arg(userNick.nick).arg(oldTopic);
+    GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(user);	
+    QString message = QString("%1 zmienia temat na: %2").arg(userNick.nick).arg(oldTopic);
 
-	if(showMessage)
-	    GetProfile()->getSession()->sendMessage(message);
+    if(showMessage)
+        GetProfile()->getSession()->sendMessage(message);
 
-        qDebug() << message;
+    qDebug() << message;
 }
 
 void CommandResolver::opCommand()
