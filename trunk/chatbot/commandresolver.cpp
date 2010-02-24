@@ -595,10 +595,15 @@ void CommandResolver::banCommand()
 void CommandResolver::banHelperCommand(UserInfoTOPtr user, uint banTime, QString description)
 {
     QString message;
+    QString nickName = user->getNick();
+    
+    if(nickName.isEmpty())
+        nickName = user->getUin();
+
     if(description.isEmpty())
-        message = QString("%1 dostaje bana na %2 minut.").arg(user->getUin()).arg(banTime);
+        message = QString("%1 dostaje bana na %2 minut.").arg(nickName).arg(banTime);
     else
-        message = QString("%1 dostaje bana na %2 minut. Powod: %3").arg(user->getUin()).arg(banTime).arg(description);
+        message = QString("%1 dostaje bana na %2 minut. Powod: %3").arg(nickName).arg(banTime).arg(description);
 
     GetProfile()->getSession()->sendMessage(message);
 
