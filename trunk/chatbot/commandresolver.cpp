@@ -600,10 +600,18 @@ void CommandResolver::banHelperCommand(UserInfoTOPtr user, uint banTime, QString
     if(nickName.isEmpty())
         nickName = user->getUin();
 
-    if(description.isEmpty())
-        message = QString("%1 dostaje bana na %2 minut.").arg(nickName).arg(banTime);
+    QDateTime currentDate = QDateTime::currentDateTime();
+    if(banTime == 0)
+        currentDate = currentDate.addYears(1);        // jesli banTime==0 to dajemy bana na rok
     else
-        message = QString("%1 dostaje bana na %2 minut. Powod: %3").arg(nickName).arg(banTime).arg(description);
+        currentDate = currentDate.addSecs(banTime*60);
+    QString banEndTimeDesc = currentDate.toString();//"dddd d-M-yyyy h:m:s
+
+
+    if(description.isEmpty())
+        message = QString("%1 dostaje bana do %2.").arg(nickName).arg(banEndTimeDesc);
+    else
+        message = QString("%1 dostaje bana do %2. Powod: %3").arg(nickName).arg(banEndTimeDesc).arg(description);
 
     GetProfile()->getSession()->sendMessage(message);
 
@@ -612,11 +620,6 @@ void CommandResolver::banHelperCommand(UserInfoTOPtr user, uint banTime, QString
     user->setBanned(true);
     user->setBanReason(description);
     user->setNick(QString());
-    QDateTime currentDate = QDateTime::currentDateTime();
-    if(banTime == 0)
-        currentDate = currentDate.addYears(1);        // jesli banTime==0 to dajemy bana na rok
-    else
-        currentDate = currentDate.addSecs(banTime*60);
     user->setBanTime(currentDate);
 
     qDebug() << message;
