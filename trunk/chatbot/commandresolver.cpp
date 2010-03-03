@@ -760,7 +760,7 @@ void CommandResolver::opCommand()
                 if(u->getUserFlags() < GGChatBot::SUPER_USER_FLAG)
                 {
 		    GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(user);
-                    QString msg = QString("%1 ustawia op dla %2").arg(userNick.nick).arg(u->getNick());
+                    QString msg = QString("Na przekor ewolucji %1 cofa sie do poziomu malpy.").arg(u->getNick());
                     u->setUserFlags(GGChatBot::OP_USER_FLAG);
                     GetProfile()->getSession()->sendMessage(msg);
                     qDebug() << msg;
