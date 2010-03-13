@@ -40,9 +40,12 @@ private:
     QString lastString;
     int m_channelFlags;
     QString m_topic;
+    bool isChatClosed;
 
     QString removeCommand(QString message, QString command);
 
+    void closedCommand();
+    bool checkIfUserCanJoin();
     void nickCommand();
     void joinCommand();
     void leaveCommand();

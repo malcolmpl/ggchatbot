@@ -62,6 +62,7 @@ namespace
     const QString CMD_REMOVEFLAGS       = "/removeflags";
     const QString CMD_MODERATE          = "/moderate";
     const QString CMD_UNMODERATE        = "/unmoderate";
+    const QString CMD_CLOSED            = "/closed";
 
     const QString MSG_NICK_EXIST        = "Uzytkownik o takim nicku juz istnieje!";
     const QString MSG_HELP              = "Dostepne komendy:\n/nick 'Nick' - zmiana nicka\n" \
@@ -78,6 +79,7 @@ namespace
 
 CommandResolver::CommandResolver()
 {
+    isChatClosed = false;
 }
 
 CommandResolver::~CommandResolver()
@@ -263,6 +265,12 @@ bool CommandResolver::checkCommand(gg_event *event)
             unmoderateCommand();
             return true;
         }
+        else if(command.compare(CMD_CLOSED, Qt::CaseInsensitive)==0)
+        {
+            lastString = removeCommand(str, CMD_CLOSED);
+            closedCommand();
+            return true;
+        }
     }
 
     return false;
@@ -336,11 +344,56 @@ void CommandResolver::nickCommand()
     }
 }
 
+void CommandResolver::closedCommand()
+{
+    UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
+
+    if(user->getUserFlags() < GGChatBot::OP_USER_FLAG)
+        return;
+
+    isChatClosed = !isChatClosed;
+
+    QString msg;
+
+    if(isChatClosed)
+    {
+        msg = "Czat zostal zamkniety dla nieznajomych!";
+    }
+    else
+    {
+        msg = "Czat zostal otwarty dla wszystkich.";
+    }
+
+    GetProfile()->getSession()->sendMessage(msg);
+}
+
+bool CommandResolver::checkIfUserCanJoin()
+{
+     UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
+
+     if(user->getUserFlags() >= GGChatBot::VOICE_USER_FLAG)
+         return true;
+
+     if(user->getNick().isEmpty())
+         return false;
+
+     QDateTime lastSeen = user->getLastSeen();
+     QDateTime currentTime = QDateTime::currentDateTime();
+     currentTime.addSecs(-1800);
+     if(lastSeen > currentTime)
+         return false;
+
+     return true;
+}
+
 void CommandResolver::joinCommand()
 {
     setTopic(m_topic, false);
     UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
     if(user->getOnChannel())
+        return;
+
+    if(isChatClosed && !checkIfUserCanJoin())
         return;
 
     if(user->getNick().isEmpty())
