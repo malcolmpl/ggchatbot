@@ -266,7 +266,8 @@ void SessionClient::ReadImageStatus(struct gg_event *event)
     QString xmlBeginTime("doc($internalFile)/activeUserbarEventList/activeUserbarEvent/beginTime/string()");
     QString xmlExpireTime("doc($internalFile)/activeUserbarEventList/activeUserbarEvent/expireTime/string()");
 
-    QBuffer outputBuffer(xmlEvent.toUtf8());
+	QByteArray out = xmlEvent.toUtf8();
+    QBuffer outputBuffer(&out);
     outputBuffer.open(QIODevice::ReadOnly);
 
     QXmlQuery query;
