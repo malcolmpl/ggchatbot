@@ -94,6 +94,9 @@ bool CommandResolver::checkCommand(gg_event *event)
     QString str = GGChatBot::makeInternalMessage(GGChatBot::cp2unicode((const char*)m_event->event.msg.message));
     int pos = 0;
 
+    BotSettingsTO bs = GetProfile()->getBotSettings();
+    m_channelFlags = bs.getChannelFlags();
+
     if((pos = rx.indexIn(str, pos)) != -1)
     {
         QString command = rx.cap(1);
@@ -378,7 +381,7 @@ bool CommandResolver::checkIfUserCanJoin()
          return false;
 
      QDateTime lastSeen = user->getLastSeen();
-     QDateTime currentTime = QDateTime::currentDateTime();
+     QDateTime currentTime = GGChatBot::getDateTime();
      currentTime.addSecs(-1800);
      if(lastSeen > currentTime)
          return false;
@@ -401,7 +404,7 @@ void CommandResolver::joinCommand()
 
     if(user->getBanned())
     {
-        QDateTime currentTime = QDateTime::currentDateTime();
+        QDateTime currentTime = GGChatBot::getDateTime();
         QDateTime banTime = user->getBanTime();
         if(currentTime>banTime)
         {
@@ -653,7 +656,7 @@ void CommandResolver::banHelperCommand(UserInfoTOPtr user, uint banTime, QString
     if(nickName.isEmpty())
         nickName = user->getUin();
 
-    QDateTime currentDate = QDateTime::currentDateTime();
+    QDateTime currentDate = GGChatBot::getDateTime();
     if(banTime == 0)
         currentDate = currentDate.addYears(1);        // jesli banTime==0 to dajemy bana na rok
     else
@@ -836,7 +839,7 @@ void CommandResolver::voiceCommand()
     if(user->getUserFlags() < GGChatBot::OP_USER_FLAG)
         return;
    
-	QRegExp rx("^(\\w+).*");
+    QRegExp rx("^(\\w+).*");
     int pos = 0;
 
     if((pos = rx.indexIn(lastString, pos)) != -1)
@@ -853,10 +856,12 @@ void CommandResolver::voiceCommand()
                 if(u->getUserFlags() < GGChatBot::SUPER_USER_FLAG)
                 {
                     QString msg = QString("%1 tajemniczo dostaje voice.").arg(u->getNick());
-                    u->setUserFlags(GGChatBot::VOICE_USER_FLAG);
                     GetProfile()->getSession()->sendMessage(msg);
                     qDebug() << msg;
-            	    return;
+                    if(u->getUserFlags() >= GGChatBot::OP_USER_FLAG)
+                        return;
+                    u->setUserFlags(GGChatBot::VOICE_USER_FLAG);
+           	    return;
                 }
                 else
                 {

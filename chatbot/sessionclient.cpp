@@ -107,7 +107,7 @@ bool SessionClient::Login()
     loginParams.password = GetProfile()->getBotSettings().getPassword().toAscii().data();
     loginParams.async = 1;
     //loginParams.encoding = GG_ENCODING_UTF8;
-    //loginParams.protocol_features = GG_FEATURE_ALL;
+    loginParams.protocol_features = GG_FEATURE_ALL;
 
     if (!( session = gg_login(&loginParams) ) )
     {
@@ -235,11 +235,22 @@ void SessionClient::EventLoop()
                 return;
             }
 
+            if(event->type == GG_XML_EVENT)
+            {
+                SetImageStatus(event);
+            }
+
             eventManager.ResolveEvent(event);
             
             gg_event_free(event);
         }
     }
+}
+
+void SessionClient::SetImageStatus(struct gg_event *event)
+{
+    QString xmlEvent(event->event.xml_event.data);
+    qDebug() << xmlEvent;
 }
 
 void SessionClient::sendMessage(QString message)

@@ -42,7 +42,7 @@ KickUserJob::~KickUserJob()
 void KickUserJob::makeJob()
 {
     QList<UserInfoTOPtr> usersList = GetProfile()->getUserDatabase()->getUserList();
-    QDateTime now = QDateTime::currentDateTime();
+    QDateTime now = GGChatBot::getDateTime();
 
     foreach(UserInfoTOPtr user, usersList)
     {
