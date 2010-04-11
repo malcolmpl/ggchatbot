@@ -26,6 +26,8 @@
 
 #include <errno.h>
 #include <QCoreApplication>
+#include <QBuffer>
+#include <QXmlQuery>
 
 SessionClient::SessionClient(QObject *parent)
     : QObject(parent)
