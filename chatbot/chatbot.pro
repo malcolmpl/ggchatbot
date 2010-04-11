@@ -23,6 +23,7 @@ SOURCES += main.cpp \
     pingserverjob.cpp \
     kickuserjob.cpp \
     common.cpp \
+	imagedescriptionsettings.cpp
 
 HEADERS += connectionthread.h \
     sessionclient.h \
@@ -41,4 +42,5 @@ HEADERS += connectionthread.h \
     kickuserjob.h \
     sessionclientptr.h \
     profileptr.h \
-    common.h
+    common.h \
+	imagedescriptionsettings.h
