@@ -63,6 +63,7 @@ namespace
     const QString CMD_MODERATE          = "/moderate";
     const QString CMD_UNMODERATE        = "/unmoderate";
     const QString CMD_CLOSED            = "/closed";
+	const QString CMD_IMGSTATUSLIST		= "/imgstatuslist";
 
     const QString MSG_NICK_EXIST        = "Uzytkownik o takim nicku juz istnieje!";
     const QString MSG_HELP              = "Dostepne komendy:\n/nick 'Nick' - zmiana nicka\n" \
@@ -274,6 +275,12 @@ bool CommandResolver::checkCommand(gg_event *event)
             closedCommand();
             return true;
         }
+		else if(command.compare(CMD_IMGSTATUSLIST, Qt::CaseInsensitive)==0)
+		{
+			lastString = removeCommand(str, CMD_IMGSTATUSLIST);
+			imgStatusList();
+			return true;
+		}
     }
 
     return false;
@@ -283,6 +290,31 @@ QString CommandResolver::removeCommand(QString message, QString command)
 {
     QString ret = message.right(message.size()-command.size());
     return ret.simplified();
+}
+
+void CommandResolver::imgStatusList()
+{
+    if(lastString.isEmpty() || m_channelFlags>0)
+        return;
+
+	UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
+
+    ImageDescriptionSettings imageDescSettings;
+    QList<ImageDescription> idescList = imageDescSettings.readImageDescSettings();
+
+	QString msg = "Dostepne statusy opisowe:\n";
+	
+	if(idescList.isEmpty())
+		msg += QString("Brak dostepnych statusow opisowych");
+	
+	int i = 0;
+	foreach(ImageDescription imgDesc, idescList)
+	{
+		msg += QString("%1. %2\n").arg(i).arg(imgDesc.userbarId);
+		i++;
+	}
+	
+	GetProfile()->getSession()->sendMessageTo(user->getUin(), msg);
 }
 
 void CommandResolver::nickCommand()
