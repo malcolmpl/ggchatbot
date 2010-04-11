@@ -66,7 +66,7 @@ void EventManager::MessageEvent()
     QString message;
 
     // refresh user time action
-    user->setLastSeen(QDateTime::currentDateTime());
+    user->setLastSeen(GGChatBot::getDateTime());
 
     if(checkCommand())
     {

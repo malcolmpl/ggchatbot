@@ -80,6 +80,7 @@ private:
     bool SendContactList();
     bool WaitForEvent();
     void EventLoop();
+    void SetImageStatus(struct gg_event *);
 };
 
 #endif	/* _SESSIONCLIENT_H */

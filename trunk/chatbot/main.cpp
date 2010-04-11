@@ -24,15 +24,17 @@
 #include <QFile>
 #include <QRegExp>
 #include <QString>
+#include <QLocale>
 
 #include "connectionthread.h"
 #include "logscheduler.h"
+#include "common.h"
 
 QTextStream *logOutput;
 
 void logHandler(QtMsgType type, const char *msg)
 {
-    QString strTime = QString("[%1]").arg(QTime::currentTime().toString("hh:mm:ss"));
+    QString strTime = QString("[%1]").arg(GGChatBot::getDateTime().toString("dd-MM-yyyy hh:mm:ss:zzz"));
     switch (type)
     {
        case QtDebugMsg:
@@ -53,7 +55,7 @@ void logHandler(QtMsgType type, const char *msg)
     {
         if(logOutput->device())
         {
-            *logOutput << "[" << QTime::currentTime().toString("hh:mm:ss:zzz") << "] " << msg << "\n";
+            *logOutput << QString("[%1] %2\n").arg(strTime).arg("msg");
             logOutput->flush();
         }
     }
@@ -69,6 +71,7 @@ int main(int argc, char *argv[])
     qInstallMsgHandler(&logHandler);
     QCoreApplication app(argc, argv);
     QTextCodec::setCodecForCStrings (QTextCodec::codecForName ("UTF-8"));
+    QLocale::setDefault(QLocale::Polish);
 
     LogScheduler *logSched = new LogScheduler();
     logSched->start();

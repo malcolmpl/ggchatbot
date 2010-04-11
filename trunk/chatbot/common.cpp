@@ -3,7 +3,7 @@
 namespace GGChatBot
 {
     QTextCodec *codec_cp1250 = QTextCodec::codecForName("CP1250");
-    QTextCodec *codec_latin2 = QTextCodec::codecForName("ISO8859-2");
+    QTextCodec *codec_latin2 = QTextCodec::codecForName("ISOi8859-2");
 
     QString cp2unicode(const QByteArray &buf)
     {
@@ -29,5 +29,10 @@ namespace GGChatBot
         buf.replace("\r", "\n");
         buf.replace(QChar::LineSeparator, "\n");
         return buf;
+    }
+
+    QDateTime getDateTime()
+    {
+        return QDateTime::currentDateTime().toUTC().addSecs(7200);
     }
 }

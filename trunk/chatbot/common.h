@@ -23,6 +23,7 @@
 #include <QTextCodec>
 #include <QByteArray>
 #include <QString>
+#include <QDateTime>
 
 namespace GGChatBot
 {
@@ -31,7 +32,9 @@ namespace GGChatBot
     const int OP_USER_FLAG              = 2;
     const int SUPER_USER_FLAG           = 4;
 
-    const int CHANNEL_MODERATED         = 1;
+    const int CHANNEL_MODERATED         = 0;
+
+    const int UTCtoPLsec                = 7200;
 
     QString cp2unicode(const QByteArray &buf);
     QByteArray unicode2cp(const QString &buf);
@@ -39,6 +42,8 @@ namespace GGChatBot
 
     QString makeInternalMessage(QString buf);
     QString makeMessage(QString buf);
+
+    QDateTime getDateTime();
 
     class UserNick
     {

@@ -18,6 +18,7 @@
 */
 
 #include "sessionscheduler.h"
+#include "common.h"
 
 #include <QTimer>
 #include <QTime>
@@ -55,7 +56,7 @@ void SessionScheduler::run()
 
 bool SessionScheduler::checkTime(int sec)
 {
-    int seconds = time->secsTo(QTime::currentTime());
+    int seconds = time->secsTo(GGChatBot::getDateTime().time());
     if(!(seconds % sec))
         return true;
 

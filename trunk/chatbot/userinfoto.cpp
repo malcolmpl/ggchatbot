@@ -18,10 +18,11 @@
 */
 
 #include "userinfoto.h"
+#include "common.h"
 
 UserInfoTO::UserInfoTO()
     : m_channelName("default"), m_onChannel(false), m_flags(GGChatBot::NONE_FLAG),
-    m_lastSeen(QDateTime::currentDateTime()), m_uin(0), m_banned(false)
+    m_lastSeen(GGChatBot::getDateTime()), m_uin(0), m_banned(false)
 {
 }
 

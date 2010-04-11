@@ -18,9 +18,10 @@
 */
 
 #include "logscheduler.h"
+#include "common.h"
 
 #include <QTimer>
-#include <QDate>
+#include <QDateTime>
 #include <QFile>
 #include <QTextStream>
 #include <QDebug>
@@ -33,8 +34,7 @@ LogScheduler::LogScheduler()
 
 void LogScheduler::run()
 {
-    QDate date;
-    date = QDate::currentDate();
+    QDateTime date = GGChatBot::getDateTime();
     QString fileName = QString("logs/log_%1.txt").arg(date.toString("ddMMyyyy"));
     logFile.setFileName(fileName);
     if (!logFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append))
@@ -59,9 +59,10 @@ LogScheduler::~LogScheduler()
 
 void LogScheduler::updateLogFile()
 {
-    if(QTime::currentTime() < lastTime)
+    QTime currentTime = GGChatBot::getDateTime().time();
+    if(currentTime < lastTime)
     {
-        lastTime = QTime::currentTime();
+        lastTime = currentTime;
         if(!logOutput->device())
             return;
 
@@ -69,8 +70,7 @@ void LogScheduler::updateLogFile()
         logOutput = 0;
         
         logFile.close();
-        QDate date;
-        date = QDate::currentDate();
+        QDateTime date = GGChatBot::getDateTime();
         QString fileName = QString("logs/log_%1.txt").arg(date.toString("ddMMyyyy"));
         logFile.setFileName(fileName);
         if (!logFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append))
