@@ -55,7 +55,8 @@ public slots:
     void sendMessageRichtext(uin_t, QString, const unsigned char*, int);
     void sendMessageRichtextTo(uin_t uin, QString message, const unsigned char *format, int formatlen);
     void ChangeStatus(QString description = "v0.3", int status = GG_STATUS_FFC_DESCR);
-    
+	void SetImageStatus(QString description);
+	
 signals:
     void endServer();
     void restartConnection();
@@ -80,7 +81,7 @@ private:
     bool SendContactList();
     bool WaitForEvent();
     void EventLoop();
-    void SetImageStatus(struct gg_event *);
+    void ReadImageStatus(struct gg_event *);
 };
 
 #endif	/* _SESSIONCLIENT_H */
