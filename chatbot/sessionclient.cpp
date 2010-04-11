@@ -22,6 +22,7 @@
 #include "sessionscheduler.h"
 #include "userdatabase.h"
 #include "profile.h"
+#include "imagedescriptionsettings.h"
 
 #include <errno.h>
 #include <QCoreApplication>
@@ -155,6 +156,13 @@ void SessionClient::ChangeStatus(QString description, int status)
     gg_change_status_descr(session, status, data.data());
 }
 
+void SessionClient::SetImageStatus(QString description)
+{
+    qDebug() << "Zmieniam status na status obrazkowy" << description;
+    QByteArray data = GGChatBot::unicode2cp(GGChatBot::makeMessage(description));
+    gg_change_status_descr(session, GG_STATUS_DESCR_MASK | GG_STATUS_IMAGE_MASK | GG_STATUS_FFC, data.data());
+}
+
 bool SessionClient::WaitForEvent()
 {
     if( !(event = gg_watch_fd(session)) )
@@ -237,7 +245,7 @@ void SessionClient::EventLoop()
 
             if(event->type == GG_XML_EVENT)
             {
-                SetImageStatus(event);
+                ReadImageStatus(event);
             }
 
             eventManager.ResolveEvent(event);
@@ -247,10 +255,46 @@ void SessionClient::EventLoop()
     }
 }
 
-void SessionClient::SetImageStatus(struct gg_event *event)
+void SessionClient::ReadImageStatus(struct gg_event *event)
 {
     QString xmlEvent(event->event.xml_event.data);
     qDebug() << xmlEvent;
+	
+    QString xmlUserbarId("doc($internalFile)/activeUserbarEventList/activeUserbarEvent/userbarId/string()");
+    QString xmlBeginTime("doc($internalFile)/activeUserbarEventList/activeUserbarEvent/beginTime/string()");
+    QString xmlExpireTime("doc($internalFile)/activeUserbarEventList/activeUserbarEvent/expireTime/string()");
+
+    QBuffer outputBuffer(&xmlEvent);
+    outputBuffer.open(QIODevice::ReadOnly);
+
+    QXmlQuery query;
+    query.bindVariable("internalFile", &outputBuffer);
+
+    QString userbarId;
+    query.setQuery(xmlUserbarId);
+    query.evaluateTo(&userbarId);
+
+    QString beginTime;
+    query.setQuery(xmlBeginTime);
+    query.evaluateTo(&beginTime);
+    beginTime = beginTime.left(beginTime.length() - (beginTime.length()-beginTime.indexOf("+")));
+
+    QString expireTime;
+    query.setQuery(xmlExpireTime);
+    query.evaluateTo(&expireTime);
+    expireTime = expireTime.left(expireTime.length() - (expireTime.length()-expireTime.indexOf("+")));
+
+    ImageDescriptionSettings imageDescSettings;
+    QList<ImageDescription> idescList = imageDescSettings.readImageDescSettings();
+
+    ImageDescription idesc;
+    idesc.userbarId = userbarId;
+    idesc.beginTime = QDateTime::fromString(beginTime, Qt::ISODate);
+    idesc.expireTime = QDateTime::fromString(expireTime, Qt::ISODate);
+
+    idescList.push_back(idesc);
+
+    imageDescSettings.saveImageDescription(idescList);
 }
 
 void SessionClient::sendMessage(QString message)
