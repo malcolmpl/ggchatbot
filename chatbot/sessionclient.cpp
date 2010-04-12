@@ -297,7 +297,8 @@ void SessionClient::ReadImageStatus(struct gg_event *event)
     query.evaluateTo(&expireTime);
 
     ImageDescriptionSettings imageDescSettings;
-    QList<ImageDescription> idescList = imageDescSettings.readImageDescSettings();
+    QList<ImageDescription> idescList;
+    imageDescSettings.readImageDescSettings(idescList);
 
     for(int i=0; i<userbarId.size(); ++i)
     {

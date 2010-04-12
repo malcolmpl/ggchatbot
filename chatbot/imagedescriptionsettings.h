@@ -20,7 +20,7 @@ class ImageDescriptionSettings : public QObject
 public:
     ImageDescriptionSettings();
     ~ImageDescriptionSettings();
-    QList<ImageDescription> readImageDescSettings();
+    void readImageDescSettings(QList<ImageDescription> &);
     void saveImageDescription(QList<ImageDescription> &);
 
 private:
