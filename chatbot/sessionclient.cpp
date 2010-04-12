@@ -172,6 +172,7 @@ void SessionClient::SetImageStatus(QString description)
 {
     qDebug() << "Zmieniam status na status obrazkowy" << description;
     QByteArray data = GGChatBot::unicode2cp(GGChatBot::makeMessage(description));
+    ChangeStatus(description, GG_STATUS_FFC);
     gg_change_status_descr(session, GG_STATUS_DESCR_MASK | GG_STATUS_IMAGE_MASK | GG_STATUS_FFC, data.data());
 }
 
