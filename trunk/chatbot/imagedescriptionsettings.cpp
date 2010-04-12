@@ -10,9 +10,8 @@ ImageDescriptionSettings::ImageDescriptionSettings()
 ImageDescriptionSettings::~ImageDescriptionSettings()
 {}
 
-QList<ImageDescription> ImageDescriptionSettings::readImageDescSettings()
+void ImageDescriptionSettings::readImageDescSettings(QList<ImageDescription> &idescList)
 {
-    QList<ImageDescription> idescList;
     ImageDescription idesc;
     int size = settings->beginReadArray(IMAGE_DESC_NAME);
 
@@ -27,8 +26,6 @@ QList<ImageDescription> ImageDescriptionSettings::readImageDescSettings()
 
         idescList.push_back(idesc);
     }
-
-    return idescList;
 }
 
 void ImageDescriptionSettings::saveImageDescription(QList<ImageDescription> &idescList)
@@ -44,4 +41,6 @@ void ImageDescriptionSettings::saveImageDescription(QList<ImageDescription> &ide
     }
 
     settings->endArray();
+
+    settings->sync();
 }

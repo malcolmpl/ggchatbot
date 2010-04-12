@@ -300,7 +300,8 @@ void CommandResolver::imgStatusList()
         return;
 
     ImageDescriptionSettings imageDescSettings;
-    QList<ImageDescription> idescList = imageDescSettings.readImageDescSettings();
+    QList<ImageDescription> idescList;
+    imageDescSettings.readImageDescSettings(idescList);
 
     QString msg = "Dostepne statusy opisowe:\n";
 	
