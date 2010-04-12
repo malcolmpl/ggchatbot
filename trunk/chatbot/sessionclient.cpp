@@ -29,6 +29,8 @@
 #include <QBuffer>
 #include <QXmlQuery>
 
+#include "protocol.h"
+
 SessionClient::SessionClient(QObject *parent)
     : QObject(parent)
 {
@@ -109,8 +111,12 @@ bool SessionClient::Login()
     loginParams.uin = uin;
     loginParams.password = GetProfile()->getBotSettings().getPassword().toAscii().data();
     loginParams.async = 1;
+    loginParams.status = GG_STATUS_FFC;
+    loginParams.protocol_version = GG_DEFAULT_PROTOCOL_VERSION;
+    loginParams.client_version = "Gadu-Gadu Client Build 10.0.0.10784";
+    loginParams.has_audio = 0;
     //loginParams.encoding = GG_ENCODING_UTF8;
-    loginParams.protocol_features = GG_FEATURE_ALL;
+    loginParams.protocol_features = (GG_FEATURE_STATUS80BETA|GG_FEATURE_MSG80|GG_FEATURE_STATUS80|GG_FEATURE_MSG77|GG_FEATURE_STATUS77|GG_FEATURE_DND_FFC|GG_FEATURE_IMAGE_DESCR);
 
     if (!( session = gg_login(&loginParams) ) )
     {
@@ -120,6 +126,8 @@ bool SessionClient::Login()
     }
 
     qDebug() << "Laczenie...";
+
+    qDebug() << "Protocol version:" << session->protocol_version << "client version:" << session->client_version;
 
     if(scheduler)
     {
@@ -245,7 +253,7 @@ void SessionClient::EventLoop()
                 return;
             }
 
-            if(event->type == GG_XML_EVENT)
+            if(event->type == GG_XML_EVENT | event->type == GG_EVENT_XML_EVENT)
             {
                 ReadImageStatus(event);
             }
@@ -266,7 +274,7 @@ void SessionClient::ReadImageStatus(struct gg_event *event)
     QString xmlBeginTime("doc($internalFile)/activeUserbarEventList/activeUserbarEvent/beginTime/string()");
     QString xmlExpireTime("doc($internalFile)/activeUserbarEventList/activeUserbarEvent/expireTime/string()");
 
-	QByteArray out = xmlEvent.toUtf8();
+    QByteArray out = xmlEvent.toUtf8();
     QBuffer outputBuffer(&out);
     outputBuffer.open(QIODevice::ReadOnly);
 
