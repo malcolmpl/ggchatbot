@@ -235,8 +235,6 @@ void SessionClient::EventLoop()
                 continue;
             }
 
-            qDebug() << "Event type:" << event->type;
-
             if(event->type == GG_EVENT_CONN_SUCCESS)
             {
                 if(!SendContactList())
