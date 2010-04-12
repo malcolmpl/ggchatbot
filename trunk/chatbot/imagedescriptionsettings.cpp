@@ -1,10 +1,15 @@
 #include "imagedescriptionsettings.h"
 
+#include <QtDebug>
+
 const QString IMAGE_DESC_NAME = "imageDescription";
 
 ImageDescriptionSettings::ImageDescriptionSettings()
 {
     settings = QSharedPointer<QSettings>(new QSettings("imagedescription.ini", QSettings::IniFormat));
+
+    if(!settings->isWritable() || settings->status() != QSettings::NoError)
+        qDebug() << "Error in reading Image description file!";
 }
 
 ImageDescriptionSettings::~ImageDescriptionSettings()
@@ -12,6 +17,8 @@ ImageDescriptionSettings::~ImageDescriptionSettings()
 
 void ImageDescriptionSettings::readImageDescSettings(QList<ImageDescription> &idescList)
 {
+    qDebug() << "Read image description file.";
+
     ImageDescription idesc;
     int size = settings->beginReadArray(IMAGE_DESC_NAME);
 
@@ -30,6 +37,8 @@ void ImageDescriptionSettings::readImageDescSettings(QList<ImageDescription> &id
 
 void ImageDescriptionSettings::saveImageDescription(QList<ImageDescription> &idescList)
 {
+    qDebug() << "Save image description file.";
+
     settings->beginWriteArray(IMAGE_DESC_NAME);
 
     for(int i=0; i<idescList.size(); ++i)
