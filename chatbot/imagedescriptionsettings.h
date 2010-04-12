@@ -2,7 +2,6 @@
 #define IMAGEDESCRIPTIONSETTINGS_H
 
 #include <QObject>
-#include <QSharedPointer>
 #include <QSettings>
 #include <QDateTime>
 
@@ -24,7 +23,7 @@ public:
     void saveImageDescription(QList<ImageDescription> &);
 
 private:
-    QSharedPointer<QSettings> settings;
+    QSettings *settings;
 };
 
 #endif // IMAGEDESCRIPTIONSETTINGS_H

@@ -302,11 +302,18 @@ void SessionClient::ReadImageStatus(struct gg_event *event)
 
     for(int i=0; i<userbarId.size(); ++i)
     {
+        bool bFound = false;
         foreach(ImageDescription imgDescription, idescList)
         {
             if(imgDescription.userbarId == userbarId.at(i))
-                continue;
+            {
+                bFound = true;
+                break;
+            }
         }
+
+        if(bFound)
+            continue;
 
         ImageDescription idesc;
         idesc.userbarId = userbarId.at(i);

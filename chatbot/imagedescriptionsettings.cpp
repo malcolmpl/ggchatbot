@@ -2,44 +2,50 @@
 
 #include <QtDebug>
 
-const QString IMAGE_DESC_NAME = "imageDescription";
-
 ImageDescriptionSettings::ImageDescriptionSettings()
 {
-    settings = QSharedPointer<QSettings>(new QSettings("imagedescription.ini", QSettings::IniFormat));
+    settings = new QSettings("imagedescription.ini", QSettings::IniFormat);
 
     if(!settings->isWritable() || settings->status() != QSettings::NoError)
         qDebug() << "Error in reading Image description file!";
 }
 
 ImageDescriptionSettings::~ImageDescriptionSettings()
-{}
+{
+    delete settings;
+}
 
 void ImageDescriptionSettings::readImageDescSettings(QList<ImageDescription> &idescList)
 {
     qDebug() << "Read image description file.";
 
-    ImageDescription idesc;
-    int size = settings->beginReadArray(IMAGE_DESC_NAME);
+    int size = settings->beginReadArray("imageDescription");
 
     for(int i=0; i<size; ++i)
     {
         settings->setArrayIndex(i);
+
+        ImageDescription idesc;
         idesc.userbarId = settings->value("UserbarId").toString();
         idesc.beginTime = settings->value("BeginTime").toDateTime();
         idesc.expireTime = settings->value("ExpireTime").toDateTime();
 
-        // sprawdzic czy expire uplynal
+        qDebug() << idesc.userbarId << idesc.beginTime << idesc.expireTime;
 
-        idescList.push_back(idesc);
+        // sprawdzic czy expire uplynal
+        if(QDateTime::currentDateTime() < idesc.expireTime)
+            idescList.push_back(idesc);
     }
+
+    settings->endArray();
 }
 
 void ImageDescriptionSettings::saveImageDescription(QList<ImageDescription> &idescList)
 {
     qDebug() << "Save image description file.";
+    settings->clear();
 
-    settings->beginWriteArray(IMAGE_DESC_NAME);
+    settings->beginWriteArray("imageDescription");
 
     for(int i=0; i<idescList.size(); ++i)
     {
