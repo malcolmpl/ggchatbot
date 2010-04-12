@@ -271,6 +271,8 @@ void SessionClient::ReadImageStatus(struct gg_event *event)
 {
     QString xmlEvent(event->event.xml_event.data);
 
+    qDebug() << "New XML Event: " << xmlEvent;
+
     QString xmlUserbarId("doc($internalFile)/activeUserbarEventList/activeUserbarEvent/userbarId/string()");
     QString xmlBeginTime("doc($internalFile)/activeUserbarEventList/activeUserbarEvent/beginTime/string()");
     QString xmlExpireTime("doc($internalFile)/activeUserbarEventList/activeUserbarEvent/expireTime/string()");
