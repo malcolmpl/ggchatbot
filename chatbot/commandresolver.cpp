@@ -18,7 +18,7 @@
 */
 
 #include "userinfoto.h"
-
+#include "imagedescriptionsettings.h"
 #include "sessionclient.h"
 #include "botsettings.h"
 #include "userdatabase.h"
@@ -294,27 +294,27 @@ QString CommandResolver::removeCommand(QString message, QString command)
 
 void CommandResolver::imgStatusList()
 {
-    if(lastString.isEmpty() || m_channelFlags>0)
+    UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);    
+    
+    if(user->getUserFlags() < GGChatBot::OP_USER_FLAG)
         return;
-
-	UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
 
     ImageDescriptionSettings imageDescSettings;
     QList<ImageDescription> idescList = imageDescSettings.readImageDescSettings();
 
-	QString msg = "Dostepne statusy opisowe:\n";
+    QString msg = "Dostepne statusy opisowe:\n";
 	
-	if(idescList.isEmpty())
-		msg += QString("Brak dostepnych statusow opisowych");
+    if(idescList.isEmpty())
+        msg += QString("Brak dostepnych statusow opisowych");
 	
-	int i = 0;
-	foreach(ImageDescription imgDesc, idescList)
-	{
-		msg += QString("%1. %2\n").arg(i).arg(imgDesc.userbarId);
-		i++;
-	}
+    int i = 0;
+    foreach(ImageDescription imgDesc, idescList)
+    {
+        msg += QString("%1. %2\n").arg(i).arg(imgDesc.userbarId);
+        i++;
+    }
 	
-	GetProfile()->getSession()->sendMessageTo(user->getUin(), msg);
+    GetProfile()->getSession()->sendMessageTo(user->getUin(), msg);
 }
 
 void CommandResolver::nickCommand()

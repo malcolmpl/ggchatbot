@@ -1,4 +1,5 @@
 QT -= gui
+QT += xmlpatterns xml
 LIBS += -lgadu
 TARGET = ggchatbot
 CONFIG += console \
