@@ -270,8 +270,7 @@ void SessionClient::EventLoop()
 void SessionClient::ReadImageStatus(struct gg_event *event)
 {
     QString xmlEvent(event->event.xml_event.data);
-    qDebug() << "XML EVENT:" << xmlEvent;
-	
+
     QString xmlUserbarId("doc($internalFile)/activeUserbarEventList/activeUserbarEvent/userbarId/string()");
     QString xmlBeginTime("doc($internalFile)/activeUserbarEventList/activeUserbarEvent/beginTime/string()");
     QString xmlExpireTime("doc($internalFile)/activeUserbarEventList/activeUserbarEvent/expireTime/string()");
@@ -283,29 +282,38 @@ void SessionClient::ReadImageStatus(struct gg_event *event)
     QXmlQuery query;
     query.bindVariable("internalFile", &outputBuffer);
 
-    QString userbarId;
+    QStringList userbarId;
     query.setQuery(xmlUserbarId);
     query.evaluateTo(&userbarId);
 
-    QString beginTime;
+    QStringList beginTime;
     query.setQuery(xmlBeginTime);
     query.evaluateTo(&beginTime);
-    beginTime = beginTime.left(beginTime.length() - (beginTime.length()-beginTime.indexOf("+")));
 
-    QString expireTime;
+    QStringList expireTime;
     query.setQuery(xmlExpireTime);
     query.evaluateTo(&expireTime);
-    expireTime = expireTime.left(expireTime.length() - (expireTime.length()-expireTime.indexOf("+")));
 
     ImageDescriptionSettings imageDescSettings;
     QList<ImageDescription> idescList = imageDescSettings.readImageDescSettings();
 
-    ImageDescription idesc;
-    idesc.userbarId = userbarId;
-    idesc.beginTime = QDateTime::fromString(beginTime, Qt::ISODate);
-    idesc.expireTime = QDateTime::fromString(expireTime, Qt::ISODate);
+    for(int i=0; i<userbarId.size(); ++i)
+    {
+        foreach(ImageDescription imgDescription, idescList)
+        {
+            if(imgDescription.userbarId == userbarId.at(i))
+                continue;
+        }
 
-    idescList.push_back(idesc);
+        ImageDescription idesc;
+        idesc.userbarId = userbarId.at(i);
+        QString btime = beginTime.at(i).left(beginTime.at(i).length() - (beginTime.at(i).length()-beginTime.at(i).indexOf("+")));
+        QString etime = expireTime.at(i).left(expireTime.at(i).length() - (expireTime.at(i).length()-expireTime.at(i).indexOf("+")));
+        idesc.beginTime = QDateTime::fromString(btime, Qt::ISODate);
+        idesc.expireTime = QDateTime::fromString(etime, Qt::ISODate);
+
+        idescList.push_back(idesc);
+    }
 
     imageDescSettings.saveImageDescription(idescList);
 }
