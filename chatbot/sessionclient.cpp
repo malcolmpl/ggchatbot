@@ -31,6 +31,8 @@
 
 #include "protocol.h"
 
+const char * BOT_DEFAULT_VERSION = "Gadu-Gadu Client Build 10.0.0.10784";
+
 SessionClient::SessionClient(QObject *parent)
     : QObject(parent)
 {
@@ -113,7 +115,7 @@ bool SessionClient::Login()
     loginParams.async = 1;
     loginParams.status = GG_STATUS_FFC;
     loginParams.protocol_version = GG_DEFAULT_PROTOCOL_VERSION;
-    loginParams.client_version = "Gadu-Gadu Client Build 10.0.0.10784";
+    loginParams.client_version = const_cast<char*>(BOT_DEFAULT_VERSION);
     loginParams.has_audio = 0;
     //loginParams.encoding = GG_ENCODING_UTF8;
     loginParams.protocol_features = (GG_FEATURE_STATUS80BETA|GG_FEATURE_MSG80|GG_FEATURE_STATUS80|GG_FEATURE_MSG77|GG_FEATURE_STATUS77|GG_FEATURE_DND_FFC|GG_FEATURE_IMAGE_DESCR);
@@ -233,6 +235,8 @@ void SessionClient::EventLoop()
                 continue;
             }
 
+            qDebug() << "Event type:" << event->type;
+
             if(event->type == GG_EVENT_CONN_SUCCESS)
             {
                 if(!SendContactList())
@@ -253,7 +257,7 @@ void SessionClient::EventLoop()
                 return;
             }
 
-            if(event->type == GG_XML_EVENT | event->type == GG_EVENT_XML_EVENT)
+            if(event->type == GG_XML_EVENT || event->type == GG_EVENT_XML_EVENT)
             {
                 ReadImageStatus(event);
             }
@@ -268,7 +272,7 @@ void SessionClient::EventLoop()
 void SessionClient::ReadImageStatus(struct gg_event *event)
 {
     QString xmlEvent(event->event.xml_event.data);
-    qDebug() << xmlEvent;
+    qDebug() << "XML EVENT:" << xmlEvent;
 	
     QString xmlUserbarId("doc($internalFile)/activeUserbarEventList/activeUserbarEvent/userbarId/string()");
     QString xmlBeginTime("doc($internalFile)/activeUserbarEventList/activeUserbarEvent/beginTime/string()");

@@ -24,7 +24,7 @@ SOURCES += main.cpp \
     pingserverjob.cpp \
     kickuserjob.cpp \
     common.cpp \
-	imagedescriptionsettings.cpp
+    imagedescriptionsettings.cpp
 
 HEADERS += connectionthread.h \
     sessionclient.h \
@@ -44,4 +44,9 @@ HEADERS += connectionthread.h \
     sessionclientptr.h \
     profileptr.h \
     common.h \
-	imagedescriptionsettings.h
+    imagedescriptionsettings.h \
+    libgadu.h \
+    protocol.h \
+    resolver.h \
+    compat.h
+
