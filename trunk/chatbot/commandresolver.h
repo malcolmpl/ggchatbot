@@ -64,7 +64,8 @@ private:
     void moderateCommand();
     void unmoderateCommand();
     void setTopic(QString, bool showMessage = true);
-	void imgStatusList();
+    void imgStatusList();
+    void setImgStatus();
 };
 
 #endif	/* _COMMANDRESOLVER_H */
