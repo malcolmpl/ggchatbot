@@ -406,7 +406,10 @@ void CommandResolver::privCommand()
         }
 
         GetProfile()->getSession()->sendMessageTo(user->getUin(), QString("Nie ma uzytkownika o nicku %1.").arg(newNick));
+        return;
     }
+
+    GetProfile()->getSession()->sendMessageTo(user->getUin(), QString("Poprawna komenda to: /priv Nick tekst"));
 }
 
 void CommandResolver::nickCommand()
