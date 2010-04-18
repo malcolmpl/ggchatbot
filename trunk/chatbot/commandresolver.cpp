@@ -47,6 +47,7 @@ namespace
     const QString CMD_KONIEC		= "/koniec";
     const QString CMD_WHO               = "/who";
     const QString CMD_KTO               = "/kto";
+    const QString CMD_USERS             = "/users";
     const QString CMD_HELP              = "/help";
     const QString CMD_HELP_ALIAS        = "/h";
     const QString CMD_POMOC             = "/pomoc";
@@ -181,6 +182,12 @@ bool CommandResolver::checkCommand(gg_event *event)
         else if(command.compare(CMD_KTO, Qt::CaseInsensitive)==0)
         {
             lastString = removeCommand(str, CMD_KTO);
+            whoCommand();
+            return true;
+        }
+        else if(command.compare(CMD_USERS, Qt::CaseInsensitive)==0)
+        {
+            lastString = removeCommand(str, CMD_USERS);
             whoCommand();
             return true;
         }
