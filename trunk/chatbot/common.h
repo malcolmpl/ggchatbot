@@ -34,6 +34,7 @@ namespace GGChatBot
 
     const int CHANNEL_MODERATED         = 0;
 
+    const bool DISABLE_BACK_MESSAGE	= true;
     const int UTCtoPLsec                = 7200;
 
     QString cp2unicode(const QByteArray &buf);
