@@ -356,7 +356,12 @@ void SessionClient::sendMessageRichtext(uin_t uin, QString message, const unsign
     QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
     foreach(UserInfoTOPtr user, users)
     {
-        if(user->getUin() != uin && GetProfile()->getUserDatabase()->isUserOnChannel(user))
+        if(GGChatBot::DISABLE_BACK_MESSAGE)
+        {
+            if(user->getUin() != uin && GetProfile()->getUserDatabase()->isUserOnChannel(user))
+                gg_send_message_richtext(session, GG_CLASS_CHAT, user->getUin(), (const unsigned char*)data.data(), format, formatlen);
+        }
+        else
             gg_send_message_richtext(session, GG_CLASS_CHAT, user->getUin(), (const unsigned char*)data.data(), format, formatlen);
     }
 }
@@ -379,8 +384,13 @@ void SessionClient::sendMessage(uin_t uin, QString message)
     QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
     foreach(UserInfoTOPtr user, users)
     {
-        if(user->getUin() != uin && GetProfile()->getUserDatabase()->isUserOnChannel(user))
-            sendMessageTo(user->getUin(), message);
+        if(GGChatBot::DISABLE_BACK_MESSAGE)
+        {
+            if(user->getUin() != uin && GetProfile()->getUserDatabase()->isUserOnChannel(user))
+                sendMessageTo(user->getUin(), message);
+        }
+        else
+            sendMessageTo(user->getUin(), message);    
     }
 }
 
