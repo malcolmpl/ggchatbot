@@ -320,10 +320,10 @@ void CommandResolver::imgStatusList()
     QList<ImageDescription> idescList;
     imageDescSettings.readImageDescSettings(idescList);
 
-    QString msg = "Dostepne statusy opisowe:\n";
+    QString msg = "Dostepne statusy graficzne:\n";
 	
     if(idescList.isEmpty())
-        msg += QString("Brak dostepnych statusow opisowych");
+        msg += QString("Brak dostepnych statusow graficznych.");
 	
     int i = 0;
     foreach(ImageDescription imgDesc, idescList)
@@ -400,7 +400,7 @@ void CommandResolver::privCommand()
                     return;
                 }
 
-                GetProfile()->getSession()->sendMessageTo(u->getUin(), QString("%1 pisze: %2").arg(userNick.nick).arg(lastString));
+                GetProfile()->getSession()->sendMessageTo(u->getUin(), QString("* (priv) * %1 %2").arg(userNick.nick).arg(lastString));
                 return;
             }
         }
