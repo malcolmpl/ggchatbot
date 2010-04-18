@@ -55,7 +55,7 @@ void logHandler(QtMsgType type, const char *msg)
     {
         if(logOutput->device())
         {
-            *logOutput << QString("[%1] %2\n").arg(strTime).arg("msg");
+            *logOutput << QString("%1 %2\n").arg(strTime).arg(msg);
             logOutput->flush();
         }
     }
