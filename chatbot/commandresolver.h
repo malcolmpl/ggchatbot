@@ -66,6 +66,7 @@ private:
     void setTopic(QString, bool showMessage = true);
     void imgStatusList();
     void setImgStatus();
+    void privCommand();
 };
 
 #endif	/* _COMMANDRESOLVER_H */

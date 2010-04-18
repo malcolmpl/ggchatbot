@@ -65,18 +65,22 @@ namespace
     const QString CMD_CLOSED            = "/closed";
     const QString CMD_IMGSTATUSLIST	= "/imgstatuslist";
     const QString CMD_SETIMGSTATUS      = "/setimgstatus";
+    const QString CMD_PRIV              = "/priv";
 
     const QString MSG_NICK_EXIST        = "Uzytkownik o takim nicku juz istnieje!";
     const QString MSG_HELP              = "Dostepne komendy:\n/nick 'Nick' - zmiana nicka\n" \
         "/start - wejscie na czat\n/koniec 'tekst'- opuszczenie czatu, opcjonalnie z tekstem\n" \
-        "/kto - spis osob dostepnych na czacie\n/pomoc - pomoc ktora wlasnie czytasz ;)";
+        "/kto - spis osob dostepnych na czacie\n/priv Nick 'tekst' - wysyla prywatna wiadomosc\n" \
+        "/pomoc - pomoc ktora wlasnie czytasz ;)";
 
     const QString MSG_HELP_FOR_OPS      = "Dostepne komendy:\n/nick 'Nick' - zmiana nicka\n" \
         "/join /start - wejscie na czat\n/leave /stop /quit /koniec 'tekst'- opuszczenie czatu\n" \
-        "/who /kto - spis osob dostepnych na czacie\n/help /pomoc - pomoc\n/ban /unban nick/numer czas opis - banowanie" \
+        "/who /kto - spis osob dostepnych na czacie\n/priv Nick 'tekst' - wysyla prywatna wiadomosc\n" \
+        "/help /pomoc - pomoc\n/ban /unban nick/numer czas opis - banowanie" \
         ", czas w minutach, 0=rok\n/kick nick/numer opis - wywalenie z czatu\n/op numer - ustawia flage op'a\n" \
         "/voice numer - ustawia flage voice\n/removeflags numer - zdejmuje wszystkie flagi\n" \
-        "/moderate /unmoderate - ustawia/zdejmuje czat moderowany";
+        "/moderate /unmoderate - ustawia/zdejmuje czat moderowany\n/imgstatuslist - pokazuje dostepne statusy graficzne\n" \
+        "/setimgstatus numer - ustawia status graficzny o podanym numerze";
 }
 
 CommandResolver::CommandResolver()
@@ -288,6 +292,12 @@ bool CommandResolver::checkCommand(gg_event *event)
             setImgStatus();
             return true;
         }
+        else if(command.compare(CMD_PRIV, Qt::CaseInsensitive)==0)
+        {
+            lastString = removeCommand(str, CMD_PRIV);
+            privCommand();
+            return true;
+        }
     }
 
     return false;
@@ -353,6 +363,49 @@ void CommandResolver::setImgStatus()
             return;
 
         GetProfile()->getSession()->SetImageStatus(idescList.at(itemPos).userbarId);
+    }
+}
+
+void CommandResolver::privCommand()
+{
+    if(lastString.isEmpty())
+        return;
+
+    UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
+    if(!user->getOnChannel())
+        return;
+
+    QRegExp rx("^(\\w+).*");
+    int pos = 0;
+
+    if((pos = rx.indexIn(lastString, pos)) != -1)
+    {
+        QString newNick = rx.cap(1);
+        lastString = removeCommand(rx.cap(0), newNick);  
+        QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
+        foreach(UserInfoTOPtr u, users)
+        {
+            if(u->getNick() == newNick)
+            {
+                GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(user);
+
+                if(!u->getOnChannel())
+                {
+                    GetProfile()->getSession()->sendMessageTo(user->getUin(), QString("Uzytkownika %1 nie ma na czacie.").arg(u->getNick()));
+                    return;
+                }
+                if(lastString.isEmpty())
+                {
+                    GetProfile()->getSession()->sendMessageTo(user->getUin(), QString("Poprawna komenda to: /priv Nick tekst"));
+                    return;
+                }
+
+                GetProfile()->getSession()->sendMessageTo(u->getUin(), QString("%1 pisze: %2").arg(userNick.nick).arg(lastString));
+                return;
+            }
+        }
+
+        GetProfile()->getSession()->sendMessageTo(user->getUin(), QString("Nie ma uzytkownika o nicku %1.").arg(newNick));
     }
 }
 
