@@ -41,8 +41,11 @@ public:
     void setDefaultDescription(const QString v) { m_defaultDescription = v; }
     QString getDefaultDescription() const { return m_defaultDescription; }
 
-    void setChannelFlags(const int v) { m_channelFlags = v; }
-    int getChannelFlags() { return m_channelFlags; }
+    void setChannelModerated(const bool v) { m_channelModerated = v; }
+    bool getChannelModerated() { return m_channelModerated; }
+
+    void setChannelClosed(const bool v) { m_channelClosed = v; }
+    bool getChannelClosed() { return m_channelClosed; }
 
     void setWhoDescription(const QString v) { m_whoDescription = v; }
     QString getWhoDescription() const { return m_whoDescription; }
@@ -53,7 +56,8 @@ private:
     QString m_password;
     QString m_defaultDescription;
     QString m_whoDescription;
-    int m_channelFlags;
+    int m_channelModerated;
+    bool m_channelClosed;
 };
 
 #endif	/* _BOTSETTINGSTO_H */
