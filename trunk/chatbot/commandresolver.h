@@ -41,6 +41,7 @@ private:
     bool mChannelModerated;
     QString m_topic;
     bool mChannelClosed;
+    QDateTime mLastUserJoin;
 
     QString removeCommand(QString message, QString command);
 

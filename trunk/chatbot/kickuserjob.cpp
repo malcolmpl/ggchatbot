@@ -28,6 +28,8 @@
 
 // 10 minutes in seconds
 const int INACTIVE_TIME = 60*20;
+// 1 minuta in seconds
+const int INACTIVE_NONICK_TIME = 60;
 
 KickUserJob::KickUserJob()
 {
@@ -44,20 +46,29 @@ void KickUserJob::makeJob()
     QList<UserInfoTOPtr> usersList = GetProfile()->getUserDatabase()->getUserList();
     QDateTime now = GGChatBot::getDateTime();
 
+    int inactiveTime;
+
     foreach(UserInfoTOPtr user, usersList)
     {
         if(user->getOnChannel())
         {
+            inactiveTime = INACTIVE_TIME;
+
             // it not working on special users
             if(user->getUserFlags() >= GGChatBot::OP_USER_FLAG)
                 continue;
 
-            if(user->getLastSeen().secsTo(now) > INACTIVE_TIME)
+            if(user->getNick().startsWith("Ktos", Qt::CaseInsensitive))
+            {
+                inactiveTime = INACTIVE_NONICK_TIME;
+            }
+
+            if(user->getLastSeen().secsTo(now) > inactiveTime)
             {
                 // kick user
                 GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(user);
                 QString msg = QString("%1 wylatuje z czatu. Nie spac, zwiedzac!").arg(userNick.nick);
-                GetProfile()->getSession()->sendMessage(user->getUin(), msg);
+                GetProfile()->getSession()->sendMessage(msg);
                 qDebug() << msg;
                 msg = QString("Zostales automatycznie wylogowany z powodu braku aktywnosci przez 20 minut. Aby powrocic wpisz: /start");
                 GetProfile()->getSession()->sendMessageTo(user->getUin(), msg);
