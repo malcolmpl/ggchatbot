@@ -85,6 +85,7 @@ namespace
 }
 
 CommandResolver::CommandResolver()
+    : mLastUserJoin(QDateTime::currentDateTime())
 {
 }
 
@@ -509,10 +510,23 @@ void CommandResolver::closedCommand()
 
 bool CommandResolver::checkIfUserCanJoin()
 {
+    UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
+
+    QDateTime currentDateTime = QDateTime::currentDateTime();
+    currentDateTime = currentDateTime.addSecs(-15); // przez 15 sekund uzytkownicy bez flag nie moga wejsc na czat
+    if(user->getUserFlags() < GGChatBot::VOICE_USER_FLAG)
+    {
+        qDebug() << "last:" << mLastUserJoin << "current" << currentDateTime;
+        if(mLastUserJoin > currentDateTime)
+        {
+            QString msg = QString("Limit osob na czacie zostal przekroczony. Sproboj ponownie za chwile");
+            GetProfile()->getSession()->sendMessageTo(user->getUin(), msg);
+            return false;
+        }
+    }
+
     if(!mChannelClosed)
         return true;
-
-    UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
 
     if(user->getUserFlags() >= GGChatBot::VOICE_USER_FLAG)
         return true;
@@ -575,6 +589,8 @@ void CommandResolver::joinCommand()
 
     if(!mChannelModerated)
         GetProfile()->getSession()->sendMessage(msg);
+
+    mLastUserJoin = QDateTime::currentDateTime();
 }
 
 void CommandResolver::leaveCommand()
@@ -724,7 +740,6 @@ void CommandResolver::kickHelperCommand(UserInfoTOPtr user)
     if(user->getOnChannel())
         GetProfile()->getSession()->sendMessage(msg);
     user->setOnChannel(false);
-    qDebug() << msg;
     setTopic(m_topic, false);
 }
 
@@ -1064,6 +1079,7 @@ void CommandResolver::moderateCommand()
     GetProfile()->setBotSettings(bs);
 
     QString msg = QString("CZAT MODEROWANY !! Tylko osoby z voice/op moga rozmawiac.");
+    qDebug() << msg;
     GetProfile()->getSession()->sendMessage(msg);
 }
 
@@ -1080,6 +1096,7 @@ void CommandResolver::unmoderateCommand()
     GetProfile()->setBotSettings(bs);
 
     QString msg = QString("Moderacja zostala wylaczona !!");
+    qDebug() << msg;
     GetProfile()->getSession()->sendMessage(msg);
 }
 
