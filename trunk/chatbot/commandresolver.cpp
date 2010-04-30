@@ -516,7 +516,6 @@ bool CommandResolver::checkIfUserCanJoin()
     currentDateTime = currentDateTime.addSecs(-15); // przez 15 sekund uzytkownicy bez flag nie moga wejsc na czat
     if(user->getUserFlags() < GGChatBot::VOICE_USER_FLAG)
     {
-        qDebug() << "last:" << mLastUserJoin << "current" << currentDateTime;
         if(mLastUserJoin > currentDateTime)
         {
             QString msg = QString("Limit osob na czacie zostal przekroczony. Sproboj ponownie za chwile");
