@@ -70,7 +70,7 @@ void KickUserJob::makeJob()
                 QString msg = QString("%1 wylatuje z czatu. Nie spac, zwiedzac!").arg(userNick.nick);
                 GetProfile()->getSession()->sendMessage(msg);
                 qDebug() << msg;
-                msg = QString("Zostales automatycznie wylogowany z powodu braku aktywnosci przez 20 minut. Aby powrocic wpisz: /start");
+                msg = QString("Zostales automatycznie wylogowany z powodu braku aktywnosci przez %1 minut. Aby powrocic wpisz: /start").arg(inactiveTime);
                 GetProfile()->getSession()->sendMessageTo(user->getUin(), msg);
                 user->setOnChannel(false);
             }

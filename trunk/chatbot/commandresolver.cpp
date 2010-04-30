@@ -512,13 +512,34 @@ bool CommandResolver::checkIfUserCanJoin()
 {
     UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
 
+    QString msg = QString("Limit osob na czacie zostal przekroczony. Sproboj ponownie za chwile");
+
+    // limit na 2 ktosiow na czacie, nowe nie moga wchodzic
+    if(user->getNick().startsWith("Ktos", Qt::CaseInsensitive))
+    {
+        int ktosCount = 0;
+        QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
+        foreach(UserInfoTOPtr u, users)
+        {   
+            if(GetProfile()->getUserDatabase()->isUserOnChannel(u) && u->getNick().startsWith("Ktos", Qt::CaseInsensitive))
+            {
+                ktosCount++;
+            }
+        }
+
+        if(ktosCount >= 2)
+        {
+            GetProfile()->getSession()->sendMessageTo(user->getUin(), msg);
+            return false;
+        }
+    }
+
     QDateTime currentDateTime = QDateTime::currentDateTime();
     currentDateTime = currentDateTime.addSecs(-15); // przez 15 sekund uzytkownicy bez flag nie moga wejsc na czat
     if(user->getUserFlags() < GGChatBot::VOICE_USER_FLAG)
     {
         if(mLastUserJoin > currentDateTime)
         {
-            QString msg = QString("Limit osob na czacie zostal przekroczony. Sproboj ponownie za chwile");
             GetProfile()->getSession()->sendMessageTo(user->getUin(), msg);
             return false;
         }
@@ -549,11 +570,11 @@ void CommandResolver::joinCommand()
     if(user->getOnChannel())
         return;
 
-    if(!checkIfUserCanJoin())
-        return;
-
     if(user->getNick().isEmpty())
 	user->setNick(QString("Ktos%1").arg(user->getUin()));
+    
+    if(!checkIfUserCanJoin())
+        return;
 
     if(user->getBanned())
     {
