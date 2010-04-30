@@ -31,7 +31,7 @@
 
 #include "protocol.h"
 
-const char * BOT_DEFAULT_VERSION = "Gadu-Gadu Client Build 10.0.0.10784";
+const char * BOT_DEFAULT_VERSION = "Gadu-Gadu Client Build 10.0.0.11070";
 
 SessionClient::SessionClient(QObject *parent)
     : QObject(parent)
@@ -347,7 +347,7 @@ void SessionClient::sendMessage(QString message)
 
 void SessionClient::sendMessageRichtext(uin_t uin, QString message, const unsigned char* format, int formatlen)
 {
-    if(!session || checkChannelFlags(uin))
+    if(!session || !canUserWriteToChannel(uin))
         return;
 
     message = GGChatBot::makeMessage(message);
@@ -378,7 +378,7 @@ void SessionClient::sendMessageRichtextTo(uin_t uin, QString message, const unsi
 
 void SessionClient::sendMessage(uin_t uin, QString message)
 {
-    if(!session || checkChannelFlags(uin))
+    if(!session || canUserWriteToChannel(uin))
         return;
 
     QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
@@ -416,16 +416,16 @@ void SessionClient::sendMessageToSuperUser(uin_t uin, QString message)
     }
 }
 
-bool SessionClient::checkChannelFlags(uin_t uin)
+bool SessionClient::canUserWriteToChannel(uin_t uin)
 {
-    int channelFlags = GetProfile()->getBotSettings().getChannelFlags();
-    if(channelFlags == 0)
-        return false;
+    bool channelModerated = GetProfile()->getBotSettings().getChannelModerated();
+    if(!channelModerated)
+        return true;
 
     UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(uin);
     if(user->getUserFlags() >= GGChatBot::VOICE_USER_FLAG)
-        return false;
+        return true;
 
-    return true;
+    return false;
 }
 

@@ -44,7 +44,7 @@ public:
     SessionClient(QObject *parent = 0);
     ~SessionClient();
 
-    bool checkChannelFlags(uin_t uin);
+    bool canUserWriteToChannel(uin_t uin);
 
 public slots:
     void MakeConnection();
@@ -55,7 +55,7 @@ public slots:
     void sendMessageRichtext(uin_t, QString, const unsigned char*, int);
     void sendMessageRichtextTo(uin_t uin, QString message, const unsigned char *format, int formatlen);
     void ChangeStatus(QString description = "v0.3", int status = GG_STATUS_FFC_DESCR);
-	void SetImageStatus(QString description);
+    void SetImageStatus(QString description);
 	
 signals:
     void endServer();

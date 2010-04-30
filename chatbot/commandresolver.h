@@ -38,9 +38,9 @@ public:
 private:
     gg_event *m_event;
     QString lastString;
-    int m_channelFlags;
+    bool mChannelModerated;
     QString m_topic;
-    bool isChatClosed;
+    bool mChannelClosed;
 
     QString removeCommand(QString message, QString command);
 

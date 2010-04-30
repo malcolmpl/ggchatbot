@@ -86,7 +86,6 @@ namespace
 
 CommandResolver::CommandResolver()
 {
-    isChatClosed = false;
 }
 
 CommandResolver::~CommandResolver()
@@ -102,7 +101,8 @@ bool CommandResolver::checkCommand(gg_event *event)
     int pos = 0;
 
     BotSettingsTO bs = GetProfile()->getBotSettings();
-    m_channelFlags = bs.getChannelFlags();
+    mChannelModerated = bs.getChannelModerated();
+    mChannelClosed = bs.getChannelClosed();
 
     if((pos = rx.indexIn(str, pos)) != -1)
     {
@@ -421,7 +421,7 @@ void CommandResolver::privCommand()
 
 void CommandResolver::nickCommand()
 {
-    if(lastString.isEmpty() || m_channelFlags>0)
+    if(lastString.isEmpty() || mChannelModerated)
         return;
     
     QRegExp rx("^(\\w+).*");
@@ -488,11 +488,14 @@ void CommandResolver::closedCommand()
     if(user->getUserFlags() < GGChatBot::OP_USER_FLAG)
         return;
 
-    isChatClosed = !isChatClosed;
+    mChannelClosed = !mChannelClosed;
+    BotSettingsTO bs = GetProfile()->getBotSettings();
+    bs.setChannelClosed(mChannelClosed);
+    GetProfile()->setBotSettings(bs);
 
     QString msg;
 
-    if(isChatClosed)
+    if(mChannelClosed)
     {
         msg = "Czat zostal zamkniety dla nieznajomych!";
     }
@@ -506,21 +509,24 @@ void CommandResolver::closedCommand()
 
 bool CommandResolver::checkIfUserCanJoin()
 {
-     UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
+    if(!mChannelClosed)
+        return true;
 
-     if(user->getUserFlags() >= GGChatBot::VOICE_USER_FLAG)
-         return true;
+    UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
 
-     if(user->getNick().isEmpty())
-         return false;
+    if(user->getUserFlags() >= GGChatBot::VOICE_USER_FLAG)
+        return true;
 
-     QDateTime lastSeen = user->getLastSeen();
-     QDateTime currentTime = GGChatBot::getDateTime();
-     currentTime.addSecs(-1800);
-     if(lastSeen > currentTime)
-         return false;
+    if(user->getNick().isEmpty() || user->getNick().startsWith("Ktos", Qt::CaseInsensitive))
+        return false;
 
-     return true;
+    QDateTime lastSeen = user->getLastSeen();
+    QDateTime currentTime = GGChatBot::getDateTime();
+    currentTime.addSecs(-3600); // 3600 - godzina
+    if(lastSeen > currentTime)
+        return false;
+
+    return true;
 }
 
 void CommandResolver::joinCommand()
@@ -530,7 +536,7 @@ void CommandResolver::joinCommand()
     if(user->getOnChannel())
         return;
 
-    if(isChatClosed && !checkIfUserCanJoin())
+    if(!checkIfUserCanJoin())
         return;
 
     if(user->getNick().isEmpty())
@@ -567,7 +573,7 @@ void CommandResolver::joinCommand()
     QString msg = "Przychodzi " + userNick.nick;
     qDebug() << "UIN:" << user->getUin() << msg;
 
-    if(m_channelFlags==0)
+    if(!mChannelModerated)
         GetProfile()->getSession()->sendMessage(msg);
 }
 
@@ -588,11 +594,14 @@ void CommandResolver::leaveCommand()
     QString msg = "Odchodzi " + userNick.nick + " " + reason;
     qDebug() << "UIN:" << user->getUin() << msg;
 
-    if(m_channelFlags==0)
+    if(!mChannelModerated)
         GetProfile()->getSession()->sendMessage(msg);
 
     user->setOnChannel(false);
     GetProfile()->getUserDatabase()->saveDatabase();
+
+    if(user->getNick().startsWith("Ktos", Qt::CaseInsensitive))
+        user->setNick(QString());
 }
 
 void CommandResolver::whoCommand()
@@ -641,7 +650,7 @@ void CommandResolver::whoCommand()
     if(!whoDesc.isEmpty())
         listOfUsers += "\n" + whoDesc;
 
-    if(m_channelFlags)
+    if(mChannelModerated)
         listOfUsers += "\nCZAT MODEROWANY !! Tylko osoby z voice/op moga rozmawiac.";
 
     QString msg = QString("%1 %2 %3").arg(user->getUin()).arg(user->getNick()).arg(CMD_WHO);
@@ -788,7 +797,7 @@ void CommandResolver::banHelperCommand(UserInfoTOPtr user, uint banTime, QString
     QString nickName = user->getNick();
     
     if(nickName.isEmpty())
-        nickName = user->getUin();
+        nickName = QString("%1").arg(user->getUin());
 
     QDateTime currentDate = GGChatBot::getDateTime();
     if(banTime == 0)
@@ -1046,12 +1055,12 @@ void CommandResolver::moderateCommand()
 {
     UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
 
-    if(m_channelFlags>0 || user->getUserFlags() < GGChatBot::OP_USER_FLAG)
+    if(mChannelModerated || user->getUserFlags() < GGChatBot::OP_USER_FLAG)
         return;
 
-    m_channelFlags = GGChatBot::CHANNEL_MODERATED;
+    mChannelModerated = true;
     BotSettingsTO bs = GetProfile()->getBotSettings();
-    bs.setChannelFlags(m_channelFlags);
+    bs.setChannelModerated(mChannelModerated);
     GetProfile()->setBotSettings(bs);
 
     QString msg = QString("CZAT MODEROWANY !! Tylko osoby z voice/op moga rozmawiac.");
@@ -1062,12 +1071,12 @@ void CommandResolver::unmoderateCommand()
 {
     UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
 
-    if(m_channelFlags==0 || user->getUserFlags() < GGChatBot::OP_USER_FLAG)
+    if(!mChannelModerated || user->getUserFlags() < GGChatBot::OP_USER_FLAG)
         return;
 
-    m_channelFlags = GGChatBot::NONE_FLAG;
+    mChannelModerated = false;
     BotSettingsTO bs = GetProfile()->getBotSettings();
-    bs.setChannelFlags(m_channelFlags);
+    bs.setChannelModerated(mChannelModerated);
     GetProfile()->setBotSettings(bs);
 
     QString msg = QString("Moderacja zostala wylaczona !!");

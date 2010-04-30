@@ -32,7 +32,7 @@ namespace GGChatBot
     const int OP_USER_FLAG              = 2;
     const int SUPER_USER_FLAG           = 4;
 
-    const int CHANNEL_MODERATED         = 0;
+    const int CHANNEL_MODERATED         = 1;
 
     const bool DISABLE_BACK_MESSAGE	= true;
     const int UTCtoPLsec                = 7200;
