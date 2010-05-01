@@ -11,6 +11,7 @@
 #include <QtDebug>
 #include <QString>
 #include "userinfoto.h"
+#include "common.h"
 
 void showUserDebug(UserInfoTOPtr user, QString message)
 {
@@ -20,7 +21,7 @@ void showUserDebug(UserInfoTOPtr user, QString message)
     qDebug() << "UIN:" << user->getUin()
         << "Nick:" << user->getNick()
         << "Banned:" << user->getBanned()
-        << "MSG:" << message;
+        << "MSG:" << GGChatBot::unicode2latin(message);
 }
 
 #endif	/* _DEBUG_H */
