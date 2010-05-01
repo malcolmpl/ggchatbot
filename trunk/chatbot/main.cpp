@@ -38,16 +38,16 @@ void logHandler(QtMsgType type, const char *msg)
     switch (type)
     {
        case QtDebugMsg:
-           fprintf(stderr, "%s %s\n", strTime.toAscii().data(), msg);
+           fprintf(stderr, "%s %s\n", strTime.toAscii().data(), GGChatBot::unicode2latin(msg).data());
            break;
        case QtWarningMsg:
-           fprintf(stderr, "Warning: %s %s\n", strTime.toAscii().data(), msg);
+           fprintf(stderr, "Warning: %s %s\n", strTime.toAscii().data(), GGChatBot::unicode2latin(msg).data());
            break;
        case QtCriticalMsg:
-           fprintf(stderr, "Critical: %s %s\n", strTime.toAscii().data(), msg);
+           fprintf(stderr, "Critical: %s %s\n", strTime.toAscii().data(), GGChatBot::unicode2latin(msg).data());
            break;
        case QtFatalMsg:
-           fprintf(stderr, "Fatal: %s %s\n", strTime.toAscii().data(), msg);
+           fprintf(stderr, "Fatal: %s %s\n", strTime.toAscii().data(), GGChatBot::unicode2latin(msg).data());
            break;
     }
 
@@ -55,7 +55,7 @@ void logHandler(QtMsgType type, const char *msg)
     {
         if(logOutput->device())
         {
-            *logOutput << QString("%1 %2\n").arg(strTime).arg(msg);
+            *logOutput << QString("%1 %2\n").arg(strTime).arg(GGChatBot::unicode2latin(msg).data());
             logOutput->flush();
         }
     }
@@ -70,15 +70,14 @@ int main(int argc, char *argv[])
 {
     qInstallMsgHandler(&logHandler);
     QCoreApplication app(argc, argv);
-    QTextCodec::setCodecForCStrings (QTextCodec::codecForName ("UTF-8"));
-    QLocale::setDefault(QLocale::Polish);
+//    QTextCodec::setCodecForCStrings (QTextCodec::codecForName ("UTF-8"));
+//    QLocale::setDefault(QLocale::Polish);
 
     LogScheduler *logSched = new LogScheduler();
     logSched->start();
 
     ConnectionThreadPtr connection = ConnectionThread::Create();
     QObject::connect(connection.get(), SIGNAL(finished()), &app, SLOT(quit()));
-//    QObject::connect(connection, SIGNAL(finished()), logSched, SLOT(quit()), Qt::DirectConnection);
     connection->start();
     connection->startServer();
 

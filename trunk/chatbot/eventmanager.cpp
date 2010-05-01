@@ -62,7 +62,13 @@ void EventManager::MessageEvent()
     uin_t sender = m_event->event.msg.sender;
 
     UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(sender);
-    QString msg = GGChatBot::makeInternalMessage(GGChatBot::cp2unicode((const char*)m_event->event.msg.message));
+
+    QString content = QString::fromUtf8((const char *)m_event->event.msg.message);
+
+    content.replace(QLatin1String("\r\n"), QString(QChar::LineSeparator));
+    content.replace(QLatin1String("\n"),   QString(QChar::LineSeparator));
+    content.replace(QLatin1String("\r"),   QString(QChar::LineSeparator));
+
     QString message;
 
     // refresh user time action
@@ -70,7 +76,7 @@ void EventManager::MessageEvent()
 
     if(checkCommand())
     {
-        showUserDebug(user, msg);
+        showUserDebug(user, content);
         return;
     }
     
@@ -80,7 +86,7 @@ void EventManager::MessageEvent()
         return;
     }
 
-    if(user->getLastMessage() == msg && user->getUserFlags() < GGChatBot::VOICE_USER_FLAG)
+    if(user->getLastMessage() == content && user->getUserFlags() < GGChatBot::VOICE_USER_FLAG)
     {
         message = "Nie powtarzaj sie!";
         emit sendMessageTo(user->getUin(), message);
@@ -88,7 +94,7 @@ void EventManager::MessageEvent()
     }
     else
     {
-        user->setLastMessage(msg);
+        user->setLastMessage(content);
     }
 
     unsigned char * result;
@@ -111,7 +117,7 @@ void EventManager::MessageEvent()
 
     if((GetProfile()->getUserDatabase()->isSuperUser(user)))
     {
-        message = "<!" + user->getNick() + "> " + msg;
+        message = "<!" + user->getNick() + "> " + content;
 	color.red = 255;
 	color.green = 0;
 	color.blue = 0;
@@ -124,7 +130,7 @@ void EventManager::MessageEvent()
     }
     else if((GetProfile()->getUserDatabase()->isUserHaveOp(user)))
     {
-        message = "<@" + user->getNick() + "> " + msg;
+        message = "<@" + user->getNick() + "> " + content;
         color.red = 51;
         color.green = 0;
         color.blue = 204;
@@ -138,7 +144,7 @@ void EventManager::MessageEvent()
     }
     else if((GetProfile()->getUserDatabase()->isUserHaveVoice(user)))
     {
-        message = "<+" + user->getNick() + "> " + msg;
+        message = "<+" + user->getNick() + "> " + content;
         color.red = 0;
         color.green = 150;
         color.blue = 0;
@@ -151,7 +157,7 @@ void EventManager::MessageEvent()
     }
     else
     {
-        message = "<" + user->getNick() + "> " + msg;
+        message = "<" + user->getNick() + "> " + content;
         color.red = 100;
         color.green = 0;
         color.blue = 0;
@@ -170,7 +176,7 @@ void EventManager::MessageEvent()
     memcpy(result + memoryPosition, &color_black, sizeof(color_black));
    
     emit sendMessageRichtext(sender, message, result, resultlen);
-    showUserDebug(user, msg);
+    showUserDebug(user, content);
 }
 
 void EventManager::welcomeMessage()
