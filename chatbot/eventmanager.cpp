@@ -63,7 +63,7 @@ void EventManager::MessageEvent()
 
     UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(sender);
 
-    QString content = QString::fromUtf8((const char *)m_event->event.msg.message);
+    QString content = QString((const char*)m_event->event.msg.message);
 
     content.replace(QLatin1String("\r\n"), QString(QChar::LineSeparator));
     content.replace(QLatin1String("\n"),   QString(QChar::LineSeparator));
