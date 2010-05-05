@@ -21,10 +21,33 @@
 #define	_COMMANDRESOLVER_H
 
 #include <QObject>
+#include <QPointer>
 #include <libgadu.h>
 
 #include "profilebase.h"
 #include "userinfoto.h"
+
+class Stats : public QObject
+{
+public:
+    Stats() : adminUsers(0), opUsers(0), voiceUsers(0), totalUsers(0), ktosUsers(0), banUsers(0), totalBansTime(0), last24h(0), lastWeek(0), lastMonth(0) {}
+
+    void init()
+    {
+        adminUsers = opUsers = voiceUsers = totalUsers = ktosUsers = banUsers = totalBansTime = last24h = lastWeek = lastMonth = 0;
+    }
+
+    int adminUsers;
+    int opUsers;
+    int voiceUsers;
+    int totalUsers;
+    int ktosUsers;
+    int banUsers;
+    int totalBansTime;
+    int last24h;
+    int lastWeek;
+    int lastMonth;
+};
 
 class CommandResolver : public QObject, public ProfileBase
 {
@@ -42,6 +65,7 @@ private:
     QString m_topic;
     bool mChannelClosed;
     QDateTime mLastUserJoin;
+    QPointer<Stats> mStatsPtr;
 
     QString removeCommand(QString message, QString command);
 
@@ -53,9 +77,9 @@ private:
     void whoCommand();
     void helpCommand();
     void kickCommand();
-    void kickHelperCommand(UserInfoTOPtr);
+    void kickHelperCommand(UserInfoTOPtr, UserInfoTOPtr);
     void banCommand();
-    void banHelperCommand(UserInfoTOPtr, uint, QString);
+    void banHelperCommand(UserInfoTOPtr, uint, QString, UserInfoTOPtr);
     void unbanCommand();
     void unbanHelperCommand(UserInfoTOPtr);
     void topicCommand();
@@ -68,6 +92,9 @@ private:
     void imgStatusList();
     void setImgStatus();
     void privCommand();
+    void kickAllCommand();
+    void totalKickCommand();
+    void statsCommand();
 };
 
 #endif	/* _COMMANDRESOLVER_H */

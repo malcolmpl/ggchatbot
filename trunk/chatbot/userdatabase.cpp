@@ -68,12 +68,13 @@ void UserDatabase::readUsersListConfig()
         user->setBanned(settings->value("banned").toBool());
         user->setBanTime(settings->value("banTime").toDateTime());
         user->setBanReason(settings->value("banReason").toString());
+/*
 	if(user->getLastSeen().daysTo(now) >= LAST_DAYS_SEEN)
 	{
 	    qDebug() << "Usuwam z bazy informacje o" << user->getUin() << user->getNick();
 	    continue;
 	}
-
+*/
         m_usersList.push_back(user);
     }
     settings->endArray();

@@ -67,16 +67,21 @@ namespace
     const QString CMD_IMGSTATUSLIST	= "/imgstatuslist";
     const QString CMD_SETIMGSTATUS      = "/setimgstatus";
     const QString CMD_PRIV              = "/priv";
+    const QString CMD_KICKALL           = "/kickall";
+    const QString CMD_TOTALKICK         = "/totalkick";
+    const QString CMD_STATS             = "/stats";
 
     const QString MSG_NICK_EXIST        = "Uzytkownik o takim nicku juz istnieje!";
     const QString MSG_HELP              = "Dostepne komendy:\n/nick 'Nick' - zmiana nicka\n" \
         "/start - wejscie na czat\n/koniec 'tekst'- opuszczenie czatu, opcjonalnie z tekstem\n" \
         "/kto - spis osob dostepnych na czacie\n/priv Nick 'tekst' - wysyla prywatna wiadomosc\n" \
+        "/stats - statystyki czata\n" \
         "/pomoc - pomoc ktora wlasnie czytasz ;)";
 
     const QString MSG_HELP_FOR_OPS      = "Dostepne komendy:\n/nick 'Nick' - zmiana nicka\n" \
         "/join /start - wejscie na czat\n/leave /stop /quit /koniec 'tekst'- opuszczenie czatu\n" \
         "/who /kto - spis osob dostepnych na czacie\n/priv Nick 'tekst' - wysyla prywatna wiadomosc\n" \
+        "/stats - statystyki czata\n" \
         "/help /pomoc - pomoc\n/ban /unban nick/numer czas opis - banowanie" \
         ", czas w minutach, 0=rok\n/kick nick/numer opis - wywalenie z czatu\n/op numer - ustawia flage op'a\n" \
         "/voice numer - ustawia flage voice\n/removeflags numer - zdejmuje wszystkie flagi\n" \
@@ -304,6 +309,24 @@ bool CommandResolver::checkCommand(gg_event *event)
         {
             lastString = removeCommand(str, CMD_PRIV);
             privCommand();
+            return true;
+        }
+        else if(command.compare(CMD_KICKALL, Qt::CaseInsensitive)==0)
+        {
+            lastString = removeCommand(str, CMD_KICKALL);
+            kickAllCommand();
+            return true;
+        }
+        else if(command.compare(CMD_TOTALKICK, Qt::CaseInsensitive)==0)
+        {
+            lastString = removeCommand(str, CMD_TOTALKICK);
+            totalKickCommand();
+            return true;
+        }
+        else if(command.compare(CMD_STATS, Qt::CaseInsensitive)==0)
+        {
+            lastString = removeCommand(str, CMD_STATS);
+            statsCommand();
             return true;
         }
     }
@@ -708,9 +731,9 @@ void CommandResolver::helpCommand()
 
 void CommandResolver::kickCommand()
 {
-    UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
+    UserInfoTOPtr sender = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
 
-    if(user->getUserFlags() < GGChatBot::OP_USER_FLAG)
+    if(sender->getUserFlags() < GGChatBot::OP_USER_FLAG)
         return;
 
     QRegExp rx2("^(\\d+).*");
@@ -727,7 +750,7 @@ void CommandResolver::kickCommand()
             QString uin = QString("%1").arg(u->getUin());
             if(uin == uinToKick)
             {
-                kickHelperCommand(u);
+                kickHelperCommand(u, sender);
                 return;
             }
         }
@@ -746,15 +769,21 @@ void CommandResolver::kickCommand()
         {
             if(u->getNick() == nickToKick)
             {
-                kickHelperCommand(u);
+                kickHelperCommand(u, sender);
                 return;
             }
         }
     }
 }
 
-void CommandResolver::kickHelperCommand(UserInfoTOPtr user)
+void CommandResolver::kickHelperCommand(UserInfoTOPtr u, UserInfoTOPtr sender)
 {
+    UserInfoTOPtr user;
+    if(u->getUserFlags() > GGChatBot::OP_USER_FLAG)
+        user = sender;
+    else
+        user = u;
+
     GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(user);
     QString msg = QString("%1 wylatuje z czatu. %2").arg(userNick.nick).arg(lastString);
     if(user->getOnChannel())
@@ -810,7 +839,7 @@ void CommandResolver::banCommand()
             QString uin = QString("%1").arg(u->getUin());
             if(uin == nick)
             {
-                banHelperCommand(u, minutes, description);
+                banHelperCommand(u, minutes, description, user);
                 break;
             }
         }
@@ -819,15 +848,21 @@ void CommandResolver::banCommand()
             QString nickStr = u->getNick();
             if(nickStr == nick)
             {
-                banHelperCommand(u, minutes, description);
+                banHelperCommand(u, minutes, description, user);
                 break;
             }
         }
     }
 }
 
-void CommandResolver::banHelperCommand(UserInfoTOPtr user, uint banTime, QString description)
+void CommandResolver::banHelperCommand(UserInfoTOPtr u, uint banTime, QString description, UserInfoTOPtr sender)
 {
+    UserInfoTOPtr user;
+    if(u->getUserFlags() > GGChatBot::SUPER_USER_FLAG)
+        user = sender;
+    else
+        user = u;
+
     QString message;
     QString nickName = user->getNick();
     
@@ -850,7 +885,7 @@ void CommandResolver::banHelperCommand(UserInfoTOPtr user, uint banTime, QString
     GetProfile()->getSession()->sendMessage(message);
 
     lastString = "";
-    kickHelperCommand(user);
+    kickHelperCommand(user, sender);
     user->setBanned(true);
     user->setBanReason(description);
     user->setNick(QString());
@@ -1120,3 +1155,123 @@ void CommandResolver::unmoderateCommand()
     GetProfile()->getSession()->sendMessage(msg);
 }
 
+void CommandResolver::kickAllCommand()
+{
+    UserInfoTOPtr sender = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
+
+    if(sender->getUserFlags() < GGChatBot::OP_USER_FLAG)
+        return;
+
+    QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
+    foreach(UserInfoTOPtr user, users)
+    {
+        if(user->getOnChannel() && user->getUserFlags() < GGChatBot::VOICE_USER_FLAG)
+            kickHelperCommand(user, sender);
+    }
+}
+
+void CommandResolver::totalKickCommand()
+{
+    UserInfoTOPtr sender = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
+
+    if(sender->getUserFlags() < GGChatBot::SUPER_USER_FLAG)
+        return;
+
+    QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
+    foreach(UserInfoTOPtr user, users)
+    {
+        if(user->getOnChannel() && user->getUserFlags() <= GGChatBot::OP_USER_FLAG)
+            kickHelperCommand(user, sender);
+    }
+}
+
+void CommandResolver::statsCommand()
+{
+    UserInfoTOPtr sender = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
+
+    if(!sender->getOnChannel())
+        return;
+
+    const int MINUTE = 60;
+    const int HOUR   = MINUTE * 60;
+    const int DAY    = HOUR * 24;
+    const int MONTH  = DAY * 30;
+    const int YEAR   = MONTH * 12;
+
+    if(mStatsPtr.isNull())
+    {
+        mStatsPtr = new Stats;
+    }
+
+    mStatsPtr->init();
+
+        QDateTime currentTime = GGChatBot::getDateTime();
+        QDateTime last24h = GGChatBot::getDateTime();
+        last24h = last24h.addSecs(-86400);
+        QDateTime lastWeek = GGChatBot::getDateTime();
+        lastWeek = lastWeek.addSecs(-604800);
+        QDateTime lastMonth = GGChatBot::getDateTime();
+        lastMonth = lastMonth.addSecs(-2592000);
+
+        QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
+        mStatsPtr->totalUsers = users.size();
+
+        foreach(UserInfoTOPtr u, users)
+        {
+            if(u->getUserFlags() > GGChatBot::OP_USER_FLAG)
+                mStatsPtr->adminUsers++;
+            if(u->getUserFlags() == GGChatBot::OP_USER_FLAG)
+                mStatsPtr->opUsers++;
+            if(u->getUserFlags() == GGChatBot::VOICE_USER_FLAG)
+                mStatsPtr->voiceUsers++;
+
+            if(u->getNick().startsWith("Ktos", Qt::CaseInsensitive))
+                mStatsPtr->ktosUsers++;
+
+            if(u->getBanned())
+                mStatsPtr->banUsers++;
+
+            QDateTime lastSeen = u->getLastSeen();
+            if(lastSeen > last24h)
+                mStatsPtr->last24h++;
+
+            if(lastSeen > lastWeek)
+                mStatsPtr->lastWeek++;
+
+            if(lastSeen > lastMonth)
+                mStatsPtr->lastMonth++;
+
+            if(u->getBanned())
+            {
+                QDateTime banTime = u->getBanTime(); 
+                mStatsPtr->totalBansTime += currentTime.secsTo(banTime);
+                mStatsPtr->banUsers++;
+            }
+        }
+
+    int years = 0;
+    int months = 0;
+    int days = 0;
+    int hours = 0;
+    int minutes = 0;
+    int seconds = mStatsPtr->totalBansTime;
+
+    if(years = (seconds/YEAR))
+        seconds -= YEAR * years;
+    if(months = (seconds/MONTH))
+        seconds -= MONTH * months;
+    if(days = (seconds/DAY))
+        seconds -= DAY * days;
+    if(hours = (seconds/HOUR))
+        seconds -= HOUR * hours;
+    if(minutes = (seconds/MINUTE))
+        seconds -= MINUTE * minutes;
+
+    QString bansTimeMsg = QString("%1 lat %2 miesiecy %3 dni %4 godzin %5 minut %6 sekund").arg(years).arg(months).arg(days).arg(hours).arg(minutes).arg(seconds);
+    QString userInfo = QString("Wszystkich uzytkownikow: %1 w tym:\nAdminow: %2\nOpow: %3\nVoiceow: %4\nUzytkownikow bez ustawionego nicka: %5")
+        .arg(mStatsPtr->totalUsers).arg(mStatsPtr->adminUsers).arg(mStatsPtr->opUsers).arg(mStatsPtr->voiceUsers).arg(mStatsPtr->ktosUsers);
+    QString msg = QString("%1\nUzytkownikow w ostatnich:\n24 godzinach: %2\ntygodniu: %3\nmiesiacu: %4\n"
+        "Uzytkownikow z banem: %5\nLaczny czas wszystkich banow: %6\n").arg(userInfo).arg(mStatsPtr->last24h).arg(mStatsPtr->lastWeek).arg(mStatsPtr->lastMonth).arg(mStatsPtr->banUsers).arg(bansTimeMsg);
+
+    GetProfile()->getSession()->sendMessageTo(sender->getUin(), msg);
+}
