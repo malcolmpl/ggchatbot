@@ -117,7 +117,7 @@ bool SessionClient::Login()
     loginParams.protocol_version = GG_DEFAULT_PROTOCOL_VERSION;
     loginParams.client_version = const_cast<char*>(BOT_DEFAULT_VERSION);
     loginParams.has_audio = 0;
-//    loginParams.encoding = GG_ENCODING_UTF8;
+    loginParams.encoding = GG_ENCODING_UTF8;
     loginParams.protocol_features = (GG_FEATURE_STATUS80BETA|GG_FEATURE_MSG80|GG_FEATURE_STATUS80|GG_FEATURE_MSG77|GG_FEATURE_STATUS77|GG_FEATURE_DND_FFC|GG_FEATURE_IMAGE_DESCR);
 
     if (!( session = gg_login(&loginParams) ) )
@@ -164,7 +164,8 @@ bool SessionClient::SendContactList()
 void SessionClient::ChangeStatus(QString description, int status)
 {
     qDebug() << "Zmieniam status na: " << description;
-    QByteArray data = GGChatBot::unicode2cp(GGChatBot::makeMessage(description));
+    description = GGChatBot::makeMessage(description);
+    QByteArray data = description.toUtf8();
     gg_change_status_descr(session, status, data.data());
 }
 
@@ -336,7 +337,7 @@ void SessionClient::sendMessage(QString message)
         return;
 
     message = GGChatBot::makeMessage(message);
-    QByteArray data = message.toAscii();
+    QByteArray data = message.toUtf8();
 
     QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
     foreach(UserInfoTOPtr user, users)
@@ -352,7 +353,7 @@ void SessionClient::sendMessageRichtext(uin_t uin, QString message, const unsign
         return;
 
     message = GGChatBot::makeMessage(message);
-    QByteArray data = message.toAscii();
+    QByteArray data = message.toUtf8();
 
     QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
     foreach(UserInfoTOPtr user, users)
@@ -372,14 +373,14 @@ void SessionClient::sendMessageRichtextTo(uin_t uin, QString message, const unsi
     if(!session)
 	return;
 
-    QByteArray data = message.toAscii();
+    QByteArray data = message.toUtf8();
 
     gg_send_message_richtext(session, GG_CLASS_CHAT, uin, (unsigned char*)data.data(), format, formatlen);
 }
 
 void SessionClient::sendMessage(uin_t uin, QString message)
 {
-    if(!session || canUserWriteToChannel(uin))
+    if(!session || !canUserWriteToChannel(uin))
         return;
 
     QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
@@ -402,7 +403,8 @@ void SessionClient::sendMessageTo(uin_t uin, QString message)
    
     message = GGChatBot::makeMessage(message);
 
-    QByteArray data = message.toAscii();
+    //QByteArray data = GGChatBot::unicode2cp(message); // It's working if we connected without utf flag
+    QByteArray data = message.toUtf8();
     gg_send_message(session, GG_CLASS_CHAT, uin, (unsigned char*)data.data());
 }
 

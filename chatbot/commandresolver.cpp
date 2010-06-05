@@ -629,7 +629,7 @@ void CommandResolver::joinCommand()
     GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(user);
     QString msg = "Przychodzi " + userNick.nick;
     qDebug() << "UIN:" << user->getUin() << msg;
-
+    
     if(!mChannelModerated)
         GetProfile()->getSession()->sendMessage(msg);
 
@@ -1192,11 +1192,11 @@ void CommandResolver::statsCommand()
     if(!sender->getOnChannel())
         return;
 
-    const int MINUTE = 60;
-    const int HOUR   = MINUTE * 60;
-    const int DAY    = HOUR * 24;
-    const int MONTH  = DAY * 30;
-    const int YEAR   = MONTH * 12;
+    const uint64_t MINUTE = 60;
+    const uint64_t HOUR   = MINUTE * 60;
+    const uint64_t DAY    = HOUR * 24;
+    const uint64_t MONTH  = DAY * 30;
+    const uint64_t YEAR   = MONTH * 12;
 
     if(mStatsPtr.isNull())
     {
@@ -1249,12 +1249,12 @@ void CommandResolver::statsCommand()
             }
         }
 
-    int years = 0;
-    int months = 0;
-    int days = 0;
-    int hours = 0;
-    int minutes = 0;
-    int seconds = mStatsPtr->totalBansTime;
+    uint64_t years = 0;
+    uint64_t months = 0;
+    uint64_t days = 0;
+    uint64_t hours = 0;
+    uint64_t minutes = 0;
+    uint64_t seconds = mStatsPtr->totalBansTime;
 
     if(years = (seconds/YEAR))
         seconds -= YEAR * years;

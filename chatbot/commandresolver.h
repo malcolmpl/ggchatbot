@@ -43,7 +43,7 @@ public:
     int totalUsers;
     int ktosUsers;
     int banUsers;
-    int totalBansTime;
+    uint64_t totalBansTime;
     int last24h;
     int lastWeek;
     int lastMonth;
