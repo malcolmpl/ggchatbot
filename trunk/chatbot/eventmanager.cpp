@@ -27,6 +27,7 @@
 
 EventManager::EventManager()
 {
+    mSpamList << "hydro" << "pijanyindyk" << "cotygadasz" << "5024276";
 }
 
 EventManager::~EventManager()
@@ -63,7 +64,8 @@ void EventManager::MessageEvent()
 
     UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(sender);
 
-    QString content = QString((const char*)m_event->event.msg.message);
+//    QString content = QString((const char*)m_event->event.msg.message);
+    QString content = GGChatBot::makeInternalMessage(GGChatBot::cp2unicode((const char*)m_event->event.msg.message));
 
     content.replace(QLatin1String("\r\n"), QString(QChar::LineSeparator));
     content.replace(QLatin1String("\n"),   QString(QChar::LineSeparator));
@@ -96,6 +98,9 @@ void EventManager::MessageEvent()
     {
         user->setLastMessage(content);
     }
+
+    if(messageIsSpam(user, content))
+        return;
 
     unsigned char * result;
     unsigned int memoryPosition = sizeof(gg_msg_richtext);
@@ -204,4 +209,21 @@ bool EventManager::checkCommand()
     return cmdResolv.checkCommand(m_event);
 }
 
+bool EventManager::messageIsSpam(UserInfoTOPtr user, QString content)
+{
+    QStringList contentList = content.split(" ", QString::SkipEmptyParts);
+    foreach(QString str, contentList)
+    {
+        foreach(QString spam, mSpamList)
+        {
+            if(str.contains(spam, Qt::CaseInsensitive))
+            {
+                QString msg = "SPAM!: " + content;
+                showUserDebug(user, msg);
+                return true;
+            }
+        }
+    }
 
+    return false;
+}

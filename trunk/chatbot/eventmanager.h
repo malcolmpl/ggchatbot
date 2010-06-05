@@ -22,6 +22,7 @@
 
 #include "libgadu.h"
 #include <QObject>
+#include <QStringList>
 
 #include "profilebase.h"
 #include "userinfoto.h"
@@ -46,11 +47,13 @@ signals:
 private:
     gg_event *m_event;
     CommandResolver cmdResolv;
+    QStringList mSpamList;
     
     void AckEvent();
     void MessageEvent();
     void welcomeMessage();
     bool checkCommand();
+    bool messageIsSpam(UserInfoTOPtr, QString);
 };
 
 #endif	/* _EVENTMANAGER_H */
