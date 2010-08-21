@@ -27,7 +27,6 @@
 
 EventManager::EventManager()
 {
-    mSpamList << "hydro" << "pijanyindyk" << "cotygadasz" << "5024276";
 }
 
 EventManager::~EventManager()
@@ -99,7 +98,7 @@ void EventManager::MessageEvent()
         user->setLastMessage(content);
     }
 
-    if(messageIsSpam(user, content))
+    if(GetProfile()->messageIsSpam(user, content))
         return;
 
     unsigned char * result;
@@ -209,21 +208,4 @@ bool EventManager::checkCommand()
     return cmdResolv.checkCommand(m_event);
 }
 
-bool EventManager::messageIsSpam(UserInfoTOPtr user, QString content)
-{
-    QStringList contentList = content.split(" ", QString::SkipEmptyParts);
-    foreach(QString str, contentList)
-    {
-        foreach(QString spam, mSpamList)
-        {
-            if(str.contains(spam, Qt::CaseInsensitive))
-            {
-                QString msg = "SPAM!: " + content;
-                showUserDebug(user, msg);
-                return true;
-            }
-        }
-    }
 
-    return false;
-}

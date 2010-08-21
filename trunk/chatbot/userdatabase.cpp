@@ -68,6 +68,8 @@ void UserDatabase::readUsersListConfig()
         user->setBanned(settings->value("banned").toBool());
         user->setBanTime(settings->value("banTime").toDateTime());
         user->setBanReason(settings->value("banReason").toString());
+
+//        user->setBanned(false);
 /*
 	if(user->getLastSeen().daysTo(now) >= LAST_DAYS_SEEN)
 	{

@@ -24,7 +24,8 @@ SOURCES += main.cpp \
     pingserverjob.cpp \
     kickuserjob.cpp \
     common.cpp \
-    imagedescriptionsettings.cpp
+    imagedescriptionsettings.cpp \
+    debug.cpp
 
 HEADERS += connectionthread.h \
     sessionclient.h \
