@@ -95,6 +95,7 @@ private:
     void kickAllCommand();
     void totalKickCommand();
     void statsCommand();
+    void setNickCommand();
 };
 
 #endif	/* _COMMANDRESOLVER_H */

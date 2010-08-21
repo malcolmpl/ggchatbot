@@ -70,6 +70,7 @@ namespace
     const QString CMD_KICKALL           = "/kickall";
     const QString CMD_TOTALKICK         = "/totalkick";
     const QString CMD_STATS             = "/stats";
+    const QString CMD_SETNICK           = "/setnick";
 
     const QString MSG_NICK_EXIST        = "Uzytkownik o takim nicku juz istnieje!";
     const QString MSG_HELP              = "Dostepne komendy:\n/nick 'Nick' - zmiana nicka\n" \
@@ -329,6 +330,12 @@ bool CommandResolver::checkCommand(gg_event *event)
             statsCommand();
             return true;
         }
+        else if(command.compare(CMD_SETNICK, Qt::CaseInsensitive)==0)
+        {
+            lastString = removeCommand(str, CMD_SETNICK);
+            setNickCommand();
+            return true;
+        }
     }
 
     return false;
@@ -404,6 +411,9 @@ void CommandResolver::privCommand()
 
     UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
     if(!user->getOnChannel())
+        return;
+
+    if(GetProfile()->messageIsSpam(user, lastString))
         return;
 
     QRegExp rx("^(\\w+).*");
@@ -648,6 +658,9 @@ void CommandResolver::leaveCommand()
     {
         reason = lastString;
     }
+
+    if(GetProfile()->messageIsSpam(user, reason))
+        reason.clear();
 
     GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(user);
     QString msg = "Odchodzi " + userNick.nick + " " + reason;
@@ -1275,3 +1288,32 @@ void CommandResolver::statsCommand()
 
     GetProfile()->getSession()->sendMessageTo(sender->getUin(), msg);
 }
+
+void CommandResolver::setNickCommand()
+{
+    UserInfoTOPtr sender = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
+
+    if(sender->getUserFlags() < GGChatBot::OP_USER_FLAG)
+        return;
+
+    QRegExp rx2("^(\\d+).*");
+    int pos = 0;
+
+    if((pos = rx2.indexIn(lastString, pos)) != -1)
+    {
+        QString uinTo = rx2.cap(1);
+        lastString = removeCommand(rx2.cap(0), uinTo);
+
+        QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
+        foreach(UserInfoTOPtr u, users)
+        {
+            QString uin = QString("%1").arg(u->getUin());
+            if(uin == uinTo)
+            {
+                u->setNick(lastString);
+                return;
+            }
+        }
+    }
+}
+

@@ -23,6 +23,7 @@
 #include <QPointer>
 #include "sessionclientptr.h"
 #include "profileptr.h"
+#include "userinfoto.h"
 
 class UserDatabase;
 class BotSettings;
@@ -43,9 +44,11 @@ public:
     UserDatabasePtr getUserDatabase() const;
     SessionClientPtr getSession() const;
     void setSession(const SessionClientPtr v);
+    bool messageIsSpam(UserInfoTOPtr, QString);
     
 private:
     void Init();
+    QStringList getSpamContent();
 
     BotSettingsPtr m_botSettings;
     UserDatabasePtr m_userDatabase;

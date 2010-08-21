@@ -21,7 +21,9 @@
 #include "userdatabase.h"
 #include "botsettings.h"
 #include "sessionclient.h"
+#include "debug.h"
 
+#include <QStringList>
 
 Profile::Profile()
 {
@@ -64,4 +66,32 @@ SessionClientPtr Profile::getSession() const
 void Profile::setSession(const SessionClientPtr v)
 {
     m_sessionClient = v;
+}
+
+QStringList Profile::getSpamContent()
+{
+    QStringList spamList;
+    spamList << "hydro" << "pijanyindyk" << "cotygadasz" << "5024276" << "grizlichat" << "21360"
+        << "1915166" << "5433825";
+    return spamList;
+}
+
+bool Profile::messageIsSpam(UserInfoTOPtr user, QString content)
+{
+    QStringList spamList = getSpamContent();
+    QStringList contentList = content.split(" ", QString::SkipEmptyParts);
+    foreach(QString str, contentList)
+    {   
+        foreach(QString spam, spamList)
+        {   
+            if(str.contains(spam, Qt::CaseInsensitive))
+            {   
+                QString msg = "SPAM!: " + content;
+                showUserDebug(user, msg);
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
