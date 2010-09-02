@@ -26,9 +26,11 @@
 
 #include <QDebug>
 
-// 10 minutes in seconds
+// inactive time for users - 10 minutes in seconds
 const int INACTIVE_TIME = 60*20;
-// 1 minuta in seconds
+// 1 minut in seconds
+const int ONE_MINUTE_IN_SECONDS = 60;
+// seconds for users without nick
 const int INACTIVE_NONICK_TIME = 60;
 
 KickUserJob::KickUserJob()
@@ -70,7 +72,7 @@ void KickUserJob::makeJob()
                 QString msg = QString("%1 wylatuje z czatu. Nie spac, zwiedzac!").arg(userNick.nick);
                 GetProfile()->getSession()->sendMessage(msg);
                 qDebug() << msg;
-                msg = QString("Zostales automatycznie wylogowany z powodu braku aktywnosci przez %1 minut. Aby powrocic wpisz: /start").arg(inactiveTime);
+                msg = QString("Zostales automatycznie wylogowany z powodu braku aktywnosci przez %1 minut. Aby powrocic wpisz: /start").arg(inactiveTime/ONE_MINUTE_IN_SECONDS);
                 GetProfile()->getSession()->sendMessageTo(user->getUin(), msg);
                 user->setOnChannel(false);
             }

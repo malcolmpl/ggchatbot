@@ -72,7 +72,7 @@ QStringList Profile::getSpamContent()
 {
     QStringList spamList;
     spamList << "hydro" << "pijanyindyk" << "cotygadasz" << "5024276" << "grizlichat" << "21360"
-        << "1915166" << "5433825";
+        << "1915166" << "5433825" << "kamiloo";
     return spamList;
 }
 
