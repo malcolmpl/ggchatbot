@@ -1210,6 +1210,13 @@ void CommandResolver::statsCommand()
     const uint64_t DAY    = HOUR * 24;
     const uint64_t MONTH  = DAY * 30;
     const uint64_t YEAR   = MONTH * 12;
+    uint64_t years = 0;
+    uint64_t months = 0;
+    uint64_t days = 0;
+    uint64_t hours = 0;
+    uint64_t minutes = 0;
+    uint64_t seconds = 0;
+    int64_t secs = 0;
 
     if(mStatsPtr.isNull())
     {
@@ -1241,9 +1248,6 @@ void CommandResolver::statsCommand()
             if(u->getNick().startsWith("Ktos", Qt::CaseInsensitive))
                 mStatsPtr->ktosUsers++;
 
-            if(u->getBanned())
-                mStatsPtr->banUsers++;
-
             QDateTime lastSeen = u->getLastSeen();
             if(lastSeen > last24h)
                 mStatsPtr->last24h++;
@@ -1256,18 +1260,21 @@ void CommandResolver::statsCommand()
 
             if(u->getBanned())
             {
-                QDateTime banTime = u->getBanTime(); 
-                mStatsPtr->totalBansTime += currentTime.secsTo(banTime);
+                QDateTime banTime = u->getBanTime();
+                secs = currentTime.secsTo(banTime);
+
+                // ban already ends, so clear it and don't count
+                if(secs <= 0)
+                {
+                    u->setBanned(false);
+                    continue;
+                }
                 mStatsPtr->banUsers++;
+                mStatsPtr->totalBansTime += secs;
             }
         }
 
-    uint64_t years = 0;
-    uint64_t months = 0;
-    uint64_t days = 0;
-    uint64_t hours = 0;
-    uint64_t minutes = 0;
-    uint64_t seconds = mStatsPtr->totalBansTime;
+    seconds = mStatsPtr->totalBansTime;
 
     if(years = (seconds/YEAR))
         seconds -= YEAR * years;
@@ -1279,7 +1286,7 @@ void CommandResolver::statsCommand()
         seconds -= HOUR * hours;
     if(minutes = (seconds/MINUTE))
         seconds -= MINUTE * minutes;
-
+    
     QString bansTimeMsg = QString("%1 lat %2 miesiecy %3 dni %4 godzin %5 minut %6 sekund").arg(years).arg(months).arg(days).arg(hours).arg(minutes).arg(seconds);
     QString userInfo = QString("Wszystkich uzytkownikow: %1 w tym:\nAdminow: %2\nOpow: %3\nVoiceow: %4\nUzytkownikow bez ustawionego nicka: %5")
         .arg(mStatsPtr->totalUsers).arg(mStatsPtr->adminUsers).arg(mStatsPtr->opUsers).arg(mStatsPtr->voiceUsers).arg(mStatsPtr->ktosUsers);
