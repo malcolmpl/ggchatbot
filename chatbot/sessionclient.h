@@ -56,6 +56,7 @@ public slots:
     void sendMessageRichtextTo(uin_t uin, QString message, const unsigned char *format, int formatlen);
     void ChangeStatus(QString description = "v0.3", int status = GG_STATUS_FFC_DESCR);
     void SetImageStatus(QString description);
+    void sendMessageToStaff(QString);
 	
 signals:
     void endServer();

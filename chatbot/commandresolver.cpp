@@ -889,6 +889,8 @@ void CommandResolver::banHelperCommand(UserInfoTOPtr u, uint banTime, QString de
         currentDate = currentDate.addSecs(banTime*60);
     QString banEndTimeDesc = currentDate.toString();//"dddd d-M-yyyy h:m:s
 
+    message = QString("%1 zbanowal %2").arg(sender->getNick()).arg(user->getUin());
+    GetProfile()->getSession()->sendMessageToStaff(message);
 
     if(description.isEmpty())
         message = QString("%1 dostaje bana do %2.").arg(nickName).arg(banEndTimeDesc);
