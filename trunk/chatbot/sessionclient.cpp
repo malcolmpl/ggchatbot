@@ -420,6 +420,20 @@ void SessionClient::sendMessageToSuperUser(uin_t uin, QString message)
     }
 }
 
+void SessionClient::sendMessageToStaff(QString message)
+{
+    QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
+    UserDatabasePtr ud = GetProfile()->getUserDatabase();
+
+    foreach(UserInfoTOPtr user, users)
+    {
+        if((ud->isSuperUser(user) || ud->isUserHaveOp(user)) && ud->isUserOnChannel(user))
+        {
+            sendMessageTo(user->getUin(), message);
+        }
+    }
+}
+
 bool SessionClient::canUserWriteToChannel(uin_t uin)
 {
     bool channelModerated = GetProfile()->getBotSettings().getChannelModerated();
