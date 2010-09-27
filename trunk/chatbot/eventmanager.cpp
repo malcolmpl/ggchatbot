@@ -60,16 +60,18 @@ void EventManager::MessageEvent()
 {
     // dodajemy usera do listy
     uin_t sender = m_event->event.msg.sender;
-
-    UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(sender);
-
-//    QString content = QString((const char*)m_event->event.msg.message);
     QString content = GGChatBot::makeInternalMessage(GGChatBot::cp2unicode((const char*)m_event->event.msg.message));
-
     content.replace(QLatin1String("\r\n"), QString(QChar::LineSeparator));
     content.replace(QLatin1String("\n"),   QString(QChar::LineSeparator));
     content.replace(QLatin1String("\r"),   QString(QChar::LineSeparator));
 
+    if(sender >= 12000000 && sender <= 13000000)
+    {
+        qDebug() << "WIDGET - Blokada" << sender << content;
+        return;
+    }
+
+    UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(sender);
     QString message;
 
     // refresh user time action
