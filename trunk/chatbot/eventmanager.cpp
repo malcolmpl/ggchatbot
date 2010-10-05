@@ -65,7 +65,7 @@ void EventManager::MessageEvent()
     content.replace(QLatin1String("\n"),   QString(QChar::LineSeparator));
     content.replace(QLatin1String("\r"),   QString(QChar::LineSeparator));
 
-    if(sender >= 12000000 && sender <= 13000000)
+    if(sender >= 12000000 && sender <= 12060000)
     {
         qDebug() << "WIDGET - Blokada" << sender << content;
         return;
@@ -102,6 +102,8 @@ void EventManager::MessageEvent()
 
     if(GetProfile()->messageIsSpam(user, content))
         return;
+
+    content = GetProfile()->replaceBadWords(content);
 
     unsigned char * result;
     unsigned int memoryPosition = sizeof(gg_msg_richtext);

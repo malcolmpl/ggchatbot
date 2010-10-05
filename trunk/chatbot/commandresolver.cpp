@@ -662,6 +662,8 @@ void CommandResolver::leaveCommand()
     if(GetProfile()->messageIsSpam(user, reason))
         reason.clear();
 
+    reason = GetProfile()->replaceBadWords(reason);
+
     GGChatBot::UserNick userNick = GetProfile()->getUserDatabase()->makeUserNick(user);
     QString msg = "Odchodzi " + userNick.nick + " " + reason;
     qDebug() << "UIN:" << user->getUin() << msg;
