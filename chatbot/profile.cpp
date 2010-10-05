@@ -95,3 +95,47 @@ bool Profile::messageIsSpam(UserInfoTOPtr user, QString content)
 
     return false;
 }
+
+QStringList Profile::getBadWordsList()
+{
+    QStringList badWords;
+    badWords << "kurw" << "jeba" << "chuj" << "huj" << "spierdalaj" << "wypierdalaj";
+    return badWords;
+}
+
+QString Profile::replaceStar(QString content)
+{
+    int size = content.size();
+    if(size>=3)
+    {
+        content = content.remove(1, size-2);
+        for(int i = 0; i<size-2; ++i)
+        {
+            content = content.insert(1, QString("*"));
+        }
+    }
+
+    return content;
+}
+
+QString Profile::replaceBadWords(QString content)
+{
+    if(content.size()<3)
+        return content;
+
+    QTime czas = QTime::currentTime();
+    if(czas.hour() < 7 && czas.hour() > 22)
+        return content;
+
+    QStringList badWords = getBadWordsList();
+    QStringList contentList = content.split(" ", QString::SkipEmptyParts);
+    foreach(QString bad, badWords)
+    {
+        if(!content.contains(bad, Qt::CaseInsensitive))
+            continue;
+    
+        content.replace(QString(bad), QString(replaceStar(bad)), Qt::CaseInsensitive);
+    }
+
+    return content;
+}

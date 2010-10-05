@@ -45,10 +45,13 @@ public:
     SessionClientPtr getSession() const;
     void setSession(const SessionClientPtr v);
     bool messageIsSpam(UserInfoTOPtr, QString);
-    
+    QString replaceBadWords(QString content);
+ 
 private:
     void Init();
     QStringList getSpamContent();
+    QString replaceStar(QString content);
+    QStringList getBadWordsList();
 
     BotSettingsPtr m_botSettings;
     UserDatabasePtr m_userDatabase;
