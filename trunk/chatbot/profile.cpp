@@ -99,7 +99,7 @@ bool Profile::messageIsSpam(UserInfoTOPtr user, QString content)
 QStringList Profile::getBadWordsList()
 {
     QStringList badWords;
-    badWords << "kurw" << "jeba" << "chuj" << "huj" << "spierdalaj" << "wypierdalaj";
+    badWords << "kurw" << "jeba" << "huj" << "pierdol" << "pierdal";
     return badWords;
 }
 
@@ -123,8 +123,8 @@ QString Profile::replaceBadWords(QString content)
     if(content.size()<3)
         return content;
 
-    QTime czas = QTime::currentTime();
-    if(czas.hour() < 7 && czas.hour() > 22)
+    QTime czas = GGChatBot::getDateTime().time();
+    if(czas.hour() < 7 || czas.hour() > 22)
         return content;
 
     QStringList badWords = getBadWordsList();
