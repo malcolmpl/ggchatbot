@@ -118,7 +118,7 @@ QString Profile::replaceStar(QString content)
     return content;
 }
 
-QString Profile::replaceBadWords(QString content)
+QString Profile::replaceBadWords(QString content, bool &badWord)
 {
     if(content.size()<3)
         return content;
@@ -135,7 +135,25 @@ QString Profile::replaceBadWords(QString content)
             continue;
     
         content.replace(QString(bad), QString(replaceStar(bad)), Qt::CaseInsensitive);
+        badWord = true;
     }
 
     return content;
+}
+
+void Profile::kickHelperCommand(UserInfoTOPtr u, UserInfoTOPtr sender, QString reason = QString())
+{
+    UserInfoTOPtr user;
+    if(u->getUserFlags() > GGChatBot::OP_USER_FLAG)
+        user = sender;
+    else
+        user = u;
+
+    GGChatBot::UserNick userNick = getUserDatabase()->makeUserNick(user);
+    QString msg = QString("%1 wylatuje z czatu. %2").arg(userNick.nick).arg(reason);
+    showUserDebug(user, msg);
+
+    if(user->getOnChannel())
+        getSession()->sendMessage(msg);
+    user->setOnChannel(false);
 }

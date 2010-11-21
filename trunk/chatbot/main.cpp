@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
     qInstallMsgHandler(&logHandler);
     QCoreApplication app(argc, argv);
 //    QTextCodec::setCodecForCStrings (QTextCodec::codecForName ("UTF-8"));
-//    QLocale::setDefault(QLocale::Polish);
+    QLocale::setDefault(QLocale::Polish);
 
     LogScheduler *logSched = new LogScheduler();
     logSched->start();
