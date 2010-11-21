@@ -103,7 +103,15 @@ void EventManager::MessageEvent()
     if(GetProfile()->messageIsSpam(user, content))
         return;
 
-    content = GetProfile()->replaceBadWords(content);
+    bool isBadWord = false;
+    content = GetProfile()->replaceBadWords(content, isBadWord);
+    if(isBadWord && user->getUserFlags() < GGChatBot::OP_USER_FLAG)
+    {
+        UserInfoTOPtr sender = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
+
+        GetProfile()->kickHelperCommand(user, sender, content);
+        return;
+    }
 
     unsigned char * result;
     unsigned int memoryPosition = sizeof(gg_msg_richtext);

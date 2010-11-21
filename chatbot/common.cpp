@@ -43,6 +43,6 @@ namespace GGChatBot
 
     QDateTime getDateTime()
     {
-        return QDateTime::currentDateTime().toUTC().addSecs(7200);
+        return QDateTime::currentDateTime().toUTC().addSecs(3600);
     }
 }
