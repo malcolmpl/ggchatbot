@@ -65,7 +65,7 @@ void EventManager::MessageEvent()
     content.replace(QLatin1String("\n"),   QString(QChar::LineSeparator));
     content.replace(QLatin1String("\r"),   QString(QChar::LineSeparator));
 
-    if(sender >= 12000000 && sender <= 12060000)
+    if(sender >= 11000000 && sender <= 12200000)
     {
         qDebug() << "WIDGET - Blokada" << sender << content;
         return;
