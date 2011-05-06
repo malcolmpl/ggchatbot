@@ -29,7 +29,6 @@
 #include <QDebug>
 #include <QRegExp>
 #include <QDateTime>
-#include <QIntValidator>
 
 namespace
 {
@@ -493,6 +492,7 @@ void CommandResolver::nickCommand()
                     GetProfile()->getSession()->sendMessageTo(user->getUin(), QString("Hej %1, juz masz ustawiony nick!").arg(userNick.nick));
                     return;
                 }
+                qDebug() << u->getUin() << user->getUin();
                 GetProfile()->getSession()->sendMessageTo(user->getUin(), MSG_NICK_EXIST);
                 return;
             }
@@ -844,51 +844,46 @@ void CommandResolver::kickCommand()
             pos += rx.matchedLength();
         }
 
-        qDebug() << list;
         if(list.size() < 2)
             return;
 
-        QIntValidator intValidator;
-
-        bool isOk = false;        
+        bool isOk = false;
         nick = list[0];
         list[1].toInt(&isOk);
-        if((intValidator.validate(list[1], 0) != QValidator::Invalid)
+        if(isOk)
             minutes = list[1].toInt(&isOk);
         if(list.size()==3)
             description = list[2];
 
         QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
-        UserInfoTOPtr u;        
-
-        if((intValidator.validate(nick, 0) != QValidator::Invalid)
-        {
-            foreach(u, users)
-            {
-                QString uin = QString("%1").arg(u->getUin());
-                if(uin.compare(nick, Qt::CaseSensitive) == 0)
-                {
-                    banHelperCommand(u, minutes, description, user);
-                    return;
-                }
-            }
-        }
-
-        // nie znalezlismy numeru gg, wiec szukamy po nicku
+        UserInfoTOPtr u;
         foreach(u, users)
         {
-            QString nickStr = u->getNick();
-            if(uin.compare(nick, Qt::CaseSensitive) == 0)
+            isOk = false;
+            nick.toInt(&isOk);
+            if(isOk)
             {
-                banHelperCommand(u, minutes, description, user);
-                return;
+                QString uin = QString("%1").arg(u->getUin());
+                if(uin == nick)
+                {
+                    banHelperCommand(u, minutes, description, user);
+                    break;
+                }
+            }
+            else
+            {
+                QString nickStr = u->getNick();
+                if(nickStr == nick)
+                {
+                    banHelperCommand(u, minutes, description, user);
+                    break;
+                }
             }
         }
     }
 
     void CommandResolver::banHelperCommand(UserInfoTOPtr u, uint banTime, QString description, UserInfoTOPtr sender)
     {
-        qDebug() << "banHelperCommand()";
         UserInfoTOPtr user;
         if(u->getUserFlags() > GGChatBot::SUPER_USER_FLAG)
             user = sender;
