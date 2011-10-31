@@ -588,6 +588,12 @@ bool CommandResolver::checkIfUserCanJoin()
         }
     }
 
+    if(mChannelClosed && user->getUin() >= 38955000)
+    {
+        qDebug() << "UIN:" << user->getUin() << "User blocked!!!" << msg;
+        return false;
+    }
+
     if(!mChannelClosed)
         return true;
 
@@ -949,6 +955,7 @@ void CommandResolver::kickCommand()
                     return;
                 }
             }
+            qDebug() << "Nie znaleziono uzytkownika.";
         }
 
         QRegExp rx("^(\\w+).*");
@@ -968,13 +975,17 @@ void CommandResolver::kickCommand()
                     return;
                 }
             }
+            qDebug() << "Nie znaleziono uzytkownika";
         }
     }
 
     void CommandResolver::unbanHelperCommand(UserInfoTOPtr u)
     {
         if(!u->isBanned())
+        {
+            qDebug() << "Uzytkownik nie ma bana";
             return;
+        }
 
         QString message = QString("%1 zostal odbanowany.").arg(u->getUin());
         GetProfile()->getSession()->sendMessage(message);
