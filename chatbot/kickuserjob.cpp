@@ -32,6 +32,8 @@ const int INACTIVE_TIME = 60*20;
 const int ONE_MINUTE_IN_SECONDS = 60;
 // seconds for users without nick
 const int INACTIVE_NONICK_TIME = 60;
+// one hour
+const int INACTIVE_VOICE_TIME = ONE_MINUTE_IN_SECONDS * 60;
 
 KickUserJob::KickUserJob()
 {
@@ -60,6 +62,9 @@ void KickUserJob::makeJob()
             if(user->getUserFlags() >= GGChatBot::OP_USER_FLAG)
                 continue;
 
+            if(user->getUserFlags() == GGChatBot::VOICE_USER_FLAG)
+                inactiveTime = INACTIVE_VOICE_TIME;
+
             if(user->getNick().startsWith("Ktos", Qt::CaseInsensitive))
             {
                 inactiveTime = INACTIVE_NONICK_TIME;
@@ -79,3 +84,4 @@ void KickUserJob::makeJob()
         }
     }
 }
+
