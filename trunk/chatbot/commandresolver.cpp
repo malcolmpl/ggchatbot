@@ -588,7 +588,7 @@ bool CommandResolver::checkIfUserCanJoin()
         }
     }
 
-    if(mChannelClosed && user->getUin() >= 38955000)
+    if(mChannelClosed && user->getUin() >= 38000000)
     {
         qDebug() << "UIN:" << user->getUin() << "User blocked!!!" << msg;
         return false;
