@@ -1009,10 +1009,13 @@ void CommandResolver::kickCommand()
         if(user->getUserFlags() < GGChatBot::OP_USER_FLAG)
             return;
 
-        if(m_topicIsBlocked)
+        if(user->getUserFlags() < GGChatBot::SUPER_USER_FLAG)
         {
-            GetProfile()->getSession()->sendMessageTo(user->getUin(), QString("Zostala wlaczona blokada zmiany opisu, nie mozesz go zmienic."));
-            return;
+            if(m_topicIsBlocked)
+            {
+                GetProfile()->getSession()->sendMessageTo(user->getUin(), QString("Zostala wlaczona blokada zmiany opisu, nie mozesz go zmienic."));
+                return;
+            }
         }
 
         QRegExp rx("^(.*)");
@@ -1029,7 +1032,7 @@ void CommandResolver::kickCommand()
     {
         UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
 
-        if(user->getUserFlags() < GGChatBot::OP_USER_FLAG)
+        if(user->getUserFlags() < GGChatBot::SUPER_USER_FLAG)
             return;
 
         QString message;
