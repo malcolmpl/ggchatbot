@@ -49,7 +49,10 @@ public:
 
     void setWhoDescription(const QString v) { m_whoDescription = v; }
     QString getWhoDescription() const { return m_whoDescription; }
-    
+
+    void setBlockTopic(const bool v) { m_blockTopic = v; }
+    bool getBlockTopic() const { return m_blockTopic; }
+ 
 private:
     int m_level;
     uin_t m_uin;
@@ -58,6 +61,7 @@ private:
     QString m_whoDescription;
     int m_channelModerated;
     bool m_channelClosed;
+    bool m_blockTopic;
 };
 
 #endif	/* _BOTSETTINGSTO_H */

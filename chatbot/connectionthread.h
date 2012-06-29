@@ -22,12 +22,12 @@
 
 #include <QThread>
 #include <QCoreApplication>
-#include <boost/shared_ptr.hpp>
+#include <QSharedPointer>
 #include "sessionclient.h"
 
 class ConnectionThread;
 
-typedef boost::shared_ptr<ConnectionThread> ConnectionThreadPtr;
+typedef QSharedPointer<ConnectionThread> ConnectionThreadPtr;
 
 class ConnectionThread : public QThread
 {
