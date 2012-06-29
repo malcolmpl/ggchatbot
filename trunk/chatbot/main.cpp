@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
     logSched->start();
 
     ConnectionThreadPtr connection = ConnectionThread::Create();
-    QObject::connect(connection.get(), SIGNAL(finished()), &app, SLOT(quit()));
+    QObject::connect(connection.data(), SIGNAL(finished()), &app, SLOT(quit()));
     connection->start();
     connection->startServer();
 

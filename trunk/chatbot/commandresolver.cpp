@@ -72,6 +72,7 @@ namespace
     const QString CMD_STATS             = "/stats";
     const QString CMD_SETNICK           = "/setnick";
     const QString CMD_SEEN              = "/seen";
+    const QString CMD_BLOCKTOPIC        = "/blocktopic";
 
     const QString MSG_NICK_EXIST        = "Uzytkownik o takim nicku juz istnieje!";
     const QString MSG_HELP              = "Dostepne komendy:\n/nick 'Nick' - zmiana nicka\n" \
@@ -113,6 +114,7 @@ bool CommandResolver::checkCommand(gg_event *event)
     BotSettingsTO bs = GetProfile()->getBotSettings();
     mChannelModerated = bs.getChannelModerated();
     mChannelClosed = bs.getChannelClosed();
+    m_topicIsBlocked = bs.getBlockTopic();
 
     if((pos = rx.indexIn(str, pos)) != -1)
     {
@@ -343,6 +345,12 @@ bool CommandResolver::checkCommand(gg_event *event)
         {
             lastString = removeCommand(str, CMD_SEEN);
             seenCommand();
+            return true;
+        }
+        else if(command.compare(CMD_BLOCKTOPIC, Qt::CaseInsensitive)==0)
+        {
+            lastString = removeCommand(str, CMD_BLOCKTOPIC);
+            blockTopicCommand();
             return true;
         }
     }
@@ -1001,6 +1009,12 @@ void CommandResolver::kickCommand()
         if(user->getUserFlags() < GGChatBot::OP_USER_FLAG)
             return;
 
+        if(m_topicIsBlocked)
+        {
+            GetProfile()->getSession()->sendMessageTo(user->getUin(), QString("Zostala wlaczona blokada zmiany opisu, nie mozesz go zmienic."));
+            return;
+        }
+
         QRegExp rx("^(.*)");
         int pos = 0;
 
@@ -1009,6 +1023,35 @@ void CommandResolver::kickCommand()
             m_topic = rx.cap(1);
             setTopic(m_topic);
         }
+    }
+
+    void CommandResolver::blockTopicCommand()
+    {
+        UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
+
+        if(user->getUserFlags() < GGChatBot::OP_USER_FLAG)
+            return;
+
+        QString message;
+
+        if(m_topicIsBlocked)
+        {
+            m_topicIsBlocked = false;
+
+            message = QString("Zmiana tematu zostala odblokowana.");
+            GetProfile()->getSession()->sendMessageToStaff(message);
+        }        
+        else
+        {
+            message = QString("Zmiana tematu zostala zablokowana przez szefunia.");
+            GetProfile()->getSession()->sendMessageToStaff(message);
+
+            m_topicIsBlocked = true;
+        }
+
+        BotSettingsTO bs = GetProfile()->getBotSettings();
+        bs.setBlockTopic(m_topicIsBlocked);
+        GetProfile()->setBotSettings(bs);
     }
 
     void CommandResolver::setTopic(QString topic, bool showMessage)

@@ -64,6 +64,7 @@ private:
     bool mChannelModerated;
     QString m_topic;
     bool mChannelClosed;
+    bool m_topicIsBlocked;
     QDateTime mLastUserJoin;
     QPointer<Stats> mStatsPtr;
 
@@ -97,6 +98,7 @@ private:
     void statsCommand();
     void setNickCommand();
     void seenCommand();
+    void blockTopicCommand();
 };
 
 #endif	/* _COMMANDRESOLVER_H */

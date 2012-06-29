@@ -48,6 +48,7 @@ void BotSettings::ReadBotSettings()
         m_botSettings.setChannelModerated(settings->value("ChannelModerated", false).toBool());
         m_botSettings.setChannelClosed(settings->value("ChannelClosed", false).toBool());
         m_botSettings.setWhoDescription(settings->value("WhoDescription", "").toString());
+        m_botSettings.setBlockTopic(settings->value("BlockTopic", false).toBool());
     settings->endGroup();
 }
 
@@ -63,5 +64,6 @@ void BotSettings::SaveBotSettings()
         settings->setValue("ChannelModerated", m_botSettings.getChannelModerated());
         settings->setValue("ChannelClosed", m_botSettings.getChannelClosed());
         settings->setValue("WhoDescription", m_botSettings.getWhoDescription());
+        settings->setValue("BlockTopic", m_botSettings.getBlockTopic());
     settings->endGroup();
 }
