@@ -54,6 +54,29 @@ void EventManager::ResolveEvent(gg_event *event)
 
 void EventManager::AckEvent()
 {
+    switch(m_event->event.ack.status)
+    {
+    case GG_ACK_DELIVERED:
+    case GG_ACK_QUEUED:
+        //  nothing
+        break;
+
+    case GG_ACK_BLOCKED:
+        qDebug() << "Message blocked by server - spam!";
+        break;
+
+    case GG_ACK_MBOXFULL:
+        qDebug() << "Message not delivered - msgbox full" << m_event->event.msg.sender;
+        break;
+
+    case GG_ACK_NOT_DELIVERED:
+        qDebug() << "Cannot delivery msg" << m_event->event.msg.sender;
+        break;
+
+    default:
+        // nothing
+        break;
+    }
 }
 
 void EventManager::MessageEvent()

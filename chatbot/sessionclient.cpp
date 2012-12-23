@@ -322,6 +322,9 @@ void SessionClient::ShowFailureReason(struct gg_event *event)
     case GG_FAILURE_UNAVAILABLE:
         qDebug() << "Server is turned off.";
         break;
+
+    default:
+        qDebug() << "Error:" << event->event.failure;
     }
 }
 
