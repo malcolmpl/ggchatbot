@@ -7,7 +7,8 @@ namespace GGChatBot
 
     QString cp2unicode(const QByteArray &buf)
     {
-        return codec_cp1250->toUnicode(buf);
+//        return codec_cp1250->toUnicode(buf);
+        return QString(buf);
     }
 
     QByteArray unicode2cp(const QString &buf)
