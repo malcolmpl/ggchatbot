@@ -706,7 +706,7 @@ void CommandResolver::leaveCommand()
 void CommandResolver::whoCommand()
 {
     UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
-    if(!user->getOnChannel() && user->getUserFlags() <= GGChatBot::OP_USER_FLAG)
+    if(!user->getOnChannel() && user->getUserFlags() < GGChatBot::OP_USER_FLAG)
         return;
 
     QList<UserInfoTOPtr> users = GetProfile()->getUserDatabase()->getUserList();
