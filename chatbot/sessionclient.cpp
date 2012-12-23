@@ -29,8 +29,6 @@
 #include <QBuffer>
 #include <QXmlQuery>
 
-#include "protocol.h"
-
 const char * BOT_DEFAULT_VERSION = "Gadu-Gadu Client Build 10.0.0.11070";
 
 SessionClient::SessionClient(QObject *parent)
@@ -190,6 +188,8 @@ void SessionClient::EventLoop()
 {
     forever
     {
+        QCoreApplication::instance()->processEvents();
+
         FD_ZERO(&rd);
         FD_ZERO(&wd);
 
@@ -207,12 +207,6 @@ void SessionClient::EventLoop()
 
         int wynik = select(session->fd + 1, &rd, &wd, NULL, /*(session->timeout) ? &tv : NULL*/ &tv);
 
-        if (!wynik)
-        {
-            QCoreApplication::instance()->processEvents();
-            continue;
-        }
-
         if (wynik == -1)
         {
             if (errno != EINTR)
@@ -228,6 +222,11 @@ void SessionClient::EventLoop()
             if(!WaitForEvent())
             {
                 qDebug() << "Rozlaczono z serwerem, ponawiam...";
+
+                gg_event_free(event);
+                gg_logoff(session);
+                gg_free_session(session);
+
                 QTimer::singleShot(5000, this, SLOT(MakeConnection()));
                 return;
             }
@@ -251,9 +250,15 @@ void SessionClient::EventLoop()
 
             if(event->type == GG_EVENT_CONN_FAILED)
             {
+                ShowFailureReason(event);
                 qDebug() << "Connection failed. Ponawiam.";
                 //emit restartConnection();
                 //emit endServer();
+
+                gg_event_free(event);
+                gg_logoff(session);
+                gg_free_session(session);
+
                 QTimer::singleShot(5000, this, SLOT(MakeConnection()));
                 return;
             }
@@ -267,6 +272,64 @@ void SessionClient::EventLoop()
             
             gg_event_free(event);
         }
+    }
+}
+
+void SessionClient::ShowFailureReason(struct gg_event *event)
+{
+    switch(event->event.failure)
+    {
+    case GG_FAILURE_RESOLVING:
+        qDebug() << "Resolving server failed.";
+        break;
+
+    case GG_FAILURE_CONNECTING:
+        qDebug() << "Connection problem.";
+        break;
+
+    case GG_FAILURE_INVALID:
+        qDebug() << "Server returned failed data.";
+        break;
+
+    case GG_FAILURE_READING:
+        qDebug() << "Error while reading.";
+        break;
+
+    case GG_FAILURE_WRITING:
+        qDebug() << "Error while writing.";
+        break;
+
+    case GG_FAILURE_PASSWORD:
+        qDebug() << "Password incorrect.";
+        break;
+
+    case GG_FAILURE_404:
+        qDebug() << "GG_FAILURE_404";
+        break;
+
+    case GG_FAILURE_TLS:
+        qDebug() << "Error while tls negotiation.";
+        break;
+
+    case GG_FAILURE_NEED_EMAIL:
+        qDebug() << "Disconnected by server. Please change email address.";
+        break;
+
+    case GG_FAILURE_INTRUDER:
+        qDebug() << "Too much connections with wrong password";
+        break;
+
+    case GG_FAILURE_UNAVAILABLE:
+        qDebug() << "Server is turned off.";
+        break;
+
+    case GG_FAILURE_PROXY:
+        qDebug() << "Error proxy server.";
+        break;
+
+    case GG_FAILURE_HUB:
+        qDebug() << "Connection with HUB problem.";
+        break;
     }
 }
 
@@ -343,7 +406,7 @@ void SessionClient::sendMessage(QString message)
     foreach(UserInfoTOPtr user, users)
     {
         if(GetProfile()->getUserDatabase()->isUserOnChannel(user))
-            gg_send_message(session, GG_CLASS_CHAT, user->getUin(), (const unsigned char*)data.data());
+            gg_send_message(session, GG_CLASS_MSG, user->getUin(), (const unsigned char*)data.data());
     }
 }
 
@@ -361,10 +424,10 @@ void SessionClient::sendMessageRichtext(uin_t uin, QString message, const unsign
         if(GGChatBot::DISABLE_BACK_MESSAGE)
         {
             if(user->getUin() != uin && GetProfile()->getUserDatabase()->isUserOnChannel(user))
-                gg_send_message_richtext(session, GG_CLASS_CHAT, user->getUin(), (unsigned char*)data.data(), format, formatlen);
+                gg_send_message_richtext(session, GG_CLASS_MSG, user->getUin(), (unsigned char*)data.data(), format, formatlen);
         }
         else
-            gg_send_message_richtext(session, GG_CLASS_CHAT, user->getUin(), (unsigned char*)data.data(), format, formatlen);
+            gg_send_message_richtext(session, GG_CLASS_MSG, user->getUin(), (unsigned char*)data.data(), format, formatlen);
     }
 }
 
@@ -375,7 +438,7 @@ void SessionClient::sendMessageRichtextTo(uin_t uin, QString message, const unsi
 
     QByteArray data = message.toUtf8();
 
-    gg_send_message_richtext(session, GG_CLASS_CHAT, uin, (unsigned char*)data.data(), format, formatlen);
+    gg_send_message_richtext(session, GG_CLASS_MSG, uin, (unsigned char*)data.data(), format, formatlen);
 }
 
 void SessionClient::sendMessage(uin_t uin, QString message)
@@ -405,7 +468,7 @@ void SessionClient::sendMessageTo(uin_t uin, QString message)
 
     //QByteArray data = GGChatBot::unicode2cp(message); // It's working if we connected without utf flag
     QByteArray data = message.toUtf8();
-    gg_send_message(session, GG_CLASS_CHAT, uin, (unsigned char*)data.data());
+    gg_send_message(session, GG_CLASS_MSG, uin, (unsigned char*)data.data());
 }
 
 void SessionClient::sendMessageToSuperUser(uin_t uin, QString message)
