@@ -322,14 +322,6 @@ void SessionClient::ShowFailureReason(struct gg_event *event)
     case GG_FAILURE_UNAVAILABLE:
         qDebug() << "Server is turned off.";
         break;
-
-    case GG_FAILURE_PROXY:
-        qDebug() << "Error proxy server.";
-        break;
-
-    case GG_FAILURE_HUB:
-        qDebug() << "Connection with HUB problem.";
-        break;
     }
 }
 
