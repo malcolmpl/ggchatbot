@@ -1,5 +1,5 @@
 QT += xmlpatterns xml gui
-LIBS += /usr/lib/libgadu.so
+LIBS += /usr/local/lib/libgadu.so
 TARGET = ggchatbot
 CONFIG += console \
     release
@@ -44,5 +44,9 @@ HEADERS += connectionthread.h \
     sessionclientptr.h \
     profileptr.h \
     common.h \
-    imagedescriptionsettings.h
+    imagedescriptionsettings.h \
+    resolver.h \
+    protocol.h \
+    libgadu.h \
+    compat.h
 
