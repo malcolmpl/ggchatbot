@@ -83,6 +83,7 @@ private:
     bool WaitForEvent();
     void EventLoop();
     void ReadImageStatus(struct gg_event *);
+    void ShowFailureReason(struct gg_event *);
 };
 
 #endif	/* _SESSIONCLIENT_H */
