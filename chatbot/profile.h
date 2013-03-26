@@ -53,6 +53,7 @@ private:
     QStringList getSpamContent();
     QString replaceStar(QString content);
     QStringList getBadWordsList();
+    QStringList getBadWordsExceptions();
 
     BotSettingsPtr m_botSettings;
     UserDatabasePtr m_userDatabase;
