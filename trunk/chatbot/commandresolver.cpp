@@ -1349,15 +1349,15 @@ void CommandResolver::kickCommand()
 
         seconds = mStatsPtr->totalBansTime;
 
-        if(years == (seconds/YEAR))
+        if(years = (seconds/YEAR))
             seconds -= YEAR * years;
-        if(months == (seconds/MONTH))
+        if(months = (seconds/MONTH))
             seconds -= MONTH * months;
-        if(days == (seconds/DAY))
+        if(days = (seconds/DAY))
             seconds -= DAY * days;
-        if(hours == (seconds/HOUR))
+        if(hours = (seconds/HOUR))
             seconds -= HOUR * hours;
-        if(minutes == (seconds/MINUTE))
+        if(minutes = (seconds/MINUTE))
             seconds -= MINUTE * minutes;
         
         QString bansTimeMsg = QString("%1 lat %2 miesiecy %3 dni %4 godzin %5 minut %6 sekund").arg(years).arg(months).arg(days).arg(hours).arg(minutes).arg(seconds);
