@@ -106,6 +106,13 @@ QStringList Profile::getBadWordsList()
     return badWords;
 }
 
+QStringList Profile::getBadWordsExceptions()
+{
+    QStringList badWordsEx;
+    badWordsEx << "ochuj" << "uchuj" << "achuj";
+    return badWordsEx;
+}
+
 QString Profile::replaceStar(QString content)
 {
     int size = content.size();
@@ -127,11 +134,58 @@ QString Profile::replaceBadWords(QString content, bool &badWord)
         return content;
 
     QTime czas = GGChatBot::getDateTime().time();
-    if(czas.hour() < 7 || czas.hour() > 22)
+    if(czas.hour() < 7 || czas.hour() >= 22)
         return content;
 
     QStringList badWords = getBadWordsList();
     QStringList contentList = content.split(" ", QString::SkipEmptyParts);
+    QString out;
+
+    foreach(QString in, contentList)
+    {
+        if(in.size() < 3)
+        {
+            out += QString("%1 ").arg(in);
+            continue;
+        }
+
+        bool isBadEx = false;
+        foreach(QString badEx, getBadWordsExceptions())
+        {
+            if(in.contains(badEx, Qt::CaseInsensitive))
+            {
+                out += QString("%1 ").arg(in);
+                isBadEx = true;
+                break;
+            }
+        }
+
+        if(isBadEx)
+            continue;
+
+        bool badInside = false;
+        foreach(QString bad, badWords)
+        {
+            if(in.contains(bad, Qt::CaseInsensitive))
+            {
+                badInside = true;
+                QString tmp = in;
+                tmp.replace(QString(bad), QString(replaceStar(bad)), Qt::CaseInsensitive);
+                out += QString("%1 ").arg(tmp);
+                badWord = true;
+                break;
+            }
+        }
+
+        if(badInside)
+            continue;
+
+        out += QString("%1 ").arg(in);
+    }
+
+    return out;
+
+/*
     foreach(QString bad, badWords)
     {
         if(!content.contains(bad, Qt::CaseInsensitive))
@@ -142,6 +196,7 @@ QString Profile::replaceBadWords(QString content, bool &badWord)
     }
 
     return content;
+*/
 }
 
 void Profile::kickHelperCommand(UserInfoTOPtr u, UserInfoTOPtr sender, QString reason = QString())
