@@ -134,6 +134,9 @@ void EventManager::MessageEvent()
 
     bool isBadWord = false;
     content = GetProfile()->replaceBadWords(content, isBadWord);
+/*
+ * Old version, replaces bad word to stars then kick
+
     if(isBadWord && user->getUserFlags() < GGChatBot::OP_USER_FLAG)
     {
         UserInfoTOPtr sender = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
@@ -141,7 +144,7 @@ void EventManager::MessageEvent()
         GetProfile()->kickHelperCommand(user, sender, content);
         return;
     }
-
+*/
     unsigned char * result;
     unsigned int memoryPosition = sizeof(gg_msg_richtext);
     gg_msg_richtext header;
