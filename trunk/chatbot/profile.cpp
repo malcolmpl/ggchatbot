@@ -129,7 +129,7 @@ QString Profile::replaceStar(QString content)
     return content;
 }
 
-QString Profile::replaceBadWords(QString content, bool &badWord)
+QString Profile::replaceBadWords(QString content, bool &badWord, bool replaceToStar)
 {
     if(content.size()<3)
         return content;
@@ -171,7 +171,14 @@ QString Profile::replaceBadWords(QString content, bool &badWord)
             {
                 badInside = true;
                 QString tmp = in;
-                tmp.replace(QString(bad), QString(replaceStar(bad)), Qt::CaseInsensitive);
+                if(replaceToStar)
+                {
+                    tmp.replace(QString(bad), QString(replaceStar(bad)), Qt::CaseInsensitive);
+                }
+                else
+                {
+                    tmp = QString("<idiota>");
+                }
                 out += QString("%1 ").arg(tmp);
                 badWord = true;
                 break;
