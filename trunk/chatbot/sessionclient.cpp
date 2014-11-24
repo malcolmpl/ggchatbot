@@ -109,7 +109,7 @@ bool SessionClient::Login()
     }
 
     loginParams.uin = uin;
-    loginParams.password = GetProfile()->getBotSettings().getPassword().toAscii().data();
+    loginParams.password = GetProfile()->getBotSettings().getPassword().toLatin1().data();
     loginParams.async = 1;
     loginParams.status = GG_STATUS_FFC;
     loginParams.protocol_version = GG_DEFAULT_PROTOCOL_VERSION;
@@ -338,7 +338,7 @@ void SessionClient::ReadImageStatus(struct gg_event *event)
     QString xmlBeginTime("doc($internalFile)/activeUserbarEventList/activeUserbarEvent/beginTime/string()");
     QString xmlExpireTime("doc($internalFile)/activeUserbarEventList/activeUserbarEvent/expireTime/string()");
 
-    QByteArray out = xmlEvent.toAscii();
+    QByteArray out = xmlEvent.toLatin1();
     QBuffer outputBuffer(&out);
     outputBuffer.open(QIODevice::ReadOnly);
 
