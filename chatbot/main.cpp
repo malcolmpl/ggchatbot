@@ -25,6 +25,7 @@
 #include <QRegExp>
 #include <QString>
 #include <QLocale>
+#include <QtGlobal>
 
 #include "connectionthread.h"
 #include "logscheduler.h"
@@ -32,22 +33,24 @@
 
 QTextStream *logOutput;
 
-void logHandler(QtMsgType type, const char *msg)
+void logHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
+    Q_UNUSED(context);
+
     QString strTime = QString("[%1]").arg(GGChatBot::getDateTime().toString("dd-MM-yyyy hh:mm:ss:zzz"));
     switch (type)
     {
        case QtDebugMsg:
-           fprintf(stderr, "%s %s\n", strTime.toAscii().data(), GGChatBot::unicode2latin(msg).data());
+           fprintf(stderr, "%s %s\n", strTime.toLatin1().data(), GGChatBot::unicode2latin(msg).data());
            break;
        case QtWarningMsg:
-           fprintf(stderr, "Warning: %s %s\n", strTime.toAscii().data(), GGChatBot::unicode2latin(msg).data());
+           fprintf(stderr, "Warning: %s %s\n", strTime.toLatin1().data(), GGChatBot::unicode2latin(msg).data());
            break;
        case QtCriticalMsg:
-           fprintf(stderr, "Critical: %s %s\n", strTime.toAscii().data(), GGChatBot::unicode2latin(msg).data());
+           fprintf(stderr, "Critical: %s %s\n", strTime.toLatin1().data(), GGChatBot::unicode2latin(msg).data());
            break;
        case QtFatalMsg:
-           fprintf(stderr, "Fatal: %s %s\n", strTime.toAscii().data(), GGChatBot::unicode2latin(msg).data());
+           fprintf(stderr, "Fatal: %s %s\n", strTime.toLatin1().data(), GGChatBot::unicode2latin(msg).data());
            break;
     }
 
@@ -68,9 +71,9 @@ void logHandler(QtMsgType type, const char *msg)
 
 int main(int argc, char *argv[])
 {
-    qInstallMsgHandler(&logHandler);
+    qInstallMessageHandler(&logHandler);
     QCoreApplication app(argc, argv);
-    QTextCodec::setCodecForCStrings (QTextCodec::codecForName ("UTF-8"));
+    QTextCodec::setCodecForLocale (QTextCodec::codecForName ("UTF-8"));
     QLocale::setDefault(QLocale::Polish);
 
     LogScheduler *logSched = new LogScheduler();

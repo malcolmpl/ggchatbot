@@ -19,6 +19,7 @@
 
 #include "userdatabase.h"
 #include "eventmanager.h"
+#include "sessionclient.h"
 #include "userinfoto.h"
 #include "debug.h"
 #include "profile.h"
@@ -103,6 +104,12 @@ void EventManager::MessageEvent()
         return;
     }
 
+    if(sender >= 51000000)
+    {
+        qDebug() << "NOWY numerek - Blokada" << sender << content;
+        return;
+    }
+
     // refresh user time action
     user->setLastSeen(GGChatBot::getDateTime());
 
@@ -131,6 +138,32 @@ void EventManager::MessageEvent()
 
     if(GetProfile()->messageIsSpam(user, content))
         return;
+
+    if(GetProfile()->isUserBlockingChat(user, content))
+    {
+        QString message;
+        QString nickName = user->getNick();
+
+        if(nickName.isEmpty())
+            nickName = QString("%1").arg(user->getUin());
+
+        QDateTime currentDate = GGChatBot::getDateTime();
+        currentDate = currentDate.addSecs(3600); // 1 hour
+        QString banEndTimeDesc = currentDate.toString();//"dddd d-M-yyyy h:m:s
+
+        message = QString("Czat banuje %2").arg(user->getUin());
+        GetProfile()->getSession()->sendMessageToStaff(message);
+
+        message = QString("%1 dostaje bana do %2.").arg(nickName).arg(banEndTimeDesc);
+        GetProfile()->getSession()->sendMessage(message);
+
+        user->setBanned(true);
+        user->setOnChannel(false);
+        user->setBanReason(QString("Won."));
+        user->setNick(QString());
+        user->setBanTime(currentDate);
+
+    }
 
     bool isBadWord = false;
     content = GetProfile()->replaceBadWords(content, isBadWord);
@@ -230,7 +263,7 @@ void EventManager::MessageEvent()
 void EventManager::welcomeMessage()
 {
     UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
-    QString msg = QString::fromAscii((const char*)m_event->event.msg.message);
+    QString msg = QString::fromLatin1((const char*)m_event->event.msg.message);
     showUserDebug(user, msg);
     QString welcome;
     if(user->getNick().isEmpty())

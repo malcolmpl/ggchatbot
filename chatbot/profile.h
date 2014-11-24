@@ -45,6 +45,7 @@ public:
     SessionClientPtr getSession() const;
     void setSession(const SessionClientPtr v);
     bool messageIsSpam(UserInfoTOPtr, QString);
+    bool isUserBlockingChat(UserInfoTOPtr, QString);
     QString replaceBadWords(QString content, bool &, bool replaceToStar=false);
     void kickHelperCommand(UserInfoTOPtr u, UserInfoTOPtr sender, QString reason);
 

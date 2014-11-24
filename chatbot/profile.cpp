@@ -80,6 +80,19 @@ QStringList Profile::getSpamContent()
     return spamList;
 }
 
+bool Profile::isUserBlockingChat(UserInfoTOPtr user, QString content)
+{
+    Q_UNUSED(user);
+
+    return false;
+    if(content.contains("w Twoim imieniu zaproszenie do kontaktu. Zostaniesz poinformowany o jego", Qt::CaseInsensitive) == 0)
+    {
+        return true;
+    }
+
+    return false;
+}
+
 bool Profile::messageIsSpam(UserInfoTOPtr user, QString content)
 {
     QStringList spamList = getSpamContent();
