@@ -41,16 +41,16 @@ void logHandler(QtMsgType type, const QMessageLogContext &context, const QString
     switch (type)
     {
        case QtDebugMsg:
-           fprintf(stderr, "%s %s\n", strTime.toLatin1().data(), GGChatBot::unicode2latin(msg).data());
+           fprintf(stderr, "%s %s\n", strTime.toLatin1().data(), msg.toUtf8().data());
            break;
        case QtWarningMsg:
-           fprintf(stderr, "Warning: %s %s\n", strTime.toLatin1().data(), GGChatBot::unicode2latin(msg).data());
+           fprintf(stderr, "Warning: %s %s\n", strTime.toLatin1().data(), msg.toUtf8().data());
            break;
        case QtCriticalMsg:
-           fprintf(stderr, "Critical: %s %s\n", strTime.toLatin1().data(), GGChatBot::unicode2latin(msg).data());
+           fprintf(stderr, "Critical: %s %s\n", strTime.toLatin1().data(), msg.toUtf8().data());
            break;
        case QtFatalMsg:
-           fprintf(stderr, "Fatal: %s %s\n", strTime.toLatin1().data(), GGChatBot::unicode2latin(msg).data());
+           fprintf(stderr, "Fatal: %s %s\n", strTime.toLatin1().data(), msg.toUtf8().data());
            break;
     }
 
@@ -58,7 +58,7 @@ void logHandler(QtMsgType type, const QMessageLogContext &context, const QString
     {
         if(logOutput->device())
         {
-            *logOutput << QString("%1 %2\n").arg(strTime).arg(GGChatBot::unicode2latin(msg).data());
+            *logOutput << QString("%1 %2\n").arg(strTime).arg(msg.toUtf8().data());
             logOutput->flush();
         }
     }

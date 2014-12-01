@@ -1,5 +1,5 @@
 QT += core xmlpatterns xml gui
-LIBS += /usr/local/lib/libgadu.so
+LIBS += -lgadu
 TARGET = ggchatbot
 CONFIG += console \
     release
