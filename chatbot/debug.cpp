@@ -27,6 +27,6 @@ void showUserDebug(UserInfoTOPtr user, QString message)
     qDebug() << "UIN:" << user->getUin()
         << "Nick:" << user->getNick()
         << "Banned:" << user->getBanned()
-        << "MSG:" << GGChatBot::unicode2latin(message);
+        << "MSG:" << message;
 }
 

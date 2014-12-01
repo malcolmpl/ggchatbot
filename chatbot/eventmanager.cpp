@@ -84,10 +84,10 @@ void EventManager::MessageEvent()
 {
     // dodajemy usera do listy
     uin_t sender = m_event->event.msg.sender;
-    QString content = GGChatBot::makeInternalMessage(GGChatBot::cp2unicode((const char*)m_event->event.msg.message));
-    content.replace(QLatin1String("\r\n"), QString(QChar::LineSeparator));
-    content.replace(QLatin1String("\n"),   QString(QChar::LineSeparator));
-    content.replace(QLatin1String("\r"),   QString(QChar::LineSeparator));
+    QString content = GGChatBot::makeInternalMessage(QString::fromUtf8(QByteArray((const char*)m_event->event.msg.message)));
+//    content.replace(QLatin1String("\r\n"), QString(QChar::LineSeparator));
+//    content.replace(QLatin1String("\n"),   QString(QChar::LineSeparator));
+//    content.replace(QLatin1String("\r"),   QString(QChar::LineSeparator));
 
     UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(sender);
     QString message;
@@ -103,13 +103,13 @@ void EventManager::MessageEvent()
         qDebug() << "WIDGET - Blokada" << sender << content;
         return;
     }
-
+/*
     if(sender >= 51000000)
     {
         qDebug() << "NOWY numerek - Blokada" << sender << content;
         return;
     }
-
+*/
     // refresh user time action
     user->setLastSeen(GGChatBot::getDateTime());
 
@@ -263,13 +263,14 @@ void EventManager::MessageEvent()
 void EventManager::welcomeMessage()
 {
     UserInfoTOPtr user = GetProfile()->getUserDatabase()->getUserInfo(m_event->event.msg.sender);
-    QString msg = QString::fromLatin1((const char*)m_event->event.msg.message);
+    QString msg = GGChatBot::makeInternalMessage(QString::fromUtf8(QByteArray((const char*)m_event->event.msg.message)));
     showUserDebug(user, msg);
     QString welcome;
     if(user->getNick().isEmpty())
     {
         welcome = "Witaj!\nWpisz /nick 'Nick' aby ustawic swoj nick a nastepnie\nwpisz /join aby dolaczyc do czatu.\nnp:\n/nick Ania\n/join\n\nMilej zabawy :-)";
-	emit sendMessageTo(m_event->event.msg.sender, welcome);
+//	emit sendMessageTo(m_event->event.msg.sender, welcome);
+	emit sendMessageTo(m_event->event.msg.sender, msg);
     }
     else
     {

@@ -461,7 +461,6 @@ void SessionClient::sendMessageTo(uin_t uin, QString message)
    
     message = GGChatBot::makeMessage(message);
 
-    //QByteArray data = GGChatBot::unicode2cp(message); // It's working if we connected without utf flag
     QByteArray data = message.toUtf8();
     gg_send_message(session, GG_CLASS_MSG, uin, (unsigned char*)data.data());
 }

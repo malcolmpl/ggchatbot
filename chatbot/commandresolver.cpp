@@ -108,7 +108,7 @@ bool CommandResolver::checkCommand(gg_event *event)
     m_event = event;
     
     QRegExp rx("^(/\\w+).*");
-    QString str = GGChatBot::makeInternalMessage(GGChatBot::cp2unicode((const char*)m_event->event.msg.message));
+    QString str = GGChatBot::makeInternalMessage(QString::fromUtf8(QByteArray((const char*)m_event->event.msg.message)));
     int pos = 0;
 
     BotSettingsTO bs = GetProfile()->getBotSettings();
