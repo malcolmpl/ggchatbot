@@ -20,11 +20,12 @@
 #include "sessionscheduler.h"
 #include "common.h"
 
+#include <QThread>
 #include <QTimer>
 #include <QTime>
 #include <QDebug>
 
-SessionScheduler::SessionScheduler()
+SessionScheduler::SessionScheduler(QObject *parent) : QObject(parent)
 {
     time = new QTime();
     time->start();
@@ -46,12 +47,13 @@ SessionScheduler::~SessionScheduler()
         delete timer;
     }
 
-    jobsList.clear();
-}
+    for(QList<JobPtr>::iterator i = jobsList.begin(); i != jobsList.end(); i++)
+    {
+        (*i).data()->destroyJob();
+        jobsList.erase(i);
+    }
 
-void SessionScheduler::run()
-{
-    exec();
+    jobsList.clear();
 }
 
 bool SessionScheduler::checkTime(int sec)
@@ -68,7 +70,7 @@ void SessionScheduler::timerEvent()
     foreach(JobPtr job, jobsList)
     {
         if(checkTime(job->timerPeriod()))
-            job->makeJob();
+            QTimer::singleShot(0, job.data(), SLOT(runJob()));
     }
 }
 
@@ -79,6 +81,11 @@ void SessionScheduler::addJob(JobPtr j)
         if(job == j)
             return;
     }
+    typedef QSharedPointer<QThread> QThreadPtr;
+    QThreadPtr tp = QThreadPtr(new QThread());
+    j->moveToThread(tp.data());
+    j->setJobThread(tp);
+    tp->start();
 
     jobsList.push_back(j);
 }
@@ -90,7 +97,14 @@ void SessionScheduler::removeJob(JobPtr j)
         if(j == (*i))
         {
             jobsList.erase(i);
+            j.data()->destroyJob();
             return;
         }
     }
+}
+
+void SessionScheduler::clearJobs()
+{
+    for(QList<JobPtr>::iterator i = jobsList.begin(); i!= jobsList.end(); i++)
+        removeJob(i->data());
 }

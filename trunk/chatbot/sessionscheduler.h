@@ -22,7 +22,7 @@
 
 #include <libgadu.h>
 
-#include <QThread>
+#include <QObject>
 #include <QList>
 
 #include "job.h"
@@ -30,16 +30,16 @@
 class QTimer;
 class QTime;
 
-class SessionScheduler : public QThread
+class SessionScheduler : public QObject
 {
     Q_OBJECT
 public:
-    SessionScheduler();
+    SessionScheduler(QObject *parent = 0);
     virtual ~SessionScheduler();
 
-    void run();
     void addJob(JobPtr j);
     void removeJob(JobPtr j);
+    void clearJobs();
 
 private slots:
     void timerEvent();
