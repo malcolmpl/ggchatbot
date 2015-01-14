@@ -39,3 +39,23 @@ void Job::setTimerPeriod(int p)
     period = p;
 }
 
+void Job::setJobThread(QSharedPointer<QThread> jtp)
+{
+    connect(jtp.data(), &QThread::finished, jtp.data(), &QObject::deleteLater);
+    jobThreadPtr = jtp;
+}
+
+void Job::destroyJob()
+{
+    qDebug() << "Removing job";
+
+    jobThreadPtr->quit();
+    jobThreadPtr->exit();
+    jobThreadPtr->wait();
+    jobThreadPtr.clear();
+}
+
+void Job::runJob()
+{
+    makeJob();
+}

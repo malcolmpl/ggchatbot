@@ -30,6 +30,7 @@ extern QTextStream *logOutput;
 
 LogScheduler::LogScheduler()
 {
+    moveToThread(this);
 }
 
 void LogScheduler::run()

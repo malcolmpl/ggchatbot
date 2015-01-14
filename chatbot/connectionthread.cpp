@@ -25,7 +25,7 @@
 ConnectionThread::ConnectionThread(QObject *parent)
     : QThread(parent)
 {
-
+    moveToThread(this);
 }
 
 ConnectionThread::~ConnectionThread()

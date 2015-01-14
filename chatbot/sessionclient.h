@@ -31,11 +31,10 @@
 #include "pingserverjob.h"
 #include "kickuserjob.h"
 #include "sessionclientptr.h"
+#include "sessionscheduler.h"
 
 typedef QPointer<gg_session*> SessionPtr;
 typedef QPointer<gg_event*> EventPtr;
-
-class SessionScheduler;
 
 class SessionClient : public QObject, public ProfileBase
 {
@@ -68,7 +67,7 @@ private:
     struct gg_session *session;
     struct gg_event *event;
     EventManager eventManager;
-    SessionScheduler *scheduler;
+    SessionScheduler scheduler;
     fd_set rd, wd, ex;
     struct timeval tv;
     JobPtr pingServer;

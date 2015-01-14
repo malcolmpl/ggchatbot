@@ -34,7 +34,12 @@ const char * BOT_DEFAULT_VERSION = "Gadu-Gadu Client Build 10.0.0.11070";
 SessionClient::SessionClient(QObject *parent)
     : QObject(parent)
 {
-    scheduler = NULL;
+    qRegisterMetaType<uin_t>("uin_t");
+    QObject::connect(&eventManager, SIGNAL(sendMessage(QString)), this, SLOT(sendMessage(QString)));
+    QObject::connect(&eventManager, SIGNAL(sendMessage(uin_t, QString)), this, SLOT(sendMessage(uin_t, QString)));
+    QObject::connect(&eventManager, SIGNAL(sendMessageTo(uin_t, QString)), this, SLOT(sendMessageTo(uin_t, QString)));
+    QObject::connect(&eventManager, SIGNAL(sendMessageRichtext(uin_t, QString, const unsigned char*, int)), this, SLOT(sendMessageRichtext(uin_t, QString, const unsigned char*, int)));
+    QObject::connect(&eventManager, SIGNAL(sendMessageRichtextTo(uin_t, QString, const unsigned char*, int)), this, SLOT(sendMessageRichtextTo(uin_t, QString, const unsigned char*, int)));
 }
 
 SessionClient::~SessionClient()
@@ -43,14 +48,7 @@ SessionClient::~SessionClient()
 
 void SessionClient::MakeConnection()
 {
-    QObject::disconnect(&eventManager, 0, 0, 0);
-    qRegisterMetaType<uin_t>("uin_t");
     eventManager.SetProfile(GetProfile());
-    QObject::connect(&eventManager, SIGNAL(sendMessage(QString)), this, SLOT(sendMessage(QString)));
-    QObject::connect(&eventManager, SIGNAL(sendMessage(uin_t, QString)), this, SLOT(sendMessage(uin_t, QString)));
-    QObject::connect(&eventManager, SIGNAL(sendMessageTo(uin_t, QString)), this, SLOT(sendMessageTo(uin_t, QString)));
-    QObject::connect(&eventManager, SIGNAL(sendMessageRichtext(uin_t, QString, const unsigned char*, int)), this, SLOT(sendMessageRichtext(uin_t, QString, const unsigned char*, int)));
-    QObject::connect(&eventManager, SIGNAL(sendMessageRichtextTo(uin_t, QString, const unsigned char*, int)), this, SLOT(sendMessageRichtextTo(uin_t, QString, const unsigned char*, int)));
 
     SetDebugLevel();
 
@@ -129,20 +127,13 @@ bool SessionClient::Login()
 
     qDebug() << "Protocol version:" << session->protocol_version << "client version:" << session->client_version;
 
-    if(scheduler)
-    {
-	qDebug() << "Deleting Sheduler";
-        delete scheduler;
-    }
-
-    scheduler = new SessionScheduler();
+    scheduler.clearJobs();
     pingServer = JobPtr(new PingServerJob(session));
     KickUserJob *k = new KickUserJob();
     k->SetProfile(GetProfile());
     kickUser = JobPtr(k);
-    scheduler->addJob(pingServer);
-    scheduler->addJob(kickUser);
-    scheduler->start();
+    scheduler.addJob(pingServer);
+    scheduler.addJob(kickUser);
     
     return true;
 }
@@ -401,7 +392,7 @@ void SessionClient::sendMessage(QString message)
     foreach(UserInfoTOPtr user, users)
     {
         if(GetProfile()->getUserDatabase()->isUserOnChannel(user))
-            gg_send_message(session, GG_CLASS_MSG, user->getUin(), (const unsigned char*)data.data());
+            gg_send_message(session, GG_CLASS_MSG, user->getUin(), (const unsigned char*)data.constData());
     }
 }
 
@@ -419,10 +410,10 @@ void SessionClient::sendMessageRichtext(uin_t uin, QString message, const unsign
         if(GGChatBot::DISABLE_BACK_MESSAGE)
         {
             if(user->getUin() != uin && GetProfile()->getUserDatabase()->isUserOnChannel(user))
-                gg_send_message_richtext(session, GG_CLASS_MSG, user->getUin(), (unsigned char*)data.data(), format, formatlen);
+                gg_send_message_richtext(session, GG_CLASS_MSG, user->getUin(), (const unsigned char*)data.constData(), format, formatlen);
         }
         else
-            gg_send_message_richtext(session, GG_CLASS_MSG, user->getUin(), (unsigned char*)data.data(), format, formatlen);
+            gg_send_message_richtext(session, GG_CLASS_MSG, user->getUin(), (const unsigned char*)data.constData(), format, formatlen);
     }
 }
 
@@ -433,7 +424,7 @@ void SessionClient::sendMessageRichtextTo(uin_t uin, QString message, const unsi
 
     QByteArray data = message.toUtf8();
 
-    gg_send_message_richtext(session, GG_CLASS_MSG, uin, (unsigned char*)data.data(), format, formatlen);
+    gg_send_message_richtext(session, GG_CLASS_MSG, uin, (const unsigned char*)data.constData(), format, formatlen);
 }
 
 void SessionClient::sendMessage(uin_t uin, QString message)
@@ -462,7 +453,7 @@ void SessionClient::sendMessageTo(uin_t uin, QString message)
     message = GGChatBot::makeMessage(message);
 
     QByteArray data = message.toUtf8();
-    gg_send_message(session, GG_CLASS_MSG, uin, (unsigned char*)data.data());
+    gg_send_message(session, GG_CLASS_MSG, uin, (const unsigned char*)data.constData());
 }
 
 void SessionClient::sendMessageToSuperUser(uin_t uin, QString message)

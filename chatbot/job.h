@@ -22,6 +22,7 @@
 
 #include <QObject>
 #include <QPointer>
+#include <QThread>
 
 class Job : public QObject
 {
@@ -32,11 +33,17 @@ public:
 
     int timerPeriod();
     void setTimerPeriod(int p);
+    void setJobThread(QSharedPointer<QThread>);
+    void destroyJob();
 
     virtual void makeJob() = 0;
 
+public slots:
+    void runJob();
+
 private:
     int period;
+    QSharedPointer<QThread> jobThreadPtr;
 };
 
 typedef QPointer<Job> JobPtr;
