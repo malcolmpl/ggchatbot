@@ -1,0 +1,1 @@
+Simple chat bot written in Qt and using libgadu to connection with GG network.
