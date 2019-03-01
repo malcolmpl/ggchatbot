@@ -21,6 +21,7 @@
 #include "common.h"
 
 #include <QDebug>
+#include <QCoreApplication>
 
 namespace
 {
@@ -30,7 +31,7 @@ namespace
 
 UserDatabase::UserDatabase()
 {
-    settings = SettingsPtr(new QSettings(USERS_CONFIG, QSettings::IniFormat));
+    settings = SettingsPtr(new QSettings(QCoreApplication::applicationDirPath() + "/" + USERS_CONFIG, QSettings::IniFormat));
     readUsersListConfig();
 }
 

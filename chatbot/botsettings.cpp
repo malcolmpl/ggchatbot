@@ -17,6 +17,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/lgpl-3.0.html>.
 */
 
+#include <QCoreApplication>
 #include "botsettings.h"
 
 namespace
@@ -26,7 +27,7 @@ namespace
 
 BotSettings::BotSettings()
 {
-    settings = SettingsPtr(new QSettings(BOT_CONFIG, QSettings::IniFormat));
+    settings = SettingsPtr(new QSettings(QCoreApplication::applicationDirPath() + "/" + BOT_CONFIG, QSettings::IniFormat));
     ReadBotSettings();
     SaveBotSettings();
 }
