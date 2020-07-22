@@ -40,18 +40,21 @@ void logHandler(QtMsgType type, const QMessageLogContext &context, const QString
     QString strTime = QString("[%1]").arg(GGChatBot::getDateTime().toString("dd-MM-yyyy hh:mm:ss:zzz"));
     switch (type)
     {
-       case QtDebugMsg:
-           fprintf(stderr, "%s %s\n", strTime.toLatin1().data(), msg.toUtf8().data());
-           break;
-       case QtWarningMsg:
-           fprintf(stderr, "Warning: %s %s\n", strTime.toLatin1().data(), msg.toUtf8().data());
-           break;
-       case QtCriticalMsg:
-           fprintf(stderr, "Critical: %s %s\n", strTime.toLatin1().data(), msg.toUtf8().data());
-           break;
-       case QtFatalMsg:
-           fprintf(stderr, "Fatal: %s %s\n", strTime.toLatin1().data(), msg.toUtf8().data());
-           break;
+        case QtDebugMsg:
+            fprintf(stderr, "%s %s\n", strTime.toLatin1().data(), msg.toUtf8().data());
+            break;
+        case QtWarningMsg:
+            fprintf(stderr, "Warning: %s %s\n", strTime.toLatin1().data(), msg.toUtf8().data());
+            break;
+        case QtCriticalMsg:
+            fprintf(stderr, "Critical: %s %s\n", strTime.toLatin1().data(), msg.toUtf8().data());
+            break;
+        case QtFatalMsg:
+            fprintf(stderr, "Fatal: %s %s\n", strTime.toLatin1().data(), msg.toUtf8().data());
+            break;
+        case QtInfoMsg:
+            fprintf(stderr, "Info: %s %s\n", strTime.toLatin1().data(), msg.toUtf8().data());
+            break;
     }
 
     if(logOutput)
